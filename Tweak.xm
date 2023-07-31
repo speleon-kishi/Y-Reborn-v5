@@ -1769,22 +1769,6 @@ BOOL isAd(id node) {
 }
 %end
 %hook YTAsyncCollectionView
-- (void)setBackgroundColor:(UIColor *)color {
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTRelatedVideosCollectionViewController")]) {
-        color = [UIColor clearColor];
-    } else if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTFullscreenMetadataHighlightsCollectionViewController")]) {
-        color = [UIColor clearColor];
-    } else {
-        color = rebornHexColour;
-    }
-    %orig;
-}
-- (UIColor *)darkBackgroundColor {
-    return rebornHexColour;
-}
-- (void)setDarkBackgroundColor:(UIColor *)color {
-    %orig(rebornHexColour);
-}
 - (void)layoutSubviews {
     %orig();
     if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTWatchNextResultsViewController")]) {
@@ -2079,9 +2063,6 @@ BOOL isAd(id node) {
         if ([responder isKindOfClass:NSClassFromString(@"YTEditSheetControllerElementsContentViewController")]) {
             self.backgroundColor = rebornHexColour;
         }
-        if ([responder isKindOfClass:NSClassFromString(@"YTMainAppEngagementPanelViewController")]) {
-            self.backgroundColor = customColor;
-        }
         responder = [responder nextResponder];
     }
 }
@@ -2093,16 +2074,12 @@ BOOL isAd(id node) {
         if ([self.accessibilityIdentifier isEqualToString:@"id.ui.comment_cell"]) { self.backgroundColor = rebornHexColour; }
         if ([self.accessibilityIdentifier isEqualToString:@"id.ui.cancel.button"]) { self.superview.backgroundColor = [UIColor clearColor]; }
         if ([self.accessibilityIdentifier isEqualToString:@"id.elements.components.comment_composer"]) { self.backgroundColor = rebornHexColour; }
+        if ([self.accessibilityIdentifier isEqualToString:@"id.elements.components.filter_chip_bar"]) { self.superview.backgroundColor = rebornHexColour; }
         if ([self.accessibilityIdentifier isEqualToString:@"id.elements.components.video_list_entry"]) { self.backgroundColor = rebornHexColour; }
         if ([self.accessibilityIdentifier isEqualToString:@"id.comment.guidelines_text"]) { self.superview.backgroundColor = rebornHexColour; }
         if ([self.accessibilityIdentifier isEqualToString:@"id.comment.channel_guidelines_bottom_sheet_container"]) { self.backgroundColor = rebornHexColour; }
         if ([self.accessibilityIdentifier isEqualToString:@"id.comment.channel_guidelines_entry_banner_container"]) { self.backgroundColor = rebornHexColour; }
 	if ([self.accessibilityIdentifier isEqualToString:@"id.comment.comment_group_detail_container"]) { self.backgroundColor = [UIColor clearColor]; }
-}
-%end
-%hook YTCinematicContainerView
-- (void)setHidden:(BOOL)arg1 {
-    %orig(YES);
 }
 %end
 %end
