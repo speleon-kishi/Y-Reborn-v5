@@ -1737,6 +1737,9 @@ BOOL isAd(id node) {
 - (UIColor *)background2 {
     return rebornHexColour;
 }
+- (UIColor *)background3 {
+    return rebornHexColour;
+}
 - (UIColor *)brandBackgroundSolid {
     return rebornHexColour;
 }
@@ -1756,6 +1759,12 @@ BOOL isAd(id node) {
     return rebornHexColour;
 }
 - (UIColor *)generalBackgroundB {
+    return rebornHexColour;
+}
+- (UIColor *)baseBackground {
+    return rebornHexColour;
+}
+- (UIColor *)menuBackground {
     return rebornHexColour;
 }
 %end
@@ -1813,6 +1822,11 @@ BOOL isAd(id node) {
     %orig(rebornHexColour);
 }
 %end
+%hook YTSettingsCell
+- (void)setBackgroundColor:(UIColor *)color {
+    %orig(rebornHexColour);
+}
+%end
 %hook YTSlideForActionsView
 - (void)setBackgroundColor:(UIColor *)color {
     %orig(rebornHexColour);
@@ -1829,6 +1843,11 @@ BOOL isAd(id node) {
 }
 %end
 %hook YTPlaylistMiniBarView
+- (void)setBackgroundColor:(UIColor *)color {
+    %orig(rebornHexColour);
+}
+%end
+%hook YTEngagementPanelView
 - (void)setBackgroundColor:(UIColor *)color {
     %orig(rebornHexColour);
 }
@@ -2017,10 +2036,6 @@ BOOL isAd(id node) {
     %orig(rebornHexColour);
 }
 %end
-%hook YTSearchSuggestionCollectionViewCell
-- (void)updateColors {
-}
-%end
 %hook YTCreateCommentTextView
 - (void)setTextColor:(UIColor *)color {
     long long ytDarkModeCheck = [ytThemeSettings appThemeSetting];
@@ -2063,6 +2078,9 @@ BOOL isAd(id node) {
         }
         if ([responder isKindOfClass:NSClassFromString(@"YTEditSheetControllerElementsContentViewController")]) {
             self.backgroundColor = rebornHexColour;
+        }
+        if ([responder isKindOfClass:NSClassFromString(@"YTMainAppEngagementPanelViewController")]) {
+            self.backgroundColor = customColor;
         }
         responder = [responder nextResponder];
     }
