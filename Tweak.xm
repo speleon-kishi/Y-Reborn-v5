@@ -1171,6 +1171,25 @@ BOOL isAd(id node) {
     %orig(textColor);
 }
 %end
+%hook UIImage
++ (UIImage *)imageNamed:(NSString *)name {
+    UIImage *originalImage = %orig;
+    if ([name isEqualToString:@"sponsorblocksettings-20@2x.png"] || [name isEqualToString:@"ytrebornbuttonwhite.png"]) {
+        UIGraphicsBeginImageContextWithOptions(originalImage.size, NO, originalImage.scale);
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        CGRect rect = CGRectMake(0, 0, originalImage.size.width, originalImage.size.height);
+        [originalImage drawInRect:rect];
+        CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor); // Change the color here
+        CGContextSetBlendMode(context, kCGBlendModeSourceAtop);
+        CGContextFillRect(context, rect);
+        UIImage *modifiedImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        return modifiedImage;
+    }
+    
+    return originalImage;
+}
+%end
 %end
 
 // Auto-Hide Home Bar by @arichorn
