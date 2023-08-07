@@ -1035,7 +1035,7 @@ BOOL isAd(id node) {
 %end
 %end
 
-%group gLowContrastMode // Low Contrast Mode v1.3.0 (Compatible with only YouTube v16.05.7-v17.38.10)
+%group gLowContrastMode // Low Contrast Mode v1.3.1 (Compatible with only YouTube v16.05.7-v17.38.10)
 %hook UIColor
 + (UIColor *)whiteColor { // Dark Theme Color
          return [UIColor colorWithRed: 0.56 green: 0.56 blue: 0.56 alpha: 1.00];
@@ -1171,6 +1171,7 @@ BOOL isAd(id node) {
     %orig(textColor);
 }
 %end
+
 %hook UIImage
 + (UIImage *)imageNamed:(NSString *)name {
     UIImage *originalImage = %orig;
@@ -1179,14 +1180,13 @@ BOOL isAd(id node) {
         CGContextRef context = UIGraphicsGetCurrentContext();
         CGRect rect = CGRectMake(0, 0, originalImage.size.width, originalImage.size.height);
         [originalImage drawInRect:rect];
-        CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor); // Change the color here
+        CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
         CGContextSetBlendMode(context, kCGBlendModeSourceAtop);
         CGContextFillRect(context, rect);
         UIImage *modifiedImage = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
         return modifiedImage;
     }
-    
     return originalImage;
 }
 %end
