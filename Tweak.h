@@ -127,6 +127,9 @@
 @interface YTPivotBarView : UIView
 @end
 
+@interface YTPivotBarIndicatorView : UIView
+@end
+
 @interface YTPivotBarViewController : UIViewController
 - (void)selectItemWithPivotIdentifier:(id)pivotIndentifier;
 @end
@@ -184,8 +187,6 @@
 @end
 
 @interface _ASDisplayView : UIView
-- (UILabel *)findLabelInSubviews:(NSArray *)subviews;
-- (void)customizeLabel:(UILabel *)label;
 @end
 
 @interface YTLabel : UILabel
