@@ -245,14 +245,8 @@ static NSString *accessGroupID() {
 %end
 
 %hook YTPivotBarView
-- (void)setSupportedRenderers:(id)supportedRenderers {
-}
-- (void)setItemViews:(NSArray *)itemViews {
-}
-- (void)setPivotBarController:(YTAppPivotBarController *)pivotBarController {
-}
 - (void)layoutSubviews {
-    %orig;
+    %orig; 
     CGFloat labelWidth = 60.0;
     CGFloat labelHeight = 20.0;
     CGFloat labelX = (self.bounds.size.width - labelWidth) / 2.0;
@@ -266,6 +260,7 @@ static NSString *accessGroupID() {
 }
 %end
 
+/*
 %hook YTAppPivotBarView
 - (NSMutableArray *)visibleButtons {
     NSMutableArray *retVal = %orig.mutableCopy;
@@ -303,6 +298,7 @@ static NSString *accessGroupID() {
     return retVal;
 }
 %end
+*/
 
 %hook YTAppPivotBarController
 - (void)pivotBarController:(YTAppPivotBarController *)arg1 didSelectItemAtIndex:(unsigned long long)arg2 {
