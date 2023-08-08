@@ -14,10 +14,8 @@
 #import "YouTubeHeader/ELMCellNode.h"
 #import "YouTubeHeader/ELMNodeController.h"
 #import "YouTubeHeader/YTIMenuConditionalServiceItemRenderer.h"
-#import "YouTubeHeader/YTPivotBarIndicatorView.h"
 #import "YouTubeHeader/YTPivotBarViewController.h"
 #import "YouTubeHeader/YTPivotBarItemView.h"
-#import "YouTubeHeader/YTIPivotBarItemRenderer.h"
 #import "YouTubeHeader/YTIPivotBarIconOnlyItemRenderer.h"
 #import "YouTubeHeader/YTIPivotBarSupportedRenderers.h"
 #import "YouTubeHeader/YTIPivotBarRenderer.h"
@@ -139,23 +137,6 @@
 
 @interface YTPivotBarViewController : UIViewController
 - (void)selectItemWithPivotIdentifier:(id)pivotIndentifier;
-@end
-
-@interface YTPivotBarItemView : UIView
-@property(readonly, nonatomic) YTQTMButton *navigationButton;
-@end
-
-@interface YTIPivotBarItemRenderer : NSObject
-- (NSString *)pivotIdentifier;
-@end
-
-@interface YTIPivotBarIconOnlyItemRenderer : GPBMessage
-- (NSString *)pivotIdentifier;
-@end
-
-@interface YTIPivotBarSupportedRenderers : NSObject
-- (YTIPivotBarItemRenderer *)pivotBarItemRenderer;
-- (YTIPivotBarIconOnlyItemRenderer *)pivotBarIconOnlyItemRenderer;
 @end
 
 @interface YTIPivotBarRenderer : NSObject
