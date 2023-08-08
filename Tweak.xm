@@ -298,6 +298,40 @@ static NSString *accessGroupID() {
 }
 %end
 
+%hook YTMainAppPivotBarView // work in progress
+
+- (void)layoutSubviews {
+    %orig;
+    CGFloat buttonSize = 40.0;
+    CGFloat buttonSpacing = 8.0;
+    CGFloat pivotBarHeight = self.frame.size.height;
+    CGFloat pivotBarWidth = self.frame.size.width;
+
+    YTMainAppControlsOverlayView *controlsOverlayView = [%c(YTMainAppControlsOverlayView) sharedInstance];
+    if (controlsOverlayView && controlsOverlayView.youtubeRebornButton) {
+        CGFloat buttonX = (pivotBarWidth - buttonSize) / 2.0;
+        CGFloat buttonY = pivotBarHeight - buttonSize - buttonSpacing;
+        controlsOverlayView.youtubeRebornButton.frame = CGRectMake(buttonX, buttonY, buttonSize, buttonSize);
+        [self addSubview:controlsOverlayView.youtubeRebornButton];
+        
+        CGFloat labelWidth = 60.0;
+        CGFloat labelHeight = 20.0;
+        CGFloat labelX = (pivotBarWidth - labelWidth) / 2.0;
+        CGFloat labelY = buttonY + buttonSize + 4.0;
+        
+        UILabel *rebornLabel = [[UILabel alloc] initWithFrame:CGRectMake(labelX, labelY, labelWidth, labelHeight)];
+        rebornLabel.text = @"Reborn";
+        rebornLabel.textAlignment = NSTextAlignmentCenter;
+        rebornLabel.textColor = [UIColor whiteColor];
+        rebornLabel.font = [UIFont systemFontOfSize:12.0];
+        [self addSubview:rebornLabel];
+        
+        self.pivot_identifier = @"FEreborn";
+    }
+}
+
+%end
+
 %hook YTMainAppControlsOverlayView
 
 %property(retain, nonatomic) UIButton *rebornOverlayButton;
