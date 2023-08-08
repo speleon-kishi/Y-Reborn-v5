@@ -138,10 +138,6 @@
 - (void)selectItemWithPivotIdentifier:(id)pivotIndentifier;
 @end
 
-@interface YTIPivotBarRenderer : NSObject
-- (NSMutableArray <YTIPivotBarSupportedRenderers *> *)itemsArray;
-@end
-
 @interface YTSingleVideo : NSObject
 - (NSString *)videoId;
 @end
