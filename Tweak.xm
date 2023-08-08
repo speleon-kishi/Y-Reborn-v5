@@ -262,6 +262,37 @@ static NSString *accessGroupID() {
 }
 %end
 
+YTIPivotBarItemPresentationStyle *presentationStyle = [YTIPivotBarItemPresentationStyle new];
+presentationStyle.title = @"Reborn";
+presentationStyle.style = YTIPivotBarItemPresentationStyleIconOnly;
+
+YTIPivotBarItemRenderer *itemRenderer = [YTIPivotBarItemRenderer new];
+itemRenderer.presentationStyle = presentationStyle;
+
+YTIPivotBarIconOnlyItemRenderer *iconOnlyItemRenderer = [YTIPivotBarIconOnlyItemRenderer new];
+iconOnlyItemRenderer.renderer = itemRenderer;
+
+YTIPivotBarItemIndicatorSupportedRenderers *indicatorSupportedRenderers = [YTIPivotBarItemIndicatorSupportedRenderers new];
+indicatorSupportedRenderers.iconOnlyItemRenderer = iconOnlyItemRenderer;
+
+YTIPivorBarSupportedRenderers *supportedRenderers = [YTIPivorBarSupportedRenderers new];
+supportedRenderers.indicatorSupportedRenderers = indicatorSupportedRenderers;
+
+YTPivotBarItemViewAccessibilityControl *accessibilityControl = [YTPivotBarItemViewAccessibilityControl new];
+accessibilityControl.view = [YTPivotBarItemView new];
+
+YTPivotBarItemView *itemView = [YTPivotBarItemView new];
+itemView.accessibilityControl = accessibilityControl;
+
+YTPivotBarView *pivotBarView = [YTPivotBarView new];
+pivotBarView.itemViews = @[itemView];
+
+YTAppPivotBarController *pivotBarController = [YTAppPivotBarController new];
+pivotBarController.pivotBarView = pivotBarView;
+
+YTPivotBarViewController *pivotBarViewController = [YTPivotBarViewController new];
+pivotBarViewController.pivotBarController = pivotBarController;
+
 %hook YTRightNavigationButtons
 %property (strong, nonatomic) YTQTMButton *youtubeRebornButton;
 - (NSMutableArray *)buttons {
