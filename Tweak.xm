@@ -245,6 +245,12 @@ static NSString *accessGroupID() {
 %end
 
 %hook YTPivotBarView
+- (void)setSupportedRenderers:(id)supportedRenderers {
+}
+- (void)setItemViews:(NSArray *)itemViews {
+}
+- (void)setPivotBarController:(YTAppPivotBarController *)pivotBarController {
+}
 - (void)layoutSubviews {
     %orig;
 
