@@ -244,6 +244,24 @@ static NSString *accessGroupID() {
 %end
 %end
 
+%hook YTPivotBarView
+- (void)layoutSubviews {
+    %orig;
+
+    CGFloat labelWidth = 60.0;
+    CGFloat labelHeight = 20.0;
+    CGFloat labelX = (self.bounds.size.width - labelWidth) / 2.0;
+    CGFloat labelY = self.bounds.size.height - labelHeight - 4.0;
+
+    UILabel *rebornLabel = [[UILabel alloc] initWithFrame:CGRectMake(labelX, labelY, labelWidth, labelHeight)];
+    rebornLabel.text = @"Reborn";
+    rebornLabel.textAlignment = NSTextAlignmentCenter;
+    rebornLabel.textColor = [UIColor whiteColor];
+    rebornLabel.font = [UIFont systemFontOfSize:12.0];
+    [self addSubview:rebornLabel];
+}
+%end
+
 %hook YTRightNavigationButtons
 %property (strong, nonatomic) YTQTMButton *youtubeRebornButton;
 - (NSMutableArray *)buttons {
@@ -295,39 +313,6 @@ static NSString *accessGroupID() {
 
     UIViewController *rootPrefsViewController = [self _viewControllerForAncestor];
     [rootPrefsViewController presentViewController:rootOptionsControllerView animated:YES completion:nil];
-}
-%end
-
-%hook YTMainAppPivotBarView // work in progress
-
-- (void)layoutSubviews {
-    %orig;
-    CGFloat buttonSize = 40.0;
-    CGFloat buttonSpacing = 8.0;
-    CGFloat pivotBarHeight = self.bounds.size.height;
-    CGFloat pivotBarWidth = self.bounds.size.width;
-
-    YTMainAppControlsOverlayView *controlsOverlayView = [%c(YTMainAppControlsOverlayView) sharedInstance];
-    if (controlsOverlayView && controlsOverlayView.youtubeRebornButton) {
-        CGFloat buttonX = (pivotBarWidth - buttonSize) / 2.0;
-        CGFloat buttonY = pivotBarHeight - buttonSize - buttonSpacing;
-        controlsOverlayView.youtubeRebornButton.frame = CGRectMake(buttonX, buttonY, buttonSize, buttonSize);
-        [self addSubview:controlsOverlayView.youtubeRebornButton];
-        
-        CGFloat labelWidth = 60.0;
-        CGFloat labelHeight = 20.0;
-        CGFloat labelX = (pivotBarWidth - labelWidth) / 2.0;
-        CGFloat labelY = buttonY + buttonSize + 4.0;
-        
-        UILabel *rebornLabel = [[UILabel alloc] initWithFrame:CGRectMake(labelX, labelY, labelWidth, labelHeight)];
-        rebornLabel.text = @"Reborn";
-        rebornLabel.textAlignment = NSTextAlignmentCenter;
-        rebornLabel.textColor = [UIColor whiteColor];
-        rebornLabel.font = [UIFont systemFontOfSize:12.0];
-        [self addSubview:rebornLabel];
-        
-        self.pivot_identifier = @"FEreborn";
-    }
 }
 %end
 
