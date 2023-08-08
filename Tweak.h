@@ -14,14 +14,14 @@
 #import "YouTubeHeader/ELMCellNode.h"
 #import "YouTubeHeader/ELMNodeController.h"
 #import "YouTubeHeader/YTIMenuConditionalServiceItemRenderer.h"
-#import "YTPivotBarView.h"
-#import "YTPivotBarIndicatorView.h"
-#import "YTPivotBarViewController.h"
-#import "YTPivotBarItemView.h"
-#import "YTIPivotBarItemRenderer.h"
-#import "YTIPivotBarIconOnlyItemRenderer.h"
-#import "YTIPivotBarSupportedRenderers.h"
-#import "YTIPivotBarRenderer.h"
+#import "YouTubeHeader/YTPivotBarView.h"
+#import "YouTubeHeader/YTPivotBarIndicatorView.h"
+#import "YouTubeHeader/YTPivotBarViewController.h"
+#import "YouTubeHeader/YTPivotBarItemView.h"
+#import "YouTubeHeader/YTIPivotBarItemRenderer.h"
+#import "YouTubeHeader/YTIPivotBarIconOnlyItemRenderer.h"
+#import "YouTubeHeader/YTIPivotBarSupportedRenderers.h"
+#import "YouTubeHeader/YTIPivotBarRenderer.h"
 
 @interface YTQTMButton : UIButton
 @property (strong, nonatomic) UIImageView *imageView;
