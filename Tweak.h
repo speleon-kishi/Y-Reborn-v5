@@ -14,7 +14,6 @@
 #import "YouTubeHeader/ELMCellNode.h"
 #import "YouTubeHeader/ELMNodeController.h"
 #import "YouTubeHeader/YTIMenuConditionalServiceItemRenderer.h"
-#import "YouTubeHeader/YTPivotBarViewController.h"
 #import "YouTubeHeader/YTPivotBarItemView.h"
 #import "YouTubeHeader/YTIPivotBarIconOnlyItemRenderer.h"
 #import "YouTubeHeader/YTIPivotBarSupportedRenderers.h"
