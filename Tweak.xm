@@ -308,7 +308,6 @@ static NSString *accessGroupID() {
     [self setSupportedRenderers:supportedRenderers];
     [self setItemViews:@[itemView]];
     [self setPivotBarController:pivotBarController];
-}
 
 %hook YTAppPivotBarView
 - (NSMutableArray *)visibleButtons {
