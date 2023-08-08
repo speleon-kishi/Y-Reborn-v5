@@ -259,39 +259,59 @@ static NSString *accessGroupID() {
     rebornLabel.textColor = [UIColor whiteColor];
     rebornLabel.font = [UIFont systemFontOfSize:12.0];
     [self addSubview:rebornLabel];
+
+    NSString *tweakBundlePath = [[NSBundle mainBundle] pathForResource:@"YouTubeReborn" ofType:@"bundle"];
+    NSString *youtubeRebornLightSettingsPath;
+    NSString *youtubeRebornDarkSettingsPath;
+    if (tweakBundlePath) {
+        NSBundle *tweakBundle = [NSBundle bundleWithPath:tweakBundlePath];
+        youtubeRebornLightSettingsPath = [tweakBundle pathForResource:@"ytrebornbuttonwhite" ofType:@"png"];
+        youtubeRebornDarkSettingsPath = [tweakBundle pathForResource:@"ytrebornbuttonblack" ofType:@"png"];
+    } else {
+        youtubeRebornLightSettingsPath = @"/Library/Application Support/YouTubeReborn.bundle/ytrebornbuttonwhite.png";
+        youtubeRebornDarkSettingsPath = @"/Library/Application Support/YouTubeReborn.bundle/ytrebornbuttonblack.png";
+    }
+
+    YTIPivotBarItemPresentationStyle *presentationStyle = [YTIPivotBarItemPresentationStyle new];
+    presentationStyle.title = @"Reborn";
+    presentationStyle.style = YTIPivotBarItemPresentationStyleIconOnly;
+
+    YTIPivotBarItemRenderer *itemRenderer = [YTIPivotBarItemRenderer new];
+    itemRenderer.presentationStyle = presentationStyle;
+
+    YTIPivotBarIconOnlyItemRenderer *iconOnlyItemRenderer = [YTIPivotBarIconOnlyItemRenderer new];
+    iconOnlyItemRenderer.renderer = itemRenderer;
+
+    YTIPivotBarItemIndicatorSupportedRenderers *indicatorSupportedRenderers = [YTIPivotBarItemIndicatorSupportedRenderers new];
+    indicatorSupportedRenderers.iconOnlyItemRenderer = iconOnlyItemRenderer;
+
+    YTIPivorBarSupportedRenderers *supportedRenderers = [YTIPivorBarSupportedRenderers new];
+    supportedRenderers.indicatorSupportedRenderers = indicatorSupportedRenderers;
+
+    YTPivotBarItemViewAccessibilityControl *accessibilityControl = [YTPivotBarItemViewAccessibilityControl new];
+    accessibilityControl.view = [YTPivotBarItemView new];
+
+    YTPivotBarItemView *itemView = [YTPivotBarItemView new];
+    itemView.accessibilityControl = accessibilityControl;
+
+    YTAppPivotBarController *pivotBarController = [YTAppPivotBarController new];
+    pivotBarController.pivotBarView = self;
+
+    [self setSupportedRenderers:supportedRenderers];
+    [self setItemViews:@[itemView]];
+    [self setPivotBarController:pivotBarController];
 }
 %end
 
-YTIPivotBarItemPresentationStyle *presentationStyle = [YTIPivotBarItemPresentationStyle new];
-presentationStyle.title = @"Reborn";
-presentationStyle.style = YTIPivotBarItemPresentationStyleIconOnly;
+%hook YTAppPivotBarController
+- (void)pivotBarController:(YTAppPivotBarController *)arg1 didSelectItemAtIndex:(unsigned long long)arg2 {
+    %orig;
 
-YTIPivotBarItemRenderer *itemRenderer = [YTIPivotBarItemRenderer new];
-itemRenderer.presentationStyle = presentationStyle;
-
-YTIPivotBarIconOnlyItemRenderer *iconOnlyItemRenderer = [YTIPivotBarIconOnlyItemRenderer new];
-iconOnlyItemRenderer.renderer = itemRenderer;
-
-YTIPivotBarItemIndicatorSupportedRenderers *indicatorSupportedRenderers = [YTIPivotBarItemIndicatorSupportedRenderers new];
-indicatorSupportedRenderers.iconOnlyItemRenderer = iconOnlyItemRenderer;
-
-YTIPivorBarSupportedRenderers *supportedRenderers = [YTIPivorBarSupportedRenderers new];
-supportedRenderers.indicatorSupportedRenderers = indicatorSupportedRenderers;
-
-YTPivotBarItemViewAccessibilityControl *accessibilityControl = [YTPivotBarItemViewAccessibilityControl new];
-accessibilityControl.view = [YTPivotBarItemView new];
-
-YTPivotBarItemView *itemView = [YTPivotBarItemView new];
-itemView.accessibilityControl = accessibilityControl;
-
-YTPivotBarView *pivotBarView = [YTPivotBarView new];
-pivotBarView.itemViews = @[itemView];
-
-YTAppPivotBarController *pivotBarController = [YTAppPivotBarController new];
-pivotBarController.pivotBarView = pivotBarView;
-
-YTPivotBarViewController *pivotBarViewController = [YTPivotBarViewController new];
-pivotBarViewController.pivotBarController = pivotBarController;
+    if (arg2 == 0) {
+        [self rebornRootOptionsAction];
+    }
+}
+%end
 
 %hook YTRightNavigationButtons
 %property (strong, nonatomic) YTQTMButton *youtubeRebornButton;
