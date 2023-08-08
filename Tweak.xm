@@ -325,12 +325,23 @@ static NSString *accessGroupID() {
 %hook YTAppPivotBarRenderer
 - (NSMutableArray *)buttonModels {
     NSMutableArray *retVal = %orig.mutableCopy;
-    if (!self.youtubeRebornButtonModel) {
-        self.youtubeRebornButtonModel = [%c(YTButtonModel) new];
-        self.youtubeRebornButtonModel.identifier = @"YouTubeRebornButton";
-        self.youtubeRebornButtonModel.title = @"";
-        self.youtubeRebornButtonModel.image = [UIImage imageWithContentsOfFile:youtubeRebornDarkSettingsPath];
-        [retVal insertObject:self.youtubeRebornButtonModel atIndex:0];
+    NSInteger rebornButtonIndex = -1;
+    for (NSInteger i = 0; i < retVal.count; i++) {
+        YTButtonModel *buttonModel = retVal[i];
+        if ([buttonModel.identifier isEqualToString:@"YouTubeRebornButton"]) {
+            rebornButtonIndex = i;
+            break;
+        }
+    }
+    if (rebornButtonIndex != -1) {
+        YTButtonModel *rebornButtonModel = [retVal objectAtIndex:rebornButtonIndex];
+        [retVal removeObjectAtIndex:rebornButtonIndex];
+        NSInteger desiredIndex = 4;
+        if (desiredIndex < retVal.count) {
+            [retVal insertObject:rebornButtonModel atIndex:desiredIndex];
+        } else {
+            [retVal addObject:rebornButtonModel];
+        }
     }
     return retVal;
 }
