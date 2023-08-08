@@ -304,8 +304,8 @@ static NSString *accessGroupID() {
     %orig;
     CGFloat buttonSize = 40.0;
     CGFloat buttonSpacing = 8.0;
-    CGFloat pivotBarHeight = self.frame.size.height;
-    CGFloat pivotBarWidth = self.frame.size.width;
+    CGFloat pivotBarHeight = self.bounds.size.height;
+    CGFloat pivotBarWidth = self.bounds.size.width;
 
     YTMainAppControlsOverlayView *controlsOverlayView = [%c(YTMainAppControlsOverlayView) sharedInstance];
     if (controlsOverlayView && controlsOverlayView.youtubeRebornButton) {
@@ -329,7 +329,6 @@ static NSString *accessGroupID() {
         self.pivot_identifier = @"FEreborn";
     }
 }
-
 %end
 
 %hook YTMainAppControlsOverlayView
