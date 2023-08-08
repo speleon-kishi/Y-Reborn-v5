@@ -253,12 +253,10 @@ static NSString *accessGroupID() {
 }
 - (void)layoutSubviews {
     %orig;
-
     CGFloat labelWidth = 60.0;
     CGFloat labelHeight = 20.0;
     CGFloat labelX = (self.bounds.size.width - labelWidth) / 2.0;
     CGFloat labelY = self.bounds.size.height - labelHeight - 4.0;
-
     UILabel *rebornLabel = [[UILabel alloc] initWithFrame:CGRectMake(labelX, labelY, labelWidth, labelHeight)];
     rebornLabel.text = @"Reborn";
     rebornLabel.textAlignment = NSTextAlignmentCenter;
@@ -267,47 +265,6 @@ static NSString *accessGroupID() {
     [self addSubview:rebornLabel];
 }
 %end
-
-    NSString *tweakBundlePath = [[NSBundle mainBundle] pathForResource:@"YouTubeReborn" ofType:@"bundle"];
-    NSString *youtubeRebornLightSettingsPath;
-    NSString *youtubeRebornDarkSettingsPath;
-    if (tweakBundlePath) {
-        NSBundle *tweakBundle = [NSBundle bundleWithPath:tweakBundlePath];
-        youtubeRebornLightSettingsPath = [tweakBundle pathForResource:@"ytrebornbuttonwhite" ofType:@"png"];
-        youtubeRebornDarkSettingsPath = [tweakBundle pathForResource:@"ytrebornbuttonblack" ofType:@"png"];
-    } else {
-        youtubeRebornLightSettingsPath = @"/Library/Application Support/YouTubeReborn.bundle/ytrebornbuttonwhite.png";
-        youtubeRebornDarkSettingsPath = @"/Library/Application Support/YouTubeReborn.bundle/ytrebornbuttonblack.png";
-    }
-
-    YTIPivotBarItemPresentationStyle *presentationStyle = [YTIPivotBarItemPresentationStyle new];
-    presentationStyle.title = @"Reborn";
-    presentationStyle.style = YTIPivotBarItemPresentationStyleIconOnly;
-
-    YTIPivotBarItemRenderer *itemRenderer = [YTIPivotBarItemRenderer new];
-    itemRenderer.presentationStyle = presentationStyle;
-
-    YTIPivotBarIconOnlyItemRenderer *iconOnlyItemRenderer = [YTIPivotBarIconOnlyItemRenderer new];
-    iconOnlyItemRenderer.renderer = itemRenderer;
-
-    YTIPivotBarItemIndicatorSupportedRenderers *indicatorSupportedRenderers = [YTIPivotBarItemIndicatorSupportedRenderers new];
-    indicatorSupportedRenderers.iconOnlyItemRenderer = iconOnlyItemRenderer;
-
-    YTIPivorBarSupportedRenderers *supportedRenderers = [YTIPivorBarSupportedRenderers new];
-    supportedRenderers.indicatorSupportedRenderers = indicatorSupportedRenderers;
-
-    YTPivotBarItemViewAccessibilityControl *accessibilityControl = [YTPivotBarItemViewAccessibilityControl new];
-    accessibilityControl.view = [YTPivotBarItemView new];
-
-    YTPivotBarItemView *itemView = [YTPivotBarItemView new];
-    itemView.accessibilityControl = accessibilityControl;
-
-    YTAppPivotBarController *pivotBarController = [YTAppPivotBarController new];
-    pivotBarController.pivotBarView = self;
-
-    [self setSupportedRenderers:supportedRenderers];
-    [self setItemViews:@[itemView]];
-    [self setPivotBarController:pivotBarController];
 
 %hook YTAppPivotBarView
 - (NSMutableArray *)visibleButtons {
