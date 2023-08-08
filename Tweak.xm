@@ -265,6 +265,8 @@ static NSString *accessGroupID() {
     rebornLabel.textColor = [UIColor whiteColor];
     rebornLabel.font = [UIFont systemFontOfSize:12.0];
     [self addSubview:rebornLabel];
+}
+%end
 
     NSString *tweakBundlePath = [[NSBundle mainBundle] pathForResource:@"YouTubeReborn" ofType:@"bundle"];
     NSString *youtubeRebornLightSettingsPath;
@@ -306,6 +308,32 @@ static NSString *accessGroupID() {
     [self setSupportedRenderers:supportedRenderers];
     [self setItemViews:@[itemView]];
     [self setPivotBarController:pivotBarController];
+}
+
+%hook YTAppPivotBarView
+- (NSMutableArray *)visibleButtons {
+    NSMutableArray *retVal = %orig.mutableCopy;
+    [self setLeadingPadding:+10];
+    if (self.youtubeRebornButton) {
+        [self.youtubeRebornButton removeFromSuperview];
+        [self addSubview:self.youtubeRebornButton];
+        [retVal insertObject:self.youtubeRebornButton atIndex:0];
+    }
+    return retVal;
+}
+%end
+
+%hook YTAppPivotBarRenderer
+- (NSMutableArray *)buttonModels {
+    NSMutableArray *retVal = %orig.mutableCopy;
+    if (!self.youtubeRebornButtonModel) {
+        self.youtubeRebornButtonModel = [%c(YTButtonModel) new];
+        self.youtubeRebornButtonModel.identifier = @"YouTubeRebornButton";
+        self.youtubeRebornButtonModel.title = @"";
+        self.youtubeRebornButtonModel.image = [UIImage imageWithContentsOfFile:youtubeRebornDarkSettingsPath];
+        [retVal insertObject:self.youtubeRebornButtonModel atIndex:0];
+    }
+    return retVal;
 }
 %end
 
