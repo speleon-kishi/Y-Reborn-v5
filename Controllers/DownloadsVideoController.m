@@ -61,7 +61,7 @@
     searchBar.text = @"";
     self.filteredItems = [NSArray array];
     self.isSearching = NO;
-    [self.tableView reloadData];
+    [self.collectionView reloadData];
     [searchBar resignFirstResponder];
 }
 
@@ -70,7 +70,7 @@
         searchBar.text = @"";
         self.filteredItems = [NSArray array];
         self.isSearching = NO;
-        [self.tableView reloadData];
+        [self.collectionView reloadData];
     }
 }
 
@@ -86,7 +86,7 @@
         self.filteredItems = [NSArray array];
         self.isSearching = NO;
     }
-    [self.tableView reloadData];
+    [self.collectionView reloadData];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
@@ -110,26 +110,26 @@
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:CellIdentifier forIndexPath:indexPath];
 
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
-        cell.contentView.textLabel.adjustsFontSizeToFitWidth = YES;
-        cell.contentView.textLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-        cell.contentView.detailTextLabel.adjustsFontSizeToFitWidth = YES;
-        cell.contentView.detailTextLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        cell = [[UICollectionViewCell alloc] initWithStyle:UICollectionViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
+        cell.textLabel.adjustsFontSizeToFitWidth = YES;
+        cell.textLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        cell.detailTextLabel.adjustsFontSizeToFitWidth = YES;
+        cell.detailTextLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
         if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight) {
             cell.backgroundColor = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:1.0];
-            cell.contentView.textLabel.textColor = [UIColor blackColor];
-            cell.contentView.detailTextLabel.textColor = [UIColor blackColor];
+            cell.textLabel.textColor = [UIColor blackColor];
+            cell.detailTextLabel.textColor = [UIColor blackColor];
         }
         else {
             cell.backgroundColor = [UIColor colorWithRed:0.110 green:0.110 blue:0.118 alpha:1.0];
-            cell.contentView.textLabel.textColor = [UIColor whiteColor];
-            cell.contentView.textLabel.shadowColor = [UIColor blackColor];
-            cell.contentView.textLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-            cell.contentView.detailTextLabel.textColor = [UIColor whiteColor];
+            cell.textLabel.textColor = [UIColor whiteColor];
+            cell.textLabel.shadowColor = [UIColor blackColor];
+            cell.textLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+            cell.detailTextLabel.textColor = [UIColor whiteColor];
         }
     }
-    cell.contentView.textLabel.text = [filePathsVideoArray objectAtIndex:indexPath.row];
+    cell.textLabel.text = [filePathsVideoArray objectAtIndex:indexPath.item];
     @try {
         NSString *artworkFileName = filePathsVideoArtworkArray[indexPath.row];
         cell.imageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"%@", [documentsDirectory stringByAppendingPathComponent:artworkFileName]]];
@@ -198,7 +198,7 @@
             [filePathsVideoArray removeAllObjects];
             [filePathsVideoArtworkArray removeAllObjects];
             [self setupVideoArrays];
-            [self.tableView reloadData];
+            [self.collectionView reloadData];
         }]];
 
         [self presentViewController:alertDeleted animated:YES completion:nil];
