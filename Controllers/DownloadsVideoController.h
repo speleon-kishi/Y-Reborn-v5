@@ -2,7 +2,7 @@
 #import <AVKit/AVKit.h>
 #import <UIKit/UIKit.h>
 
-@interface DownloadsVideoController : UIViewController <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UIScrollViewDelegate, AVPlayerViewControllerDelegate>
+@interface DownloadsVideoController : UIViewController <UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, UIScrollViewDelegate, AVPlayerViewControllerDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) NSArray *allItems;
