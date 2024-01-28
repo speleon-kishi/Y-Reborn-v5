@@ -26,26 +26,35 @@
     self.filteredItems = [NSArray array];
     self.isSearching = NO;
 
-    UITableViewStyle style;
-        if (@available(iOS 13, *)) {
-            style = UITableViewStyleInsetGrouped;
-        } else {
-            style = UITableViewStyleGrouped;
-        }
-
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:style];
-    self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.tableView.dataSource = self;
-    self.tableView.delegate = self;
-    [self.view addSubview:self.tableView];
+    UICollectionViewFlowLayout *layout;
+    if (@available(iOS 13, *)) {
+        layout = [[UICollectionViewFlowLayout alloc] init];
+        layout.sectionInset = UIEdgeInsetsMake(20, 20, 20, 20);
+    } else {
+        layout = [[UICollectionViewFlowLayout alloc] init];
+        layout.sectionInset = UIEdgeInsetsMake(20, 20, 20, 20);
+    }
+    self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
+    self.collectionView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.collectionView.dataSource = self;
+    self.collectionView.delegate = self;
+    [self.view addSubview:self.collectionView];
     [self setupVideoArrays];
     
     [NSLayoutConstraint activateConstraints:@[
-        [self.tableView.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
-        [self.tableView.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor],
-        [self.tableView.widthAnchor constraintEqualToAnchor:self.view.widthAnchor],
-        [self.tableView.heightAnchor constraintEqualToAnchor:self.view.heightAnchor]
+        [self.collectionView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+        [self.collectionView.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
+        [self.collectionView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
+        [self.collectionView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor]
     ]];
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    return CGSizeMake(100, 100);
+}
+
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
+    return UIEdgeInsetsMake(20, 20, 20, 20);
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
@@ -88,7 +97,7 @@
     return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     if (self.isSearching) {
         return self.filteredItems.count;
     } else {
@@ -96,9 +105,9 @@
     }
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"VideoDownloadsTableViewCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"VideoDownloadsTableViewCell" forIndexPath:indexPath];
 
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
@@ -131,7 +140,7 @@
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
     NSString *currentFileName = filePathsVideoArray[indexPath.row];
@@ -148,7 +157,7 @@
     [self presentViewController:playerViewController animated:YES completion:nil];
 }
 
-- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
+- (void)collectionView:(UICollectionView *)collectionView accessoryButtonTappedForItemAtIndexPath:(NSIndexPath *)indexPath {
     NSString *currentVideoFileName = filePathsVideoArray[indexPath.row];
     NSString *currentArtworkFileName = filePathsVideoArtworkArray[indexPath.row];
 
