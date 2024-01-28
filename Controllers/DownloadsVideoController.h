@@ -3,7 +3,7 @@
 #import <UIKit/UIKit.h>
 
 @interface DownloadsVideoController : UIViewController <UICollectionViewDelegate, UICollectionViewDataSource, UISearchBarDelegate, UIScrollViewDelegate, AVPlayerViewControllerDelegate>
-@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) NSArray *allItems;
 @property (nonatomic, strong) NSArray *filteredItems;
