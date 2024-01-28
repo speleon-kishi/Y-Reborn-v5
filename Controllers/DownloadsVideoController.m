@@ -14,6 +14,16 @@
 
 @implementation DownloadsVideoController
 
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+        self.titleLabel = [[UILabel alloc] initWithFrame:self.contentView.bounds];
+        self.titleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [self.contentView addSubview:self.titleLabel];
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self coloursView];
