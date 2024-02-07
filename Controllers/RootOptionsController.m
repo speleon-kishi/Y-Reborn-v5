@@ -27,7 +27,7 @@
 	[super loadView];
     [self coloursView];
 
-    self.title = @"Options";
+    self.title = @"YouTube Reborn";
     
     UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
     self.navigationItem.leftBarButtonItem = doneButton;
@@ -53,7 +53,7 @@
         }
     }
     if (section == 1) {
-        return 8;
+        return 7;
     }
     if (section == 2) {
         return 2;
@@ -102,18 +102,15 @@
                 cell.textLabel.text = @"Tab Bar Options";
             }
             if (indexPath.row == 3) {
-                cell.textLabel.text = @"Reorder Tab Bar Options";
-            }
-            if (indexPath.row == 4) {
                 cell.textLabel.text = @"Colour Options";
             }
-            if (indexPath.row == 5) {
+            if (indexPath.row == 4) {
                 cell.textLabel.text = @"Picture In Picture Options";
             }
-            if (indexPath.row == 6) {
+            if (indexPath.row == 5) {
                 cell.textLabel.text = @"Shorts Options";
             }
-            if (indexPath.row == 7) {
+            if (indexPath.row == 6) {
                 cell.textLabel.text = @"Other Options";
             }
         }
@@ -175,20 +172,13 @@
             [self presentViewController:tabBarOptionsControllerView animated:YES completion:nil];
         }
         if (indexPath.row == 3) {
-            ReorderPivotBarController *reorderPivotBarController = [[ReorderPivotBarController alloc] initWithStyle:UITableViewStyleGrouped];
-            UINavigationController *ReorderPivotBarControllerView = [[UINavigationController alloc] initWithRootViewController:reorderPivotBarController];
-            ReorderPivotBarControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
-
-            [self presentViewController:ReorderPivotBarControllerView animated:YES completion:nil];
-        }
-        if (indexPath.row == 4) {
             ColourOptionsController *colourOptionsController = [[ColourOptionsController alloc] init];
             UINavigationController *colourOptionsControllerView = [[UINavigationController alloc] initWithRootViewController:colourOptionsController];
             colourOptionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
 
             [self presentViewController:colourOptionsControllerView animated:YES completion:nil];
         }
-        if (indexPath.row == 5) {
+        if (indexPath.row == 4) {
             if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"15.0")) {
                 PictureInPictureOptionsController *pictureInPictureOptionsController = [[PictureInPictureOptionsController alloc] initWithStyle:UITableViewStyleGrouped];
                 UINavigationController *pictureInPictureOptionsControllerView = [[UINavigationController alloc] initWithRootViewController:pictureInPictureOptionsController];
@@ -204,14 +194,14 @@
                 [self presentViewController:alertError animated:YES completion:nil];
             }
         }
-        if (indexPath.row == 6) {
+        if (indexPath.row == 5) {
             ShortsOptionsController *shortsOptionsController = [[ShortsOptionsController alloc] initWithStyle:UITableViewStyleGrouped];
             UINavigationController *shortsOptionsControllerView = [[UINavigationController alloc] initWithRootViewController:shortsOptionsController];
             shortsOptionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
 
             [self presentViewController:shortsOptionsControllerView animated:YES completion:nil];
         }
-        if (indexPath.row == 7) {
+        if (indexPath.row == 6) {
             OtherOptionsController *otherOptionsController = [[OtherOptionsController alloc] initWithStyle:UITableViewStyleGrouped];
             UINavigationController *otherOptionsControllerView = [[UINavigationController alloc] initWithRootViewController:otherOptionsController];
             otherOptionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
@@ -246,7 +236,7 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
     if (section == 2) {
-        return @"YouTube Reborn v4.2.3";
+        return @"YouTube Reborn v4.2.4";
     }
     return nil;
 }
@@ -319,6 +309,8 @@
 }
 
 - (void)apply {
+    [[UIApplication sharedApplication] performSelector:@selector(suspend)];
+    [NSThread sleepForTimeInterval:0.5];
     exit(0); 
 }
 
