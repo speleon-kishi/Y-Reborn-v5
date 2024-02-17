@@ -1666,6 +1666,9 @@ BOOL isAd(id node) {
 - (void)loadFeaturedChannelWatermark {
 }
 %end
+%hook YTColdConfig
+- (BOOL)iosEnableFeaturedChannelWatermarkOverlayFix { return NO; }
+%end
 %end
 
 %group gHideShortsChannelAvatarButton
@@ -1678,6 +1681,10 @@ BOOL isAd(id node) {
 
 %group gHideShortsLikeButton
 %hook YTReelWatchPlaybackOverlayView
+- (void)layoutSubviews {
+	%orig();
+	MSHookIvar<YTQTMButton *>(self, "_reelLikeButton").hidden = YES;
+}
 - (void)setReelLikeButton:(id)arg1 {
     %orig;
 }
@@ -1686,6 +1693,10 @@ BOOL isAd(id node) {
 
 %group gHideShortsDislikeButton
 %hook YTReelWatchPlaybackOverlayView
+- (void)layoutSubviews {
+	%orig();
+	MSHookIvar<YTQTMButton *>(self, "_reelDislikeButton").hidden = YES;
+}
 - (void)setReelDislikeButton:(id)arg1 {
     %orig;
 }
@@ -1694,6 +1705,10 @@ BOOL isAd(id node) {
 
 %group gHideShortsCommentsButton
 %hook YTReelWatchPlaybackOverlayView
+- (void)layoutSubviews {
+	%orig();
+	MSHookIvar<YTQTMButton *>(self, "_viewCommentButton").hidden = YES;
+}
 - (void)setViewCommentButton:(id)arg1 {
     %orig;
 }
@@ -1702,6 +1717,10 @@ BOOL isAd(id node) {
 
 %group gHideShortsRemixButton
 %hook YTReelWatchPlaybackOverlayView
+- (void)layoutSubviews {
+	%orig();
+	MSHookIvar<YTQTMButton *>(self, "_remixButton").hidden = YES;
+}
 - (void)setRemixButton:(id)arg1 {
     %orig;
 }
@@ -1710,6 +1729,10 @@ BOOL isAd(id node) {
 
 %group gHideShortsShareButton
 %hook YTReelWatchPlaybackOverlayView
+- (void)layoutSubviews {
+	%orig();
+	MSHookIvar<YTQTMButton *>(self, "_shareButton").hidden = YES;
+}
 - (void)setShareButton:(id)arg1 {
     %orig;
 }
@@ -1718,6 +1741,10 @@ BOOL isAd(id node) {
 
 %group gHideShortsMoreActionsButton
 %hook YTReelWatchPlaybackOverlayView
+- (void)layoutSubviews {
+	%orig();
+	MSHookIvar<YTQTMButton *>(self, "_moreButton").hidden = YES;
+}
 - (void)setMoreButton:(id)arg1 {
     %orig;
 }
