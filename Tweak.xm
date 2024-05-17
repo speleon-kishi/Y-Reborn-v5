@@ -791,61 +791,92 @@ static NSString *accessGroupID() {
 - (BOOL)isMonetized { return NO; }
 %end
 %hook YTDataUtils
-+ (id)spamSignalsDictionary { return nil; }
-+ (id)spamSignalsDictionaryWithoutIDFA { return nil; }
++ (id)spamSignalsDictionary { return @{}; }
++ (id)spamSignalsDictionaryWithoutIDFA { return @{}; }
 %end
 %hook YTAdsInnerTubeContextDecorator
-- (void)decorateContext:(id)context {}
+- (void)decorateContext:(id)context { %orig(nil); }
 %end
 %hook YTAccountScopedAdsInnerTubeContextDecorator
-- (void)decorateContext:(id)context {}
+- (void)decorateContext:(id)context { %orig(nil); }
 %end
+%hook YTReelInfinitePlaybackDataSource
+- (void)setReels:(NSMutableOrderedSet <YTReelModel *> *)reels {
+    [reels removeObjectsAtIndexes:[reels indexesOfObjectsPassingTest:^BOOL(YTReelModel *obj, NSUInteger idx, BOOL *stop) {
+        return [obj respondsToSelector:@selector(videoType)] ? obj.videoType == 3 : NO;
+    }]];
+    %orig;
+}
+%end
+BOOL isAdString(NSString *description) {
+    if ([description containsString:@"brand_promo"]
+        || [description containsString:@"carousel_footered_layout"]
+        || [description containsString:@"carousel_headered_layout"]
+        || [description containsString:@"feed_ad_metadata"]
+        || [description containsString:@"full_width_portrait_image_layout"]
+        || [description containsString:@"full_width_square_image_layout"]
+        || [description containsString:@"home_video_with_context"]
+        || [description containsString:@"landscape_image_wide_button_layout"]
+        || [description containsString:@"product_engagement_panel"]
+        || [description containsString:@"product_item"]
+        || [description containsString:@"shelf_header"]
+        || [description containsString:@"square_image_layout"]
+        || [description containsString:@"text_image_button_layout"]
+        || [description containsString:@"text_search_ad"]
+        || [description containsString:@"expandable_list"]
+        || [description containsString:@"expandable_metadata"]
+        || [description containsString:@"video_display_full_buttoned_layout"])
+        return YES;
+    return NO;
+}
+NSData *cellDividerData;
 %hook YTIElementRenderer
 - (NSData *)elementData {
-    if (self.hasCompatibilityOptions && self.compatibilityOptions.hasAdLoggingData) return nil;
+    NSString *description = [self description];
+    if ([description containsString:@"cell_divider"]) {
+        if (!cellDividerData) cellDividerData = %orig;
+        return cellDividerData;
+    }
+    if ([self respondsToSelector:@selector(hasCompatibilityOptions)] && self.hasCompatibilityOptions && self.compatibilityOptions.hasAdLoggingData) return cellDividerData;
     return %orig;
 }
 %end
-BOOL isAd(YTIElementRenderer *self) {
-    if (self != nil) {
-    NSString *description = [self description];
-    if ([description containsString:@"brand_promo"]
-        || [description containsString:@"statement_banner"]
-        || [description containsString:@"product_carousel"]
-        || [description containsString:@"product_engagement_panel"]
-        || [description containsString:@"product_item"]
-        || [description containsString:@"expandable_list"]
-        || [description containsString:@"text_search_ad"]
-        || [description containsString:@"text_image_button_layout"]
-        || [description containsString:@"carousel_headered_layout"]
-        || [description containsString:@"carousel_footered_layout"]
-        || [description containsString:@"square_image_layout"]
-        || [description containsString:@"landscape_image_wide_button_layout"]
-        || [description containsString:@"feed_ad_metadata"])
-        return YES;
-    }return NO;
-}
-%hook YTSectionListViewController
+%hook YTInnerTubeCollectionViewController
 - (void)loadWithModel:(YTISectionListRenderer *)model {
-    NSMutableArray <YTISectionListSupportedRenderers *> *contentsArray = model.contentsArray;
-    NSIndexSet *removeIndexes = [contentsArray indexesOfObjectsPassingTest:^BOOL(YTISectionListSupportedRenderers *renderers, NSUInteger idx, BOOL *stop) {
-        YTIItemSectionRenderer *sectionRenderer = renderers.itemSectionRenderer;
-        YTIItemSectionSupportedRenderers *firstObject = [sectionRenderer.contentsArray firstObject];
-        return firstObject.hasPromotedVideoRenderer || firstObject.hasCompactPromotedVideoRenderer || firstObject.hasPromotedVideoInlineMutedRenderer || isAd(firstObject.elementRenderer);
-    }];
-    [contentsArray removeObjectsAtIndexes:removeIndexes];
+    if ([model isKindOfClass:%c(YTISectionListRenderer)]) {
+        NSMutableArray <YTISectionListSupportedRenderers *> *contentsArray = model.contentsArray;
+        NSIndexSet *removeIndexes = [contentsArray indexesOfObjectsPassingTest:^BOOL(YTISectionListSupportedRenderers *renderers, NSUInteger idx, BOOL *stop) {
+            if (![renderers isKindOfClass:%c(YTISectionListSupportedRenderers)])
+                return NO;
+            YTIItemSectionRenderer *sectionRenderer = renderers.itemSectionRenderer;
+            YTIItemSectionSupportedRenderers *firstObject = [sectionRenderer.contentsArray firstObject];
+            YTIElementRenderer *elementRenderer = firstObject.elementRenderer;
+            NSString *description = [elementRenderer description];
+            return isAdString(description)
+                || [description containsString:@"post_shelf"]
+                || [description containsString:@"product_carousel"]
+                || [description containsString:@"statement_banner"];
+        }];
+        [contentsArray removeObjectsAtIndexes:removeIndexes];
+    }
     %orig;
 }
 %end
 %hook YTWatchNextResultsViewController
 - (void)loadWithModel:(YTISectionListRenderer *)watchNextResults {
-    NSMutableArray <YTISectionListSupportedRenderers *> *contentsArray = watchNextResults.contentsArray;
-    NSIndexSet *removeIndexes = [contentsArray indexesOfObjectsPassingTest:^BOOL(YTISectionListSupportedRenderers *renderers, NSUInteger idx, BOOL *stop) {
-        YTIItemSectionRenderer *sectionRenderer = renderers.itemSectionRenderer;
-        YTIItemSectionSupportedRenderers *firstObject = [sectionRenderer.contentsArray firstObject];
-        return firstObject.hasPromotedVideoRenderer || firstObject.hasCompactPromotedVideoRenderer || firstObject.hasPromotedVideoInlineMutedRenderer || isAd(firstObject.elementRenderer);
-    }];
-    [contentsArray removeObjectsAtIndexes:removeIndexes];
+    if ([watchNextResults isKindOfClass:%c(YTISectionListRenderer)]) {
+        NSMutableArray <YTISectionListSupportedRenderers *> *contentsArray = watchNextResults.contentsArray;
+        NSIndexSet *removeIndexes = [contentsArray indexesOfObjectsPassingTest:^BOOL(YTISectionListSupportedRenderers *renderers, NSUInteger idx, BOOL *stop) {
+            if (![renderers isKindOfClass:%c(YTISectionListSupportedRenderers)])
+                return NO;
+            YTIItemSectionRenderer *sectionRenderer = renderers.itemSectionRenderer;
+            YTIItemSectionSupportedRenderers *firstObject = [sectionRenderer.contentsArray firstObject];
+            YTIElementRenderer *elementRenderer = firstObject.elementRenderer;
+            NSString *description = [elementRenderer description];
+            return isAdString(description);
+        }];
+        [contentsArray removeObjectsAtIndexes:removeIndexes];
+    }
     %orig;
 }
 %end
@@ -2238,6 +2269,86 @@ BOOL isAd(YTIElementRenderer *self) {
 %end
 %end
 
+// YouTube Premium Logo - @arichornlover & @bhackel
+%group gPremiumYouTubeLogo
+%hook YTHeaderLogoController
+- (void)setTopbarLogoRenderer:(YTITopbarLogoRenderer *)renderer {
+    YTIIcon *iconImage = renderer.iconImage;
+    iconImage.iconType = 537;
+    %orig;
+}
+- (void)setPremiumLogo:(BOOL)isPremiumLogo {
+    isPremiumLogo = YES;
+    %orig;
+}
+- (BOOL)isPremiumLogo {
+    return YES;
+}
+%end
+%hook YTAppCollectionViewController
+%new
+- (void)uYouEnhancedFakePremiumModel:(YTISectionListRenderer *)model {
+    Class YTVersionUtilsClass = %c(YTVersionUtils);
+    NSString *appVersion = [YTVersionUtilsClass performSelector:@selector(appVersion)];
+    NSComparisonResult result = [appVersion compare:@"18.35.4" options:NSNumericSearch];
+    if (result == NSOrderedAscending) {
+        return;
+    }
+    NSUInteger yourVideosCellIndex = -1;
+    NSMutableArray <YTISectionListSupportedRenderers *> *overallContentsArray = model.contentsArray;
+    YTISectionListSupportedRenderers *supportedRenderers;
+    for (supportedRenderers in overallContentsArray) {
+        YTIItemSectionRenderer *itemSectionRenderer = supportedRenderers.itemSectionRenderer;
+        NSMutableArray <YTIItemSectionSupportedRenderers *> *subContentsArray = itemSectionRenderer.contentsArray;
+        YTIItemSectionSupportedRenderers *itemSectionSupportedRenderers;
+        for (itemSectionSupportedRenderers in subContentsArray) {
+            if ([itemSectionSupportedRenderers hasCompactLinkRenderer]) {
+                YTICompactLinkRenderer *compactLinkRenderer = [itemSectionSupportedRenderers compactLinkRenderer];
+                if ([compactLinkRenderer hasIcon]) {
+                    YTIIcon *icon = [compactLinkRenderer icon];
+                    if ([icon hasIconType] && icon.iconType == 117) {
+                        icon.iconType = 741;
+                        ((YTIStringRun *)(compactLinkRenderer.title.runsArray.firstObject)).text = @"FAKE_YOUR_PREMIUM_BENEFITS";
+                    }
+                }
+            }
+            if ([itemSectionSupportedRenderers hasCompactListItemRenderer]) {
+                YTICompactListItemRenderer *compactListItemRenderer = itemSectionSupportedRenderers.compactListItemRenderer;
+                if ([compactListItemRenderer hasThumbnail]) {
+                    YTICompactListItemThumbnailSupportedRenderers *thumbnail = compactListItemRenderer.thumbnail;
+                    if ([thumbnail hasIconThumbnailRenderer]) {
+                        YTIIconThumbnailRenderer *iconThumbnailRenderer = thumbnail.iconThumbnailRenderer;
+                        if ([iconThumbnailRenderer hasIcon]) {
+                            YTIIcon *icon = iconThumbnailRenderer.icon;
+                            if ([icon hasIconType] && icon.iconType == 658) {
+                                yourVideosCellIndex = [subContentsArray indexOfObject:itemSectionSupportedRenderers];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (yourVideosCellIndex != -1 && subContentsArray[yourVideosCellIndex].accessibilityLabel == nil) {
+            YTIItemSectionSupportedRenderers *newItemSectionSupportedRenderers = [subContentsArray[yourVideosCellIndex] copy];
+            ((YTIStringRun *)(newItemSectionSupportedRenderers.compactListItemRenderer.title.runsArray.firstObject)).text = @"FAKE_DOWNLOADS";
+            newItemSectionSupportedRenderers.compactListItemRenderer.thumbnail.iconThumbnailRenderer.icon.iconType = 147;
+            [subContentsArray insertObject:newItemSectionSupportedRenderers atIndex:yourVideosCellIndex + 1];
+            subContentsArray[yourVideosCellIndex].accessibilityLabel = @"uYouEnhanced Modified";
+            yourVideosCellIndex = -1;
+        }
+    }
+}
+- (void)loadWithModel:(YTISectionListRenderer *)model {
+    [self uYouEnhancedFakePremiumModel:model];
+    %orig;
+}
+- (void)setupSectionListWithModel:(YTISectionListRenderer *)model isLoadingMore:(BOOL)isLoadingMore isRefreshingFromContinuation:(BOOL)isRefreshingFromContinuation {
+    [self uYouEnhancedFakePremiumModel:model];
+    %orig;
+}
+%end
+%end
+
 %group gHideYouTubeLogo
 %hook YTHeaderLogoController
 - (YTHeaderLogoController *)init {
@@ -2276,6 +2387,11 @@ BOOL isAd(YTIElementRenderer *self) {
 
 // Red Progress Bar - @dayanch96
 %group gRedProgressBar
+%hook YTSegmentableInlinePlayerBarView
+- (void)setBufferedProgressBarColor:(id)arg1 {
+     [UIColor colorWithRed:1.00 green:1.00 blue:1.00 alpha:0.50];
+}
+%end
 %hook YTInlinePlayerBarContainerView
 - (id)quietProgressBarColor {
     return [UIColor redColor];
@@ -2288,6 +2404,32 @@ BOOL isAd(YTIElementRenderer *self) {
 %hook YTSegmentableInlinePlayerBarView
 - (void)setBufferedProgressBarColor:(id)arg1 {
      [UIColor colorWithRed:1.00 green:1.00 blue:1.00 alpha:0.90];
+}
+%end
+%end
+
+// Hide Collapse (Arrow - V) Button in Video Player - @arichornlover
+%group gHideCollapseButton
+%hook YTMainAppControlsOverlayView
+- (BOOL)watchCollapseButtonHidden { return YES; }
+- (void)setWatchCollapseButtonAvailable:(BOOL)available { %orig(available); }
+%end
+%end
+
+// Hide Fullscreen Button in Video Player - @arichornlover
+%group gHideFullscreenButton
+%hook YTInlinePlayerBarContainerView
+- (void)layoutSubviews {
+    %orig;
+        if (self.exitFullscreenButton) {
+            [self.exitFullscreenButton removeFromSuperview];
+            self.exitFullscreenButton.frame = CGRectZero;
+        }
+        if (self.enterFullscreenButton) {
+            [self.enterFullscreenButton removeFromSuperview];
+            self.enterFullscreenButton.frame = CGRectZero;
+        }
+        self.fullscreenButtonDisabled = YES;
 }
 %end
 %end
@@ -2490,6 +2632,7 @@ BOOL selectedTabIndex = NO;
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableYouTubeKidsPopup"] == YES) %init(gDisableYouTubeKids);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableExtraSpeedOptions"] == YES) %init(gExtraSpeedOptions);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableHints"] == YES) %init(gDisableHints);
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kPremiumYouTubeLogo"] == YES) %init(gPremiumYouTubeLogo);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideYouTubeLogo"] == YES) %init(gHideYouTubeLogo);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kStickNavigationBar"] == YES) %init(gStickNavigationBar);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kLowContrastMode"] == YES) %init(gLowContrastMode);
@@ -2529,6 +2672,8 @@ BOOL selectedTabIndex = NO;
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kPortraitFullscreen"] == YES) %init(gPortraitFullscreen);
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kRedProgressBar"] == YES) %init(gRedProgressBar);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kGrayBufferProgress"] == YES) %init(gGrayBufferProgress);
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideCollapseButton"] == YES) %init(gHideCollapseButton);
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideFullscreenButton"] == YES) %init(gHideFullscreenButton);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHidePlayerBarHeatwave"] == YES) %init(gHidePlayerBarHeatwave);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHidePictureInPictureAdsBadge"] == YES) %init(gHidePictureInPictureAdsBadge);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHidePictureInPictureSponsorBadge"] == YES) %init(gHidePictureInPictureSponsorBadge);
