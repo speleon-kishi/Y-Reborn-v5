@@ -271,7 +271,7 @@ YTMainAppVideoPlayerOverlayViewController *stateOut;
 
 %new;
 - (void)rebornVideoDownloader :(NSString *)videoID {
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"ANDROID":@"16.20":videoID];
+    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"MEDIA_CONNECT_FRONTEND":@"0.1":videoID];
     NSString *videoTitle = [NSString stringWithFormat:@"%@", youtubePlayerRequest[@"videoDetails"][@"title"]];
     NSArray *videoArtworkArray = youtubePlayerRequest[@"videoDetails"][@"thumbnail"][@"thumbnails"];
     NSURL *videoArtwork = [NSURL URLWithString:[NSString stringWithFormat:@"%@", videoArtworkArray[([videoArtworkArray count] - 1)][@"url"]]];
@@ -454,7 +454,7 @@ YTMainAppVideoPlayerOverlayViewController *stateOut;
 
 %new;
 - (void)rebornAudioDownloader :(NSString *)videoID {
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"ANDROID":@"16.20":videoID];
+    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"MEDIA_CONNECT_FRONTEND":@"0.1":videoID];
     NSString *videoTitle = [NSString stringWithFormat:@"%@", youtubePlayerRequest[@"videoDetails"][@"title"]];
     NSArray *videoArtworkArray = youtubePlayerRequest[@"videoDetails"][@"thumbnail"][@"thumbnails"];
     NSURL *videoArtwork = [NSURL URLWithString:[NSString stringWithFormat:@"%@", videoArtworkArray[([videoArtworkArray count] - 1)][@"url"]]];
@@ -601,7 +601,7 @@ YTMainAppVideoPlayerOverlayViewController *stateOut;
 
 %new;
 - (void)rebornVideoDownloader :(NSString *)videoID {
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"ANDROID":@"16.20":videoID];
+    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"MEDIA_CONNECT_FRONTEND":@"0.1":videoID];
     NSString *videoTitle = [NSString stringWithFormat:@"%@", youtubePlayerRequest[@"videoDetails"][@"title"]];
     NSArray *videoArtworkArray = youtubePlayerRequest[@"videoDetails"][@"thumbnail"][@"thumbnails"];
     NSURL *videoArtwork = [NSURL URLWithString:[NSString stringWithFormat:@"%@", videoArtworkArray[([videoArtworkArray count] - 1)][@"url"]]];
@@ -676,7 +676,7 @@ YTMainAppVideoPlayerOverlayViewController *stateOut;
 
 %new;
 - (void)rebornAudioDownloader :(NSString *)videoID {
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"ANDROID":@"16.20":videoID];
+    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"MEDIA_CONNECT_FRONTEND":@"0.1":videoID];
     NSString *videoTitle = [NSString stringWithFormat:@"%@", youtubePlayerRequest[@"videoDetails"][@"title"]];
     NSArray *videoArtworkArray = youtubePlayerRequest[@"videoDetails"][@"thumbnail"][@"thumbnails"];
     NSURL *videoArtwork = [NSURL URLWithString:[NSString stringWithFormat:@"%@", videoArtworkArray[([videoArtworkArray count] - 1)][@"url"]]];
