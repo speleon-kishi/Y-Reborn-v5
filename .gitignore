@@ -1,3 +1,9 @@
-.theos
+# macOS
 .DS_Store
-packages
+
+# Theos
+.theos/
+packages/
+
+# Visual Studio Code
+.vscode/
