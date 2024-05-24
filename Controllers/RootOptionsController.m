@@ -160,7 +160,7 @@
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.patreon.com/lillieweeb"] options:@{} completionHandler:nil];
         }
         if (indexPath.row == 2) {
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://lillieh001.github.io/discord/youtuberebornv4.html"] options:@{} completionHandler:nil];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://discord.gg/ydAyv2F9ng"] options:@{} completionHandler:nil];
         }
         if (indexPath.row == 3) {
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.reddit.com/r/YouTubeReborn/"] options:@{} completionHandler:nil];
