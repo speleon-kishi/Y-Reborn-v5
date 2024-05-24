@@ -1182,24 +1182,6 @@ BOOL dNoSearchAds = NO;
 %end
 %end
 
-%group gHidePreviousButtonShadowInOverlay
-%hook YTMainAppControlsOverlayView
-- (void)layoutSubviews {
-	%orig();
-    MSHookIvar<YTTransportControlsButtonView *>(self, "_previousButtonView").backgroundColor = nil;
-}
-%end
-%end
-
-%group gHideNextButtonShadowInOverlay
-%hook YTMainAppControlsOverlayView
-- (void)layoutSubviews {
-	%orig();
-    MSHookIvar<YTTransportControlsButtonView *>(self, "_nextButtonView").backgroundColor = nil;
-}
-%end
-%end
-
 %group gHidePlayPauseButtonShadowInOverlay
 %hook YTMainAppControlsOverlayView
 - (void)layoutSubviews {
