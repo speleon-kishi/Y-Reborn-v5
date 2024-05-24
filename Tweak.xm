@@ -1168,7 +1168,6 @@ BOOL dNoSearchAds = NO;
 %hook YTMainAppControlsOverlayView
 - (void)layoutSubviews {
 	%orig();
-	MSHookIvar<YTMainAppControlsOverlayView *>(self, "_previousButton").hidden = YES;
     MSHookIvar<YTTransportControlsButtonView *>(self, "_previousButtonView").hidden = YES;
 }
 %end
@@ -1178,7 +1177,6 @@ BOOL dNoSearchAds = NO;
 %hook YTMainAppControlsOverlayView
 - (void)layoutSubviews {
 	%orig();
-	MSHookIvar<YTMainAppControlsOverlayView *>(self, "_nextButton").hidden = YES;
     MSHookIvar<YTTransportControlsButtonView *>(self, "_nextButtonView").hidden = YES;
 }
 %end
