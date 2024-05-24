@@ -1551,6 +1551,11 @@ BOOL dNoSearchAds = NO;
     %orig(rebornHexColour);
 }
 %end
+%hook YTPageHeaderView
+- (void)setBackgroundColor:(UIColor *)color {
+    %orig(rebornHexColour);
+}
+%end
 %hook YTSearchSuggestionCollectionViewCell
 - (void)updateColors {
 }
@@ -1596,6 +1601,9 @@ BOOL dNoSearchAds = NO;
             self.backgroundColor = rebornHexColour;
         }
         if ([responder isKindOfClass:NSClassFromString(@"YTEditSheetControllerElementsContentViewController")]) {
+            self.backgroundColor = rebornHexColour;
+        }
+        if ([responder isKindOfClass:NSClassFromString(@"YTMySubsFilterHeaderViewController")]) {
             self.backgroundColor = rebornHexColour;
         }
         responder = [responder nextResponder];
