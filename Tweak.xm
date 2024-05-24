@@ -259,7 +259,7 @@ YTMainAppVideoPlayerOverlayViewController *stateOut;
 
 %new;
 - (void)rebornVideoDownloader :(NSString *)videoID {
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"MEDIA_CONNECT_FRONTEND":@"0.1":videoID];
+    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
     NSString *videoTitle = [NSString stringWithFormat:@"%@", youtubePlayerRequest[@"videoDetails"][@"title"]];
     NSArray *videoArtworkArray = youtubePlayerRequest[@"videoDetails"][@"thumbnail"][@"thumbnails"];
     NSURL *videoArtwork = [NSURL URLWithString:[NSString stringWithFormat:@"%@", videoArtworkArray[([videoArtworkArray count] - 1)][@"url"]]];
@@ -442,7 +442,7 @@ YTMainAppVideoPlayerOverlayViewController *stateOut;
 
 %new;
 - (void)rebornAudioDownloader :(NSString *)videoID {
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"MEDIA_CONNECT_FRONTEND":@"0.1":videoID];
+    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
     NSString *videoTitle = [NSString stringWithFormat:@"%@", youtubePlayerRequest[@"videoDetails"][@"title"]];
     NSArray *videoArtworkArray = youtubePlayerRequest[@"videoDetails"][@"thumbnail"][@"thumbnails"];
     NSURL *videoArtwork = [NSURL URLWithString:[NSString stringWithFormat:@"%@", videoArtworkArray[([videoArtworkArray count] - 1)][@"url"]]];
@@ -489,7 +489,7 @@ YTMainAppVideoPlayerOverlayViewController *stateOut;
 
 %new;
 - (void)rebornPlayInExternalApp :(NSString *)videoID {
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"IOS":@"19.09.3":videoID];
+    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"ios":videoID];
     NSURL *videoPath = [NSURL URLWithString:[NSString stringWithFormat:@"%@", youtubePlayerRequest[@"streamingData"][@"hlsManifestUrl"]]];
 
     UIAlertController *alertApp = [UIAlertController alertControllerWithTitle:@"Choose App" message:nil preferredStyle:UIAlertControllerStyleAlert];
@@ -557,7 +557,7 @@ YTMainAppVideoPlayerOverlayViewController *stateOut;
 
 %new;
 - (void)rebornVideoDownloader :(NSString *)videoID {
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"MEDIA_CONNECT_FRONTEND":@"0.1":videoID];
+    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
     NSString *videoTitle = [NSString stringWithFormat:@"%@", youtubePlayerRequest[@"videoDetails"][@"title"]];
     NSArray *videoArtworkArray = youtubePlayerRequest[@"videoDetails"][@"thumbnail"][@"thumbnails"];
     NSURL *videoArtwork = [NSURL URLWithString:[NSString stringWithFormat:@"%@", videoArtworkArray[([videoArtworkArray count] - 1)][@"url"]]];
@@ -632,7 +632,7 @@ YTMainAppVideoPlayerOverlayViewController *stateOut;
 
 %new;
 - (void)rebornAudioDownloader :(NSString *)videoID {
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"MEDIA_CONNECT_FRONTEND":@"0.1":videoID];
+    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
     NSString *videoTitle = [NSString stringWithFormat:@"%@", youtubePlayerRequest[@"videoDetails"][@"title"]];
     NSArray *videoArtworkArray = youtubePlayerRequest[@"videoDetails"][@"thumbnail"][@"thumbnails"];
     NSURL *videoArtwork = [NSURL URLWithString:[NSString stringWithFormat:@"%@", videoArtworkArray[([videoArtworkArray count] - 1)][@"url"]]];
@@ -679,7 +679,7 @@ YTMainAppVideoPlayerOverlayViewController *stateOut;
 
 %new;
 - (void)rebornPlayInExternalApp :(NSString *)videoID {
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"IOS":@"19.09.3":videoID];
+    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"ios":videoID];
     NSURL *videoPath = [NSURL URLWithString:[NSString stringWithFormat:@"%@", youtubePlayerRequest[@"streamingData"][@"hlsManifestUrl"]]];
 
     UIAlertController *alertApp = [UIAlertController alertControllerWithTitle:@"Choose App" message:nil preferredStyle:UIAlertControllerStyleAlert];
