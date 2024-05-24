@@ -1,5 +1,5 @@
 <details open>
-<summary>v5.0.0 (Beta) (May 23, 2024)</summary>
+<summary>v5.0.0 (Beta 1) (May 23, 2024)</summary>
 
 ```text
 - Deprecated iOS 14 support, minimum iOS version is now iOS 15 as iOS 14 was becoming almost impossible to maintain and test
