@@ -7,7 +7,9 @@
 - Fixed video and audio downloading
 - Fixed "Hide Overlay Dark Background" for YouTube v19
 - Fixed "Hide Previous Button In Overlay" and "Hide Next Button In Overlay" for YouTube v19
-- Removed the "Hide Previous Buton Shadow In Overlay" and "Hide Next Button Shadow In Overlay" as they were unneeded for YouTube v19
+- Removed the "Hide Previous Button Shadow In Overlay" and "Hide Next Button Shadow In Overlay" as they were unneeded for YouTube v19
+- Removed the "Hide Play/Pause Button Shadow In Overlay" as it was unneeded for YouTube v19
+- Updated links and credits in the main options page
 ```
 
 </details>
