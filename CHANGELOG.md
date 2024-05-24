@@ -1,4 +1,4 @@
-<details>
+<details open>
 <summary>v5.0.0 (Beta) (May 23, 2024)</summary>
 
 ```text
