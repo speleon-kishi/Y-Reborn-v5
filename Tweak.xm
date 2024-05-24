@@ -4,15 +4,8 @@
 #import <YouTubeExtractor/YouTubeExtractor.h>
 #import <rootless.h>
 #import "Controllers/RootOptionsController.h"
-#import "Controllers/PictureInPictureController.h"
 #import "Controllers/YouTubeDownloadController.h"
 #import "Tweak.h"
-
-#define SYSTEM_VERSION_EQUAL_TO(v)                  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedSame)
-#define SYSTEM_VERSION_GREATER_THAN(v)              ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedDescending)
-#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
-#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
-#define SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(v)     ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedDescending)
 
 static BOOL hasDeviceNotch() {
 	if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
@@ -184,7 +177,7 @@ YTMainAppVideoPlayerOverlayViewController *stateOut;
 %property(retain, nonatomic) UIButton *rebornOverlayButton;
 
 - (id)initWithDelegate:(id)delegate {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"15.0") && [[NSUserDefaults standardUserDefaults] boolForKey:@"kRebornIHaveYouTubePremium"] == NO && [[NSUserDefaults standardUserDefaults] boolForKey:@"kEnablePictureInPictureVTwo"] == YES) {
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kRebornIHaveYouTubePremium"] == NO && [[NSUserDefaults standardUserDefaults] boolForKey:@"kEnablePictureInPictureVTwo"] == YES) {
         %init(gPictureInPicture);
     }
     self = %orig;
@@ -245,12 +238,6 @@ YTMainAppVideoPlayerOverlayViewController *stateOut;
 
         [alertMenu addAction:[UIAlertAction actionWithTitle:@"Download Video" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             [self rebornVideoDownloader:videoIdentifier];
-        }]];
-    }
-
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"14.0") && SYSTEM_VERSION_LESS_THAN(@"15.0")) {
-        [alertMenu addAction:[UIAlertAction actionWithTitle:@"Picture In Picture" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [self rebornPictureInPicture:videoIdentifier];
         }]];
     }
 
@@ -501,32 +488,6 @@ YTMainAppVideoPlayerOverlayViewController *stateOut;
 }
 
 %new;
-- (void)rebornPictureInPicture :(NSString *)videoID {
-    NSString *videoTime = [NSString stringWithFormat:@"%f", [resultOut mediaTime]];
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"IOS":@"19.09.3":videoID];
-    NSURL *videoPath = [NSURL URLWithString:[NSString stringWithFormat:@"%@", youtubePlayerRequest[@"streamingData"][@"hlsManifestUrl"]]];
-
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableBackgroundPlayback"] == YES) {
-        PictureInPictureController *pictureInPictureController = [[PictureInPictureController alloc] init];
-        pictureInPictureController.videoTime = videoTime;
-        pictureInPictureController.videoPath = videoPath;
-        UINavigationController *pictureInPictureControllerView = [[UINavigationController alloc] initWithRootViewController:pictureInPictureController];
-        pictureInPictureControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
-
-        UIViewController *pictureInPictureViewController = self._viewControllerForAncestor;
-        [pictureInPictureViewController presentViewController:pictureInPictureControllerView animated:YES completion:nil];
-    } else {
-        UIAlertController *alertPip = [UIAlertController alertControllerWithTitle:@"Notice" message:@"You must enable 'Background Playback' in YouTube Reborn settings to use Picture-In-Picture" preferredStyle:UIAlertControllerStyleAlert];
-
-        [alertPip addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-        }]];
-
-        UIViewController *pipViewController = [self _viewControllerForAncestor];
-        [pipViewController presentViewController:alertPip animated:YES completion:nil];
-    }
-}
-
-%new;
 - (void)rebornPlayInExternalApp :(NSString *)videoID {
     NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"IOS":@"19.09.3":videoID];
     NSURL *videoPath = [NSURL URLWithString:[NSString stringWithFormat:@"%@", youtubePlayerRequest[@"streamingData"][@"hlsManifestUrl"]]];
@@ -575,12 +536,6 @@ YTMainAppVideoPlayerOverlayViewController *stateOut;
 
         [alertMenu addAction:[UIAlertAction actionWithTitle:@"Download Video" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             [self rebornVideoDownloader:videoIdentifier];
-        }]];
-    }
-
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"14.0") && SYSTEM_VERSION_LESS_THAN(@"15.0")) {
-        [alertMenu addAction:[UIAlertAction actionWithTitle:@"Picture In Picture" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [self rebornPictureInPicture:videoIdentifier];
         }]];
     }
 
@@ -720,31 +675,6 @@ YTMainAppVideoPlayerOverlayViewController *stateOut;
 
     UIViewController *rebornYouTubeDownloadViewController = self._viewControllerForAncestor;
     [rebornYouTubeDownloadViewController presentViewController:rebornYouTubeDownloadController animated:YES completion:nil];
-}
-
-%new;
-- (void)rebornPictureInPicture :(NSString *)videoID {
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"IOS":@"19.09.3":videoID];
-    NSURL *videoPath = [NSURL URLWithString:[NSString stringWithFormat:@"%@", youtubePlayerRequest[@"streamingData"][@"hlsManifestUrl"]]];
-
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableBackgroundPlayback"] == YES) {
-        PictureInPictureController *pictureInPictureController = [[PictureInPictureController alloc] init];
-        pictureInPictureController.videoTime = nil;
-        pictureInPictureController.videoPath = videoPath;
-        UINavigationController *pictureInPictureControllerView = [[UINavigationController alloc] initWithRootViewController:pictureInPictureController];
-        pictureInPictureControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
-
-        UIViewController *pictureInPictureViewController = self._viewControllerForAncestor;
-        [pictureInPictureViewController presentViewController:pictureInPictureControllerView animated:YES completion:nil];
-    } else {
-        UIAlertController *alertPip = [UIAlertController alertControllerWithTitle:@"Notice" message:@"You must enable 'Background Playback' in YouTube Reborn settings to use Picture-In-Picture" preferredStyle:UIAlertControllerStyleAlert];
-
-        [alertPip addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-        }]];
-
-        UIViewController *pipViewController = [self _viewControllerForAncestor];
-        [pipViewController presentViewController:alertPip animated:YES completion:nil];
-    }
 }
 
 %new;

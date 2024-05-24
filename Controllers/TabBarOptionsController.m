@@ -16,9 +16,7 @@
     UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
     self.navigationItem.rightBarButtonItem = doneButton;
 
-    if (@available(iOS 15.0, *)) {
-    	[self.tableView setSectionHeaderTopPadding:0.0f];
-	}
+    [self.tableView setSectionHeaderTopPadding:0.0f];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

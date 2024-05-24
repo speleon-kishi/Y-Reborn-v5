@@ -24,9 +24,7 @@
 	[super loadView];
     [self coloursView];
 
-    if (@available(iOS 15.0, *)) {
-    	[self.tableView setSectionHeaderTopPadding:0.0f];
-	}
+    [self.tableView setSectionHeaderTopPadding:0.0f];
 
     [self setupVideoArrays];
 }
