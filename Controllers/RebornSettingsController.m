@@ -127,11 +127,10 @@
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kEnableExtraSpeedOptions"];
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kDisableHints"];
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kHideTabBarLabels"];
-                [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kHideExploreTab"];
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kHideShortsTab"];
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kHideUploadTab"];
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kHideSubscriptionsTab"];
-                [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kHideLibraryTab"];
+                [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kHideYouTab"];
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kDisableDoubleTapToSkip"];
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kHideOverlayDarkBackground"];
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kHidePreviousButtonInOverlay"];
@@ -171,7 +170,7 @@
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kOutroSegmentedInt"];
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kPreviewSegmentedInt"];
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kMusicOffTopicSegmentedInt"];
-                [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kStartupPageIntVTwo"];
+                [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kStartupPageIntVThree"];
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kHideRebornOPButtonVTwo"];
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kHideRebornShortsOPButton"];
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kHideCurrentTime"];

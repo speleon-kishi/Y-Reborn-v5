@@ -19,10 +19,10 @@ int selectedIndex;
 
     [self.tableView setSectionHeaderTopPadding:0.0f];
 
-    if (![[NSUserDefaults standardUserDefaults] integerForKey:@"kStartupPageIntVTwo"]) {
+    if (![[NSUserDefaults standardUserDefaults] integerForKey:@"kStartupPageIntVThree"]) {
         selectedIndex = 0;
     } else {
-        selectedIndex = [[NSUserDefaults standardUserDefaults] integerForKey:@"kStartupPageIntVTwo"];
+        selectedIndex = [[NSUserDefaults standardUserDefaults] integerForKey:@"kStartupPageIntVThree"];
     }
 }
 
@@ -31,7 +31,7 @@ int selectedIndex;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 5;
+    return 4;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -58,26 +58,20 @@ int selectedIndex;
             }
         }
         if (indexPath.row == 1) {
-            cell.textLabel.text = @"Explore";
+            cell.textLabel.text = @"Shorts";
             if (selectedIndex == 1) {
                 cell.accessoryType = UITableViewCellAccessoryCheckmark;
             }
         }
         if (indexPath.row == 2) {
-            cell.textLabel.text = @"Shorts";
+            cell.textLabel.text = @"Subscriptions";
             if (selectedIndex == 2) {
                 cell.accessoryType = UITableViewCellAccessoryCheckmark;
             }
         }
         if (indexPath.row == 3) {
-            cell.textLabel.text = @"Subscriptions";
+            cell.textLabel.text = @"You";
             if (selectedIndex == 3) {
-                cell.accessoryType = UITableViewCellAccessoryCheckmark;
-            }
-        }
-        if (indexPath.row == 4) {
-            cell.textLabel.text = @"Library";
-            if (selectedIndex == 4) {
                 cell.accessoryType = UITableViewCellAccessoryCheckmark;
             }
         }
@@ -88,7 +82,7 @@ int selectedIndex;
 - (void)tableView:(UITableView *)theTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [theTableView deselectRowAtIndexPath:indexPath animated:YES];
     selectedIndex = indexPath.row;
-    [[NSUserDefaults standardUserDefaults] setInteger:selectedIndex forKey:@"kStartupPageIntVTwo"];
+    [[NSUserDefaults standardUserDefaults] setInteger:selectedIndex forKey:@"kStartupPageIntVThree"];
     [[NSUserDefaults standardUserDefaults] synchronize];
     [self.tableView reloadData];
 }

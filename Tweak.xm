@@ -972,21 +972,6 @@ BOOL dNoSearchAds = NO;
 %end
 %end
 
-%group gHideExploreTab
-%hook YTPivotBarView
-- (void)setRenderer:(YTIPivotBarRenderer *)renderer {
-    NSMutableArray <YTIPivotBarSupportedRenderers *> *items = [renderer itemsArray];
-
-    NSUInteger index = [items indexOfObjectPassingTest:^BOOL(YTIPivotBarSupportedRenderers *renderers, NSUInteger idx, BOOL *stop) {
-        return [[[renderers pivotBarItemRenderer] pivotIdentifier] isEqualToString:@"FEexplore"];
-    }];
-    if (index != NSNotFound) [items removeObjectAtIndex:index];
-
-    %orig;
-}
-%end
-%end
-
 %group gHideShortsTab
 %hook YTPivotBarView
 - (void)setRenderer:(YTIPivotBarRenderer *)renderer {
@@ -1032,7 +1017,7 @@ BOOL dNoSearchAds = NO;
 %end
 %end
 
-%group gHideLibraryTab
+%group gHideYouTab
 %hook YTPivotBarView
 - (void)setRenderer:(YTIPivotBarRenderer *)renderer {
     NSMutableArray <YTIPivotBarSupportedRenderers *> *items = [renderer itemsArray];
@@ -2079,25 +2064,21 @@ BOOL selectedTabIndex = NO;
 %hook YTPivotBarViewController
 - (void)viewDidAppear:(BOOL)animated {
     %orig();
-    if ([[NSUserDefaults standardUserDefaults] integerForKey:@"kStartupPageIntVTwo"]) {
-        int selectedTab = [[NSUserDefaults standardUserDefaults] integerForKey:@"kStartupPageIntVTwo"];
+    if ([[NSUserDefaults standardUserDefaults] integerForKey:@"kStartupPageIntVThree"]) {
+        int selectedTab = [[NSUserDefaults standardUserDefaults] integerForKey:@"kStartupPageIntVThree"];
         if (selectedTab == 0 && !selectedTabIndex) {
             [self selectItemWithPivotIdentifier:@"FEwhat_to_watch"];
             selectedTabIndex = YES;
         }
         if (selectedTab == 1 && !selectedTabIndex) {
-            [self selectItemWithPivotIdentifier:@"FEexplore"];
-            selectedTabIndex = YES;
-        }
-        if (selectedTab == 2 && !selectedTabIndex) {
             [self selectItemWithPivotIdentifier:@"FEshorts"];
             selectedTabIndex = YES;
         }
-        if (selectedTab == 3 && !selectedTabIndex) {
+        if (selectedTab == 2 && !selectedTabIndex) {
             [self selectItemWithPivotIdentifier:@"FEsubscriptions"];
             selectedTabIndex = YES;
         }
-        if (selectedTab == 4 && !selectedTabIndex) {
+        if (selectedTab == 3 && !selectedTabIndex) {
             [self selectItemWithPivotIdentifier:@"FElibrary"];
             selectedTabIndex = YES;
         }
@@ -2135,11 +2116,10 @@ BOOL selectedTabIndex = NO;
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableExtraSpeedOptions"] == YES) %init(gExtraSpeedOptions);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableHints"] == YES) %init(gDisableHints);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideTabBarLabels"] == YES) %init(gHideTabBarLabels);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideExploreTab"] == YES) %init(gHideExploreTab);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsTab"] == YES) %init(gHideShortsTab);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideUploadTab"] == YES) %init(gHideUploadTab);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideSubscriptionsTab"] == YES) %init(gHideSubscriptionsTab);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideLibraryTab"] == YES) %init(gHideLibraryTab);
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideYouTab"] == YES) %init(gHideYouTab);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableDoubleTapToSkip"] == YES) %init(gDisableDoubleTapToSkip);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideOverlayDarkBackground"] == YES) %init(gHideOverlayDarkBackground);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHidePreviousButtonInOverlay"] == YES) %init(gHidePreviousButtonInOverlay);
