@@ -1,4 +1,15 @@
 <details open>
+<summary>v5.0.0 (Beta) (June 3, 2024)</summary>
+
+```text
+- Fixed SponsorBlock not working on YouTube v19
+```
+
+</details>
+
+<br>
+
+<details>
 <summary>v5.0.0 (Beta 1) (May 23, 2024)</summary>
 
 ```text

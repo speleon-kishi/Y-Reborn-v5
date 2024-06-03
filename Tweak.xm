@@ -1766,7 +1766,7 @@ BOOL dNoSearchAds = NO;
 BOOL sponsorBlockEnabled;
 BOOL sponsorSkipCheck;
 BOOL sponsorSkipShowing;
-NSDictionary *sponsorBlockValues = [[NSDictionary alloc] init];
+NSArray *sponsorBlockValues = [[NSArray alloc] init];
 
 %hook YTPlayerViewController
 - (void)playbackController:(id)arg1 didActivateVideo:(id)arg2 withPlaybackData:(id)arg3 {
@@ -1774,17 +1774,16 @@ NSDictionary *sponsorBlockValues = [[NSDictionary alloc] init];
     sponsorSkipCheck = NO;
     sponsorSkipShowing = NO;
     %orig();
-    NSString *options = @"[%22sponsor%22,%22selfpromo%22,%22interaction%22,%22intro%22,%22outro%22,%22preview%22,%22music_offtopic%22]";
     NSURLRequest *request;
     if (![[NSUserDefaults standardUserDefaults] integerForKey:@"kSourceSegmentedInt"] || [[NSUserDefaults standardUserDefaults] integerForKey:@"kSourceSegmentedInt"] == 0) {
-        request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://sponsor.ajay.app/api/skipSegments?videoID=%@&categories=%@", self.currentVideoID, options]]];
+        request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://sponsor.ajay.app/api/skipSegments?videoID=%@&categories=[\"sponsor\",\"selfpromo\",\"interaction\",\"intro\",\"outro\",\"preview\",\"music_offtopic\"]", self.currentVideoID]]];
     }
     if ([[NSUserDefaults standardUserDefaults] integerForKey:@"kSourceSegmentedInt"] == 1) {
-        request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://sponsorblock.kavin.rocks/api/skipSegments?videoID=%@&categories=%@", self.currentVideoID, options]]];
+        request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://sponsorblock.kavin.rocks/api/skipSegments?videoID=%@&categories=[\"sponsor\",\"selfpromo\",\"interaction\",\"intro\",\"outro\",\"preview\",\"music_offtopic\"]", self.currentVideoID]]];
     }
     [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (!error) {
-            NSDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            NSArray *jsonResponse = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
             if ([NSJSONSerialization isValidJSONObject:jsonResponse]) {
                 sponsorBlockValues = jsonResponse;
                 sponsorBlockEnabled = YES;
@@ -1796,10 +1795,10 @@ NSDictionary *sponsorBlockValues = [[NSDictionary alloc] init];
         }
     }] resume];
 }
-- (void)singleVideo:(id)video currentVideoTimeDidChange:(YTSingleVideoTime *)time {
+- (void)potentiallyMutatedSingleVideo:(id)video currentVideoTimeDidChange:(YTSingleVideoTime *)time {
     %orig();
     if (sponsorBlockEnabled && [NSJSONSerialization isValidJSONObject:sponsorBlockValues]) {
-        for (NSMutableDictionary *jsonDictionary in sponsorBlockValues) {
+        for (NSDictionary *jsonDictionary in sponsorBlockValues) {
             if ([[jsonDictionary objectForKey:@"category"] isEqual:@"sponsor"] && [[NSUserDefaults standardUserDefaults] integerForKey:@"kSponsorSegmentedInt"] && self.currentVideoMediaTime >= [[jsonDictionary objectForKey:@"segment"][0] floatValue] && self.currentVideoMediaTime <= ([[jsonDictionary objectForKey:@"segment"][1] floatValue] - 1)) {
                 if ([[NSUserDefaults standardUserDefaults] integerForKey:@"kSponsorSegmentedInt"] == 1) {
                     [self seekToTime:[[jsonDictionary objectForKey:@"segment"][1] floatValue]];
