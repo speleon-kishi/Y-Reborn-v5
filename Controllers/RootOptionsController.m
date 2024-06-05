@@ -38,7 +38,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == 0) {
-        return 1;
+        return 2;
     }
     if (section == 1) {
         if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"filza://"]]) {
@@ -76,6 +76,9 @@
         if (indexPath.section == 0) {
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             if (indexPath.row == 0) {
+                cell.textLabel.text = @"Donate";
+            }
+            if (indexPath.row == 1) {
                 cell.textLabel.text = @"Discord";
             }
         }
@@ -135,6 +138,23 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == 0) {
         if (indexPath.row == 0) {
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Donate" message:@"Bitcoin, Ethereum" preferredStyle:UIAlertControllerStyleAlert];
+
+            [alert addAction:[UIAlertAction actionWithTitle:@"Click To Copy BTC Address" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+                pasteboard.string = @"bc1qvt2s2vj9tgjctur3nl63dvtp5hh257xfsryyk0";
+            }]];
+
+            [alert addAction:[UIAlertAction actionWithTitle:@"Click To Copy ETH Address" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+                pasteboard.string = @"0x711bC9ff0c5F66CC6AD49A2e9f60b9DDA49a7647";
+            }]];
+            
+            [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil]];
+
+            [self presentViewController:alert animated:YES completion:nil];
+        }
+        if (indexPath.row == 1) {
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://discord.gg/ydAyv2F9ng"] options:@{} completionHandler:nil];
         }
     }
