@@ -1,8 +1,9 @@
 <details open>
-<summary>v5.0.0 (Beta) (June 3, 2024)</summary>
+<summary>v5.0.0 (Beta 2) (June 4, 2024)</summary>
 
 ```text
 - Fixed SponsorBlock not working on YouTube v19
+- Refactored the audio request handler for audio downloading
 ```
 
 </details>
