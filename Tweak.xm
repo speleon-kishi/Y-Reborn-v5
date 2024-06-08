@@ -311,7 +311,7 @@ static NSString *accessGroupID() {
     if (self) {
         self.rebornOverlayButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         [self.rebornOverlayButton addTarget:self action:@selector(rebornOptionsAction) forControlEvents:UIControlEventTouchUpInside];
-        [self.rebornOverlayButton setTitle:@"DL" forState:UIControlStateNormal];
+        [self.rebornOverlayButton setTitle:@"OP" forState:UIControlStateNormal];
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kShowStatusBarInOverlay"] == YES) {
             if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableiPadStyleOniPhone"] == YES) {
                 self.rebornOverlayButton.frame = CGRectMake(40, 9, 40.0, 30.0);
@@ -825,6 +825,7 @@ BOOL isAdString(NSString *description) {
         || [description containsString:@"text_search_ad"]
         || [description containsString:@"expandable_list"]
         || [description containsString:@"expandable_metadata"]
+        || [description containsString:@"video_display_full_layout"]
         || [description containsString:@"video_display_full_buttoned_layout"])
         return YES;
     return NO;
@@ -1058,6 +1059,9 @@ NSData *cellDividerData;
 }
 %end
 %hook YTColor
++ (UIColor *)white1 {
+    return [UIColor whiteColor];
+}
 + (UIColor *)white2 {
     return [UIColor whiteColor];
 }
@@ -1207,24 +1211,6 @@ NSData *cellDividerData;
 %hook ASButtonNode
 - (void)setTextColor:(UIColor *)textColor {
    %orig([UIColor whiteColor]);
-}
-%end
-%hook UIImage
-+ (UIImage *)imageNamed:(NSString *)name {
-    UIImage *originalImage = %orig;
-    if ([name isEqualToString:@"sponsorblocksettings-20@2x.png"] || [name isEqualToString:@"ytrebornbuttonwhite.png"]) {
-        UIGraphicsBeginImageContextWithOptions(originalImage.size, NO, originalImage.scale);
-        CGContextRef context = UIGraphicsGetCurrentContext();
-        CGRect rect = CGRectMake(0, 0, originalImage.size.width, originalImage.size.height);
-        [originalImage drawInRect:rect];
-        CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
-        CGContextSetBlendMode(context, kCGBlendModeSourceAtop);
-        CGContextFillRect(context, rect);
-        UIImage *modifiedImage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        return modifiedImage;
-    }
-    return originalImage;
 }
 %end
 %end
