@@ -45,6 +45,59 @@ class HideDarkBackground1: ClassHook<UIView> {
     }
 }
 
+// Colour Options
+
+var rebornColourOptions: UIColor = UIColor.clear
+struct ColorOptions: HookGroup {}
+
+class ColorOptionsA1: ClassHook<UIView> {
+    static let targetName = "YTAppView"
+    typealias Group = ColorOptions
+
+    func setBackgroundColor(_ arg1: UIColor) {
+        orig.setBackgroundColor(rebornColourOptions)
+    }
+}
+
+class ColorOptionsE1: ClassHook<UIView> {
+    static let targetName = "YTELMView"
+    typealias Group = ColorOptions
+
+    func setBackgroundColor(_ arg1: UIColor) {
+        orig.setBackgroundColor(rebornColourOptions)
+    }
+}
+
+class ColorOptionsN1: ClassHook<UIView> {
+    static let targetName = "YTNavigationBar" // Check Type
+    typealias Group = ColorOptions
+
+    func setBackgroundColor(_ arg1: UIColor) {
+        orig.setBackgroundColor(rebornColourOptions)
+    }
+    func setBarTintColor(_ arg1: UIColor) {
+        orig.setBarTintColor(rebornColourOptions)
+    }
+}
+
+class ColorOptionsP1: ClassHook<UIView> {
+    static let targetName = "YTPageHeaderView" // Check Type
+    typealias Group = ColorOptions
+
+    func setBackgroundColor(_ arg1: UIColor) {
+        orig.setBackgroundColor(rebornColourOptions)
+    }
+}
+
+class ColorOptionsP2: ClassHook<UIView> {
+    static let targetName = "YTPivotBarView"
+    typealias Group = ColorOptions
+
+    func setBackgroundColor(_ arg1: UIColor) {
+        orig.setBackgroundColor(rebornColourOptions)
+    }
+}
+
 // Other Options
 
 // Disable YouTube Kids
@@ -104,6 +157,17 @@ struct YouTubeReborn: Tweak {
 
         if UserDefaults.standard.bool(forKey: "kHideOverlayDarkBackground") {
             HideDarkBackground().activate()
+        }
+
+        // Colour Options
+
+        let colourData = UserDefaults.standard.object(forKey: "kYTRebornColourOptionsVFour") as? Data
+        if colourData != nil {
+            let unarchiver = try! NSKeyedUnarchiver.init(forReadingFrom: colourData!)
+            unarchiver.requiresSecureCoding = false
+            let colourString = unarchiver.decodeObject(forKey: NSKeyedArchiveRootObjectKey) as! UIColor
+            rebornColourOptions = colourString
+            ColorOptions().activate()
         }
 
         // Other Options

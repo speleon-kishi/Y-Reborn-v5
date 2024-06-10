@@ -1267,22 +1267,12 @@ BOOL dNoSearchAds = NO;
     }
 }
 %end
-%hook YTPivotBarView
-- (void)setBackgroundColor:(UIColor *)color {
-    %orig(rebornHexColour);
-}
-%end
 %hook YTHeaderView
 - (void)setBackgroundColor:(UIColor *)color {
     %orig(rebornHexColour);
 }
 %end
 %hook YTSubheaderContainerView
-- (void)setBackgroundColor:(UIColor *)color {
-    %orig(rebornHexColour);
-}
-%end
-%hook YTAppView
 - (void)setBackgroundColor:(UIColor *)color {
     %orig(rebornHexColour);
 }
@@ -1416,14 +1406,6 @@ BOOL dNoSearchAds = NO;
     %orig(rebornHexColour);
 }
 %end
-%hook YTNavigationBar
-- (void)setBackgroundColor:(UIColor *)color {
-    %orig(rebornHexColour);
-}
-- (void)setBarTintColor:(UIColor *)color {
-    %orig(rebornHexColour);
-}
-%end
 %hook YTChannelMobileHeaderView
 - (void)setBackgroundColor:(UIColor *)color {
     %orig(rebornHexColour);
@@ -1491,17 +1473,7 @@ BOOL dNoSearchAds = NO;
     %orig(rebornHexColour);
 }
 %end
-%hook YTELMView
-- (void)setBackgroundColor:(UIColor *)color {
-    %orig(rebornHexColour);
-}
-%end
 %hook YTActionSheetHeaderView
-- (void)setBackgroundColor:(UIColor *)color {
-    %orig(rebornHexColour);
-}
-%end
-%hook YTPageHeaderView
 - (void)setBackgroundColor:(UIColor *)color {
     %orig(rebornHexColour);
 }
