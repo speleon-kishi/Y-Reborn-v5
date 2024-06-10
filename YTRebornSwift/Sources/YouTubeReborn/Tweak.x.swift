@@ -1,4 +1,6 @@
+import Foundation
 import Orion
+import UIKit
 import YouTubeRebornC
 
 // Video Options
@@ -73,14 +75,20 @@ struct YouTubeReborn: Tweak {
     init() {
         // Video Options
         
-        // DisableDoubleTapToSkip().activate()
+        if UserDefaults.standard.bool(forKey: "kDisableDoubleTapToSkip") {
+            DisableDoubleTapToSkip().activate()
+        }
 
         // Overlay Options
 
-        // HideDarkBackground().activate()
+        if UserDefaults.standard.bool(forKey: "kHideOverlayDarkBackground") {
+            HideDarkBackground().activate()
+        }
 
         // Other Options
 
-        // DisableYouTubeKids().activate()
+        if UserDefaults.standard.bool(forKey: "kDisableYouTubeKidsPopup") {
+            DisableYouTubeKids().activate()
+        }
     }
 }

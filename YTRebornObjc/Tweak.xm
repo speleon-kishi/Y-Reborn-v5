@@ -900,29 +900,6 @@ BOOL dNoSearchAds = NO;
 %end
 %end
 
-%group gDisableYouTubeKids
-%hook YTWatchMetadataAppPromoCell
-- (id)initWithFrame:(CGRect)arg1 {
-    return NULL;
-}
-%end
-%hook YTHUDMessageView
-- (id)initWithMessage:(id)arg1 dismissHandler:(id)arg2 {
-    return NULL;
-}
-%end
-%hook YTNGWatchMiniBarViewController
-- (id)miniplayerRenderer {
-    return NULL;
-}
-%end
-%hook YTWatchMiniBarViewController
-- (id)miniplayerRenderer {
-    return NULL;
-}
-%end
-%end
-
 %group gDisableHints
 %hook YTSettings
 - (BOOL)areHintsDisabled {
@@ -998,30 +975,6 @@ BOOL dNoSearchAds = NO;
     if (index != NSNotFound) [items removeObjectAtIndex:index];
 
     %orig;
-}
-%end
-%end
-
-%group gDisableDoubleTapToSkip
-%hook YTDoubleTapToSeekController
-- (void)enableDoubleTapToSeek:(BOOL)arg1 {
-    %orig(NO);
-}
-- (void)showDoubleTapToSeekEducationView:(BOOL)arg1 {
-    %orig(NO);
-}
-%end
-%hook YTSettings
-- (BOOL)doubleTapToSeekEnabled {
-    return NO;
-}
-%end
-%end
-
-%group gHideOverlayDarkBackground
-%hook YTMainAppVideoPlayerOverlayView
-- (void)setBackgroundVisible:(BOOL)arg1 isGradientBackground:(BOOL)arg2 {
-    %orig(NO, arg2);
 }
 %end
 %end
@@ -2116,7 +2069,6 @@ BOOL selectedTabIndex = NO;
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kNoNotificationButton"] == YES) %init(gNoNotificationButton);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kAllowHDOnCellularData"] == YES) %init(gAllowHDOnCellularData);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableVideoEndscreenPopups"] == YES) %init(gDisableVideoEndscreenPopups);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableYouTubeKidsPopup"] == YES) %init(gDisableYouTubeKids);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableExtraSpeedOptions"] == YES) %init(gExtraSpeedOptions);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableHints"] == YES) %init(gDisableHints);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideTabBarLabels"] == YES) %init(gHideTabBarLabels);
@@ -2124,8 +2076,6 @@ BOOL selectedTabIndex = NO;
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideUploadTab"] == YES) %init(gHideUploadTab);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideSubscriptionsTab"] == YES) %init(gHideSubscriptionsTab);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideYouTab"] == YES) %init(gHideYouTab);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableDoubleTapToSkip"] == YES) %init(gDisableDoubleTapToSkip);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideOverlayDarkBackground"] == YES) %init(gHideOverlayDarkBackground);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHidePreviousButtonInOverlay"] == YES) %init(gHidePreviousButtonInOverlay);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideNextButtonInOverlay"] == YES) %init(gHideNextButtonInOverlay);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableVideoAutoPlay"] == YES) %init(gDisableVideoAutoPlay);
