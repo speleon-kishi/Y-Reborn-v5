@@ -10,7 +10,7 @@ import YouTubeRebornC
 struct DisableDoubleTapToSkip: HookGroup {}
 
 class DisableDoubleTapToSkip1: ClassHook<NSObject> {
-    static let targetName = "YTDoubleTapToSeekController>"
+    static let targetName = "YTDoubleTapToSeekController"
     typealias Group = DisableDoubleTapToSkip
 
     func enableDoubleTapToSeek(_ arg1: Bool) {
