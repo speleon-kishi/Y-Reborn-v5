@@ -9,8 +9,10 @@ import YouTubeRebornC
 
 struct DisableDoubleTapToSkip: HookGroup {}
 
-class DisableDoubleTapToSkip1: ClassHook<YTDoubleTapToSeekController> {
+class DisableDoubleTapToSkip1: ClassHook<NSObject> {
+    static let targetName = "YTDoubleTapToSeekController>"
     typealias Group = DisableDoubleTapToSkip
+
     func enableDoubleTapToSeek(_ arg1: Bool) {
         orig.enableDoubleTapToSeek(false)
     }
@@ -19,8 +21,10 @@ class DisableDoubleTapToSkip1: ClassHook<YTDoubleTapToSeekController> {
     }
 }
 
-class DisableDoubleTapToSkip2: ClassHook<YTSettings> {
+class DisableDoubleTapToSkip2: ClassHook<NSObject> { // Check Type
+    static let targetName = "YTSettings"
     typealias Group = DisableDoubleTapToSkip
+
     func doubleTapToSeekEnabled() -> Bool {
         return false
     }
@@ -32,8 +36,10 @@ class DisableDoubleTapToSkip2: ClassHook<YTSettings> {
 
 struct HideDarkBackground: HookGroup {}
 
-class HideDarkBackground1: ClassHook<YTMainAppVideoPlayerOverlayView> {
+class HideDarkBackground1: ClassHook<UIView> {
+    static let targetName = "YTMainAppVideoPlayerOverlayView"
     typealias Group = HideDarkBackground
+    
     func setBackgroundVisible(_ arg1: Bool, isGradientBackground arg2: Bool) {
         orig.setBackgroundVisible(false, isGradientBackground: arg2)
     }
@@ -45,22 +51,37 @@ class HideDarkBackground1: ClassHook<YTMainAppVideoPlayerOverlayView> {
 
 struct DisableYouTubeKids: HookGroup {}
 
-class DisableYouTubeKids1: ClassHook<YTWatchMetadataAppPromoCell> {
+class DisableYouTubeKids1: ClassHook<UIView> { // Check Type
+    static let targetName = "YTWatchMetadataAppPromoCell"
     typealias Group = DisableYouTubeKids
+
     func initWithFrame(_ arg1: CGRect) -> Any? {
         return nil
     }
 }
 
-class DisableYouTubeKids2: ClassHook<YTHUDMessageView> {
+class DisableYouTubeKids2: ClassHook<UIView> {
+    static let targetName = "YTHUDMessageView"
     typealias Group = DisableYouTubeKids
+
     func initWithMessage(_ arg1: Any?, dismissHandler arg2: Any?) -> Any? {
         return nil
     }
 }
 
-class DisableYouTubeKids4: ClassHook<YTWatchMiniBarViewController> {
+class DisableYouTubeKids4: ClassHook<UIViewController> {
+    static let targetName = "YTNGWatchMiniBarViewController"
     typealias Group = DisableYouTubeKids
+    
+    func miniplayerRenderer() -> Any? {
+        return nil
+    }
+}
+
+class DisableYouTubeKids5: ClassHook<UIViewController> {
+    static let targetName = "YTWatchMiniBarViewController"
+    typealias Group = DisableYouTubeKids
+    
     func miniplayerRenderer() -> Any? {
         return nil
     }
