@@ -243,7 +243,7 @@ static NSString *accessGroupID() {
 %end
 
 %hook YTRightNavigationButtons
-%property (strong, nonatomic) YTQTMButton *youtubeRebornButton;
+%property (retain, nonatomic) YTQTMButton *youtubeRebornButton;
 - (NSMutableArray *)buttons {
 	NSString *tweakBundlePath = [[NSBundle mainBundle] pathForResource:@"YouTubeReborn" ofType:@"bundle"];
     NSString *youtubeRebornLightSettingsPath;
