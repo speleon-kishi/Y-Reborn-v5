@@ -2310,7 +2310,7 @@ NSData *cellDividerData;
                     YTIIcon *icon = [compactLinkRenderer icon];
                     if ([icon hasIconType] && icon.iconType == 117) {
                         icon.iconType = 741;
-                        ((YTIStringRun *)(compactLinkRenderer.title.runsArray.firstObject)).text = @"FAKE_YOUR_PREMIUM_BENEFITS";
+                        ((YTIStringRun *)(compactLinkRenderer.title.runsArray.firstObject)).text = @"Your Premium Benefits";
                     }
                 }
             }
@@ -2332,7 +2332,7 @@ NSData *cellDividerData;
         }
         if (yourVideosCellIndex != -1 && subContentsArray[yourVideosCellIndex].accessibilityLabel == nil) {
             YTIItemSectionSupportedRenderers *newItemSectionSupportedRenderers = [subContentsArray[yourVideosCellIndex] copy];
-            ((YTIStringRun *)(newItemSectionSupportedRenderers.compactListItemRenderer.title.runsArray.firstObject)).text = @"FAKE_DOWNLOADS";
+            ((YTIStringRun *)(newItemSectionSupportedRenderers.compactListItemRenderer.title.runsArray.firstObject)).text = @"Downloads";
             newItemSectionSupportedRenderers.compactListItemRenderer.thumbnail.iconThumbnailRenderer.icon.iconType = 147;
             [subContentsArray insertObject:newItemSectionSupportedRenderers atIndex:yourVideosCellIndex + 1];
             subContentsArray[yourVideosCellIndex].accessibilityLabel = @"uYouEnhanced Modified";
@@ -2347,6 +2347,15 @@ NSData *cellDividerData;
 - (void)setupSectionListWithModel:(YTISectionListRenderer *)model isLoadingMore:(BOOL)isLoadingMore isRefreshingFromContinuation:(BOOL)isRefreshingFromContinuation {
     [self uYouEnhancedFakePremiumModel:model];
     %orig;
+}
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    YTIItemSectionSupportedRenderers *selectedRenderer = model.contentsArray[indexPath.section].itemSectionRenderer.contentsArray[indexPath.row];
+    if ([selectedRenderer.compactListItemRenderer.title.runsArray.firstObject.text isEqualToString:@"Downloads"]) {
+        DownloadsController *downloadsController = [[DownloadsController alloc] init];
+        [self.navigationController pushViewController:downloadsController animated:YES];
+    } else {
+        %orig;
+    }
 }
 %end
 %end
