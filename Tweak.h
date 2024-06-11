@@ -6,7 +6,6 @@
 #import <YouTubeExtractor/YouTubeExtractor.h>
 #import <dlfcn.h>
 #import <rootless.h>
-#import <roothide.h>
 #import "Controllers/RootOptionsController.h"
 #import "Controllers/PictureInPictureController.h"
 #import "Controllers/YouTubeDownloadController.h"
