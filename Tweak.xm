@@ -2287,6 +2287,7 @@ NSData *cellDividerData;
     return YES;
 }
 %end
+
 %hook YTAppCollectionViewController
 %new
 - (void)uYouEnhancedFakePremiumModel:(YTISectionListRenderer *)model {
@@ -2308,14 +2309,13 @@ NSData *cellDividerData;
                 YTICompactLinkRenderer *compactLinkRenderer = [itemSectionSupportedRenderers compactLinkRenderer];
                 if ([compactLinkRenderer hasIcon]) {
                     YTIIcon *icon = [compactLinkRenderer icon];
-                    if ([icon hasIconType] && icon.iconType == 117) {
-                        icon.iconType = 741;
-                        ((YTIStringRun *)(compactLinkRenderer.title.runsArray.firstObject)).text = @"Your Premium Benefits";
+                    if ([icon hasIconType] && icon.iconType == 741) {
+                        if ([((YTIStringRun *)(compactLinkRenderer.title.runsArray.firstObject)).text isEqualToString:@"Downloads"]) {
+                            DownloadsController *downloadsController = [[DownloadsController alloc] init];
+                            [self.navigationController pushViewController:downloadsController animated:YES];
+                            return; // Prevent opening the Your Videos menu
+                        }
                     }
-                }
-                if ([(YTIStringRun *)(compactLinkRenderer.title.runsArray.firstObject)].text isEqualToString:@"Your Downloads"] && [compactLinkRenderer hasNavigationEndpoint]) {
-                    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[DownloadsController new]];
-                    [self presentViewController:navController animated:YES completion:nil];
                 }
             }
             if ([itemSectionSupportedRenderers hasCompactListItemRenderer]) {
