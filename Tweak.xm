@@ -2313,6 +2313,10 @@ NSData *cellDividerData;
                         ((YTIStringRun *)(compactLinkRenderer.title.runsArray.firstObject)).text = @"Your Premium Benefits";
                     }
                 }
+                if ([(YTIStringRun *)(compactLinkRenderer.title.runsArray.firstObject)].text isEqualToString:@"Your Downloads"] && [compactLinkRenderer hasNavigationEndpoint]) {
+                    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[DownloadsController new]];
+                    [self presentViewController:navController animated:YES completion:nil];
+                }
             }
             if ([itemSectionSupportedRenderers hasCompactListItemRenderer]) {
                 YTICompactListItemRenderer *compactListItemRenderer = itemSectionSupportedRenderers.compactListItemRenderer;
@@ -2347,15 +2351,6 @@ NSData *cellDividerData;
 - (void)setupSectionListWithModel:(YTISectionListRenderer *)model isLoadingMore:(BOOL)isLoadingMore isRefreshingFromContinuation:(BOOL)isRefreshingFromContinuation {
     [self uYouEnhancedFakePremiumModel:model];
     %orig;
-}
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    YTIItemSectionSupportedRenderers *selectedRenderer = model.contentsArray[indexPath.section].itemSectionRenderer.contentsArray[indexPath.row];
-    if ([selectedRenderer.compactListItemRenderer.title.runsArray.firstObject.text isEqualToString:@"Downloads"]) {
-        DownloadsController *downloadsController = [[DownloadsController alloc] init];
-        [self.navigationController pushViewController:downloadsController animated:YES];
-    } else {
-        %orig;
-    }
 }
 %end
 %end
