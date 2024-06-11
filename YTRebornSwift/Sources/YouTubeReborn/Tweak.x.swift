@@ -45,7 +45,7 @@ class HideDarkBackground1: ClassHook<UIView> {
     }
 }
 
-// Colour Options
+// Colour Options (Theme)
 
 var rebornColourOptions: UIColor = UIColor.clear
 struct ColorOptions: HookGroup {}
@@ -95,6 +95,34 @@ class ColorOptionsP2: ClassHook<UIView> {
 
     func setBackgroundColor(_ arg1: UIColor) {
         orig.setBackgroundColor(rebornColourOptions)
+    }
+}
+
+// Colour Options (Tint / LowContrastMode)
+var lcmHexColor: UIColor?
+struct ColorOptions2: HookGroup {}
+
+class ColorOptions2A: ClassHook<UIColor> {
+    static let targetName = "UIColor"
+    typealias Group = ColorOptions2
+
+    static func whiteColor() -> UIColor {
+        if let lcmHexColor = lcmHexColor {
+            return lcmHexColor
+        }
+        return UIColor(red: 0.56, green: 0.56, blue: 0.56, alpha: 1.00)
+    }
+}
+
+class YTCommonColorPaletteHook: ClassHook<YTCommonColorPalette> {
+    typealias Group = ColorOptions2
+
+    func textPrimary() -> UIColor {
+        return self.pageStyle == 1 ? UIColor.white : orig.textPrimary()
+    }
+
+    func textSecondary() -> UIColor {
+        return self.pageStyle == 1 ? UIColor.white : orig.textPrimary()
     }
 }
 
@@ -168,6 +196,14 @@ struct YouTubeReborn: Tweak {
             let colourString = unarchiver.decodeObject(forKey: NSKeyedArchiveRootObjectKey) as! UIColor
             rebornColourOptions = colourString
             ColorOptions().activate()
+
+        let lcmColorData = UserDefaults.standard.object(forKey: "kYTLcmColourOptionVFive") as? Data
+        if lcmColorData != nil {
+            let lcmUnarchiver = try! NSKeyedUnarchiver.init(forReadingFrom: lcmColorData!)
+            lcmUnarchiver.requiresSecureCoding = false
+            let lcmHexString = lcmUnarchiver.decodeObject(forKey: NSKeyedArchiveRootObjectKey) as! UIColor
+            rebornColourOptions2 = colourString
+            ColorOptions2().activate()
         }
 
         // Other Options
