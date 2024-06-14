@@ -1,5 +1,5 @@
-import PackageDescription
 import Foundation
+import PackageDescription
 
 let projectDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
 
