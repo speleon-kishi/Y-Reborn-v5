@@ -5,8 +5,123 @@ import YouTubeRebornC
 
 // Video Options
 
-// Disable Double Tap To Skip
+// Enable No Ads
+struct EnableNoAds: HookGroup {}
 
+class EnableNoAds1: ClassHook<NSObject> { // Check Type
+    static let targetName = "YTIPlayerResponse"
+    typealias Group = EnableNoAds
+
+    func isMonetized() -> Bool {
+        return false
+    }
+}
+class EnableNoAds2: ClassHook<NSObject> { // Check Type
+    static let targetName = "YTDataUtils"
+    typealias Group = EnableNoAds
+
+    class func spamSignalsDictionary() -> Any? {
+        return nil
+    }
+}
+class EnableNoAds3: ClassHook<NSObject> { // Check Type
+    static let targetName = "YTAdsInnerTubeContextDecorator"
+    typealias Group = EnableNoAds
+
+    func decorateContext(_ arg1: Any?) {
+    }
+}
+
+// Enable Background Playback
+struct EnableBackgroundPlayback: HookGroup {}
+
+class EnableBackgroundPlayback1: ClassHook<NSObject> { // Check Type
+    static let targetName = "YTIPlayerResponse"
+    typealias Group = EnableBackgroundPlayback
+
+    func isPlayableInBackground() -> Bool {
+        return true
+    }
+}
+class EnableBackgroundPlayback2: ClassHook<NSObject> { // Check Type
+    static let targetName = "YTSingleVideo"
+    typealias Group = EnableBackgroundPlayback
+
+    func isPlayableInBackground() -> Bool {
+        return true
+    }
+}
+class EnableBackgroundPlayback3: ClassHook<NSObject> { // Check Type
+    static let targetName = "YTSingleVideoMediaData"
+    typealias Group = EnableBackgroundPlayback
+
+    func isPlayableInBackground() -> Bool {
+        return true
+    }
+}
+class EnableBackgroundPlayback4: ClassHook<NSObject> { // Check Type
+    static let targetName = "YTPlaybackData"
+    typealias Group = EnableBackgroundPlayback
+
+    func isPlayableInBackground() -> Bool {
+        return true
+    }
+}
+class EnableBackgroundPlayback5: ClassHook<NSObject> { // Check Type
+    static let targetName = "YTIPlayabilityStatus"
+    typealias Group = EnableBackgroundPlayback
+
+    func isPlayableInBackground() -> Bool {
+        return true
+    }
+}
+class EnableBackgroundPlayback6: ClassHook<NSObject> { // Check Type
+    static let targetName = "YTPlaybackBackgroundTaskController"
+    typealias Group = EnableBackgroundPlayback
+
+    func isContentPlayableInBackground() -> Bool {
+        return true
+    }
+    func setContentPlayableInBackground(_ arg1: Bool) {
+        orig.setContentPlayableInBackground(true)
+    }
+}
+class EnableBackgroundPlayback7: ClassHook<NSObject> { // Check Type
+    static let targetName = "YTBackgroundabilityPolicy"
+    typealias Group = EnableBackgroundPlayback
+
+    func isBackgroundableByUserSettings() -> Bool {
+        return true
+    }
+}
+
+// Allow HD On Cellular Data
+struct AllowHDOnCellularData: HookGroup {}
+
+class AllowHDOnCellularData1: ClassHook<NSObject> { // Check Type
+    static let targetName = "YTUserDefaults"
+    typealias Group = AllowHDOnCellularData
+
+    func disableHDOnCellular() -> Bool {
+        return false
+    }
+    func setDisableHDOnCellular(_ arg1: Bool) {
+        orig.setDisableHDOnCellular(false)
+    }
+}
+class AllowHDOnCellularData2: ClassHook<NSObject> { // Check Type
+    static let targetName = "YTSettings"
+    typealias Group = AllowHDOnCellularData
+
+    func disableHDOnCellular() -> Bool {
+        return false
+    }
+    func setDisableHDOnCellular(_ arg1: Bool) {
+        orig.setDisableHDOnCellular(false)
+    }
+}
+
+// Disable Double Tap To Skip
 struct DisableDoubleTapToSkip: HookGroup {}
 
 class DisableDoubleTapToSkip1: ClassHook<NSObject> {
@@ -20,7 +135,6 @@ class DisableDoubleTapToSkip1: ClassHook<NSObject> {
         orig.showDoubleTapToSeekEducationView(false)
     }
 }
-
 class DisableDoubleTapToSkip2: ClassHook<NSObject> { // Check Type
     static let targetName = "YTSettings"
     typealias Group = DisableDoubleTapToSkip
@@ -33,7 +147,6 @@ class DisableDoubleTapToSkip2: ClassHook<NSObject> { // Check Type
 // Overlay Options
 
 // Hide Dark Background
-
 struct HideDarkBackground: HookGroup {}
 
 class HideDarkBackground1: ClassHook<UIView> {
@@ -46,7 +159,6 @@ class HideDarkBackground1: ClassHook<UIView> {
 }
 
 // Colour Options
-
 var rebornColourOptions: UIColor = UIColor.clear
 struct ColorOptions: HookGroup {}
 
@@ -79,7 +191,6 @@ class ColorOptionsN1: ClassHook<UIView> {
         orig.setBarTintColor(rebornColourOptions)
     }
 }
-
 class ColorOptionsP1: ClassHook<UIView> {
     static let targetName = "YTPageHeaderView" // Check Type
     typealias Group = ColorOptions
@@ -88,7 +199,6 @@ class ColorOptionsP1: ClassHook<UIView> {
         orig.setBackgroundColor(rebornColourOptions)
     }
 }
-
 class ColorOptionsP2: ClassHook<UIView> {
     static let targetName = "YTPivotBarView"
     typealias Group = ColorOptions
@@ -101,7 +211,6 @@ class ColorOptionsP2: ClassHook<UIView> {
 // Other Options
 
 // Disable YouTube Kids
-
 struct DisableYouTubeKids: HookGroup {}
 
 class DisableYouTubeKids1: ClassHook<UIView> { // Check Type
@@ -112,7 +221,6 @@ class DisableYouTubeKids1: ClassHook<UIView> { // Check Type
         return nil
     }
 }
-
 class DisableYouTubeKids2: ClassHook<UIView> {
     static let targetName = "YTHUDMessageView"
     typealias Group = DisableYouTubeKids
@@ -121,7 +229,6 @@ class DisableYouTubeKids2: ClassHook<UIView> {
         return nil
     }
 }
-
 class DisableYouTubeKids4: ClassHook<UIViewController> {
     static let targetName = "YTNGWatchMiniBarViewController"
     typealias Group = DisableYouTubeKids
@@ -130,7 +237,6 @@ class DisableYouTubeKids4: ClassHook<UIViewController> {
         return nil
     }
 }
-
 class DisableYouTubeKids5: ClassHook<UIViewController> {
     static let targetName = "YTWatchMiniBarViewController"
     typealias Group = DisableYouTubeKids
@@ -148,13 +254,30 @@ struct YouTubeReborn: Tweak {
 
     init() {
         // Video Options
-        
+
+        // Enable No Ads
+        if UserDefaults.standard.bool(forKey: "kEnableNoVideoAds") && !UserDefaults.standard.bool(forKey: "kRebornIHaveYouTubePremium") {
+            EnableNoAds().activate()
+        }
+
+        // Enable Background Playback
+        if UserDefaults.standard.bool(forKey: "kEnableBackgroundPlayback") {
+            EnableBackgroundPlayback().activate()
+        }
+
+        // Allow HD On Cellular Data
+        if UserDefaults.standard.bool(forKey: "kAllowHDOnCellularData") {
+            AllowHDOnCellularData().activate()
+        }
+
+        // Disable Double Tap To Skip        
         if UserDefaults.standard.bool(forKey: "kDisableDoubleTapToSkip") {
             DisableDoubleTapToSkip().activate()
         }
 
         // Overlay Options
 
+        // Hide Dark Background
         if UserDefaults.standard.bool(forKey: "kHideOverlayDarkBackground") {
             HideDarkBackground().activate()
         }
@@ -172,6 +295,7 @@ struct YouTubeReborn: Tweak {
 
         // Other Options
 
+        // Disable YouTube Kids
         if UserDefaults.standard.bool(forKey: "kDisableYouTubeKidsPopup") {
             DisableYouTubeKids().activate()
         }

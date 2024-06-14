@@ -684,20 +684,6 @@ BOOL dNoSearchAds = NO;
 %end
 
 %group gNoVideoAds
-%hook YTIPlayerResponse
-- (BOOL)isMonetized {
-    return NO;
-}
-%end
-%hook YTDataUtils
-+ (id)spamSignalsDictionary {
-    return NULL;
-}
-%end
-%hook YTAdsInnerTubeContextDecorator
-- (void)decorateContext:(id)arg1 {
-}
-%end
 %hook YTSectionListViewController
 - (void)loadWithModel:(id)model {
     if (!dNoSearchAds) {
@@ -705,47 +691,6 @@ BOOL dNoSearchAds = NO;
         dNoSearchAds = YES;
     }
     %orig;
-}
-%end
-%end
-
-%group gBackgroundPlayback
-%hook YTIPlayerResponse
-- (BOOL)isPlayableInBackground {
-    return YES;
-}
-%end
-%hook YTSingleVideo
-- (BOOL)isPlayableInBackground {
-    return YES;
-}
-%end
-%hook YTSingleVideoMediaData
-- (BOOL)isPlayableInBackground {
-    return YES;
-}
-%end
-%hook YTPlaybackData
-- (BOOL)isPlayableInBackground {
-    return YES;
-}
-%end
-%hook YTIPlayabilityStatus
-- (BOOL)isPlayableInBackground {
-    return YES;
-}
-%end
-%hook YTPlaybackBackgroundTaskController
-- (BOOL)isContentPlayableInBackground {
-    return YES;
-}
-- (void)setContentPlayableInBackground:(BOOL)arg1 {
-    %orig(YES);
-}
-%end
-%hook YTBackgroundabilityPolicy
-- (BOOL)isBackgroundableByUserSettings {
-    return YES;
 }
 %end
 %end
@@ -822,25 +767,6 @@ BOOL dNoSearchAds = NO;
 - (void)layoutSubviews {
 	%orig();
 	self.notificationButton.hidden = YES;
-}
-%end
-%end
-
-%group gAllowHDOnCellularData
-%hook YTUserDefaults
-- (BOOL)disableHDOnCellular {
-	return NO;
-}
-- (void)setDisableHDOnCellular:(BOOL)arg1 {
-    %orig(NO);
-}
-%end
-%hook YTSettings
-- (BOOL)disableHDOnCellular {
-	return NO;
-}
-- (void)setDisableHDOnCellular:(BOOL)arg1 {
-    %orig(NO);
 }
 %end
 %end
@@ -2034,12 +1960,8 @@ BOOL selectedTabIndex = NO;
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableNoVideoAds"] == YES && [[NSUserDefaults standardUserDefaults] boolForKey:@"kRebornIHaveYouTubePremium"] == NO) {
             %init(gNoVideoAds);
         }
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableBackgroundPlayback"] == YES && [[NSUserDefaults standardUserDefaults] boolForKey:@"kRebornIHaveYouTubePremium"] == NO) {
-            %init(gBackgroundPlayback);
-        }
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kNoCastButton"] == YES) %init(gNoCastButton);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kNoNotificationButton"] == YES) %init(gNoNotificationButton);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kAllowHDOnCellularData"] == YES) %init(gAllowHDOnCellularData);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableVideoEndscreenPopups"] == YES) %init(gDisableVideoEndscreenPopups);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableExtraSpeedOptions"] == YES) %init(gExtraSpeedOptions);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableHints"] == YES) %init(gDisableHints);
