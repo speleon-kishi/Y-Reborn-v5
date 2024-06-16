@@ -1,4 +1,4 @@
-TARGET := iphone:clang:16.2:15.0
+TARGET := iphone:clang:latest:15.0
 INSTALL_TARGET_PROCESSES = YouTube
 
 include $(THEOS)/makefiles/common.mk
