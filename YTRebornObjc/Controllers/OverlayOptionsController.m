@@ -118,15 +118,15 @@ static BOOL hasDeviceNotch() {
             CREATE_SWITCH(hideOverlayDarkBackground, toggleHideOverlayDarkBackground, @"kHideOverlayDarkBackground");
         }
         if (indexPath.row == 10) {
-            cell.textLabel.text = LOC(@"Hide Quick Actions");
+            cell.textLabel.text = @"Hide Quick Actions";
             CREATE_SWITCH(hideOverlayQuickActions, toggleHideOverlayQuickActions, @"kHideOverlayQuickActions");
         }
         if (indexPath.row == 11) {
-            cell.textLabel.text = LOC(@"Hide Current Time");
+            cell.textLabel.text = @"Hide Current Time";
             CREATE_SWITCH(hideCurrentTime, toggleHideCurrentTime, @"kHideCurrentTime");
         }
         if (indexPath.row == 12) {
-            cell.textLabel.text = LOC(@"Hide Duration");
+            cell.textLabel.text = @"Hide Duration";
             CREATE_SWITCH(hideDuration, toggleHideDuration, @"kHideDuration");
         }
     }
