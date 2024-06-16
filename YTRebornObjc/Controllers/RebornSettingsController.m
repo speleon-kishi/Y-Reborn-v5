@@ -1,5 +1,21 @@
 #import "RebornSettingsController.h"
 
+#define BOOL_FOR_KEY(KEY) [[NSUserDefaults standardUserDefaults] boolForKey:KEY]
+#define SET_BOOL_FOR_KEY(KEY, VALUE) [[NSUserDefaults standardUserDefaults] setBool:VALUE forKey:KEY]; [[NSUserDefaults standardUserDefaults] synchronize];
+
+#define TOGGLE_SETTING(KEY, SENDER) \
+if ([SENDER isOn]) { \
+    SET_BOOL_FOR_KEY(KEY, YES); \
+} else { \
+    SET_BOOL_FOR_KEY(KEY, NO); \
+}
+
+#define CREATE_SWITCH(NAME, SELECTOR, KEY) \
+UISwitch *NAME = [[UISwitch alloc] initWithFrame:CGRectZero]; \
+[NAME addTarget:self action:@selector(SELECTOR:) forControlEvents:UIControlEventValueChanged]; \
+NAME.on = BOOL_FOR_KEY(KEY);\
+cell.accessoryView = NAME;
+
 @interface RebornSettingsController ()
 - (void)coloursView;
 @end
@@ -56,27 +72,18 @@
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             if (indexPath.row == 0) {
                 cell.textLabel.text = @"I Have YouTube Premium";
-                UISwitch *rebornIHaveYouTubePremiumButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-                [rebornIHaveYouTubePremiumButton addTarget:self action:@selector(toggleRebornIHaveYouTubePremiumButton:) forControlEvents:UIControlEventValueChanged];
-                rebornIHaveYouTubePremiumButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kRebornIHaveYouTubePremium"];
-                cell.accessoryView = rebornIHaveYouTubePremiumButton;
+                CREATE_SWITCH(rebornIHaveYouTubePremiumButton, toggleRebornIHaveYouTubePremiumButton, @"kRebornIHaveYouTubePremium");
             }
         }
         if (indexPath.section == 1) {
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             if (indexPath.row == 0) {
                 cell.textLabel.text = @"Hide Video Overlay 'OP' Button";
-                UISwitch *hideRebornOPButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-                [hideRebornOPButton addTarget:self action:@selector(toggleHideRebornOPButton:) forControlEvents:UIControlEventValueChanged];
-                hideRebornOPButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideRebornOPButtonVTwo"];
-                cell.accessoryView = hideRebornOPButton;
+                CREATE_SWITCH(hideRebornOPButton, toggleHideRebornOPButton, @"kHideRebornOPButtonVTwo");
             }
             if (indexPath.row == 1) {
                 cell.textLabel.text = @"Hide Shorts Overlay 'OP' Button";
-                UISwitch *hideRebornShortsOPButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-                [hideRebornShortsOPButton addTarget:self action:@selector(toggleHideRebornShortsOPButton:) forControlEvents:UIControlEventValueChanged];
-                hideRebornShortsOPButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideRebornShortsOPButton"];
-                cell.accessoryView = hideRebornShortsOPButton;
+                CREATE_SWITCH(hideRebornShortsOPButton, toggleHideRebornShortsOPButton, @"kHideRebornShortsOPButton");
             }
         }
         if (indexPath.section == 2) {
@@ -215,33 +222,15 @@
 }
 
 - (void)toggleRebornIHaveYouTubePremiumButton:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kRebornIHaveYouTubePremium"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kRebornIHaveYouTubePremium"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kRebornIHaveYouTubePremium", sender);
 }
 
 - (void)toggleHideRebornOPButton:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kHideRebornOPButtonVTwo"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kHideRebornOPButtonVTwo"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kHideRebornOPButtonVTwo", sender);
 }
 
 - (void)toggleHideRebornShortsOPButton:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kHideRebornShortsOPButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kHideRebornShortsOPButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kHideRebornShortsOPButton", sender);
 }
 
 @end

@@ -1,5 +1,21 @@
 #import "VideoOptionsController.h"
 
+#define BOOL_FOR_KEY(KEY) [[NSUserDefaults standardUserDefaults] boolForKey:KEY]
+#define SET_BOOL_FOR_KEY(KEY, VALUE) [[NSUserDefaults standardUserDefaults] setBool:VALUE forKey:KEY]; [[NSUserDefaults standardUserDefaults] synchronize];
+
+#define TOGGLE_SETTING(KEY, SENDER) \
+if ([SENDER isOn]) { \
+    SET_BOOL_FOR_KEY(KEY, YES); \
+} else { \
+    SET_BOOL_FOR_KEY(KEY, NO); \
+}
+
+#define CREATE_SWITCH(NAME, SELECTOR, KEY) \
+UISwitch *NAME = [[UISwitch alloc] initWithFrame:CGRectZero]; \
+[NAME addTarget:self action:@selector(SELECTOR:) forControlEvents:UIControlEventValueChanged]; \
+NAME.on = BOOL_FOR_KEY(KEY);\
+cell.accessoryView = NAME;
+
 @interface VideoOptionsController ()
 - (void)coloursView;
 @end
@@ -52,10 +68,7 @@
             if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kRebornIHaveYouTubePremium"] == YES) {
                 cell.accessoryType = UITableViewCellAccessoryDetailButton;
             } else {
-                UISwitch *enableNoVideoAds = [[UISwitch alloc] initWithFrame:CGRectZero];
-                [enableNoVideoAds addTarget:self action:@selector(toggleEnableNoVideoAds:) forControlEvents:UIControlEventValueChanged];
-                enableNoVideoAds.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableNoVideoAds"];
-                cell.accessoryView = enableNoVideoAds;
+                CREATE_SWITCH(enableNoVideoAds, toggleEnableNoVideoAds, @"kEnableNoVideoAds");
             }
         }
         if (indexPath.row == 1) {
@@ -63,92 +76,56 @@
             if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kRebornIHaveYouTubePremium"] == YES) {
                 cell.accessoryType = UITableViewCellAccessoryDetailButton;
             } else {
-                UISwitch *enableBackgroundPlayback = [[UISwitch alloc] initWithFrame:CGRectZero];
-                [enableBackgroundPlayback addTarget:self action:@selector(toggleEnableBackgroundPlayback:) forControlEvents:UIControlEventValueChanged];
-                enableBackgroundPlayback.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableBackgroundPlayback"];
-                cell.accessoryView = enableBackgroundPlayback;
+                CREATE_SWITCH(enableBackgroundPlayback, toggleEnableBackgroundPlayback, @"kEnableBackgroundPlayback");
             }
         }
         if (indexPath.row == 2) {
             cell.textLabel.text = @"Allow HD On Cellular Data";
-            UISwitch *allowHDOnCellularData = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [allowHDOnCellularData addTarget:self action:@selector(toggleAllowHDOnCellularData:) forControlEvents:UIControlEventValueChanged];
-            allowHDOnCellularData.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kAllowHDOnCellularData"];
-            cell.accessoryView = allowHDOnCellularData;
+            CREATE_SWITCH(allowHDOnCellularData, toggleAllowHDOnCellularData, @"kAllowHDOnCellularData");
         }
         if (indexPath.row == 3) {
             cell.textLabel.text = @"Auto Play In FullScreen";
-            UISwitch *autoFullScreen = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [autoFullScreen addTarget:self action:@selector(toggleAutoFullScreen:) forControlEvents:UIControlEventValueChanged];
-            autoFullScreen.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kAutoFullScreen"];
-            cell.accessoryView = autoFullScreen;
+            CREATE_SWITCH(autoFullScreen, toggleAutoFullScreen, @"kAutoFullScreen");
         }
         if (indexPath.row == 4) {
             cell.textLabel.text = @"Disable Video Endscreen Popups";
-            UISwitch *disableVideoEndscreenPopups = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [disableVideoEndscreenPopups addTarget:self action:@selector(toggleDisableVideoEndscreenPopups:) forControlEvents:UIControlEventValueChanged];
-            disableVideoEndscreenPopups.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableVideoEndscreenPopups"];
-            cell.accessoryView = disableVideoEndscreenPopups;
+            CREATE_SWITCH(disableVideoEndscreenPopups, toggleDisableVideoEndscreenPopups, @"kDisableVideoEndscreenPopups");
         }
         if (indexPath.row == 5) {
             cell.textLabel.text = @"Disable Video Info Cards";
-            UISwitch *disableVideoInfoCards = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [disableVideoInfoCards addTarget:self action:@selector(toggleDisableVideoInfoCards:) forControlEvents:UIControlEventValueChanged];
-            disableVideoInfoCards.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableVideoInfoCards"];
-            cell.accessoryView = disableVideoInfoCards;
+            CREATE_SWITCH(disableVideoInfoCards, toggleDisableVideoInfoCards, @"kDisableVideoInfoCards");
         }
         if (indexPath.row == 6) {
             cell.textLabel.text = @"Disable Video AutoPlay";
-            UISwitch *disableVideoAutoPlay = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [disableVideoAutoPlay addTarget:self action:@selector(toggleDisableVideoAutoPlay:) forControlEvents:UIControlEventValueChanged];
-            disableVideoAutoPlay.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableVideoAutoPlay"];
-            cell.accessoryView = disableVideoAutoPlay;
+            CREATE_SWITCH(disableVideoAutoPlay, toggleDisableVideoAutoPlay, @"kDisableVideoAutoPlay");
         }
         if (indexPath.row == 7) {
             cell.textLabel.text = @"Hide Channel Watermark";
-            UISwitch *hideChannelWatermark = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [hideChannelWatermark addTarget:self action:@selector(toggleHideChannelWatermark:) forControlEvents:UIControlEventValueChanged];
-            hideChannelWatermark.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideChannelWatermark"];
-            cell.accessoryView = hideChannelWatermark;
+            CREATE_SWITCH(hideChannelWatermark, toggleHideChannelWatermark, @"kHideChannelWatermark");
         }
         if (indexPath.row == 8) {
             cell.textLabel.text = @"Hide Player Bar Heatwave";
-            UISwitch *hidePlayerBarHeatwave = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [hidePlayerBarHeatwave addTarget:self action:@selector(toggleHidePlayerBarHeatwave:) forControlEvents:UIControlEventValueChanged];
-            hidePlayerBarHeatwave.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHidePlayerBarHeatwave"];
-            cell.accessoryView = hidePlayerBarHeatwave;
+            CREATE_SWITCH(hidePlayerBarHeatwave, toggleHidePlayerBarHeatwave, @"kHidePlayerBarHeatwave");
         }
         if (indexPath.row == 9) {
             cell.textLabel.text = @"Always Show Player Bar";
             if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableRelatedVideosInOverlay"] == NO || [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideOverlayQuickActions"] == NO) {
                 cell.accessoryType = UITableViewCellAccessoryDetailButton;
             } else {
-                UISwitch *alwaysShowPlayerBar = [[UISwitch alloc] initWithFrame:CGRectZero];
-                [alwaysShowPlayerBar addTarget:self action:@selector(toggleAlwaysShowPlayerBar:) forControlEvents:UIControlEventValueChanged];
-                alwaysShowPlayerBar.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kAlwaysShowPlayerBarVTwo"];
-                cell.accessoryView = alwaysShowPlayerBar;
+                CREATE_SWITCH(alwaysShowPlayerBar, toggleAlwaysShowPlayerBar, @"kAlwaysShowPlayerBarVTwo");
             }
         }
         if (indexPath.row == 10) {
             cell.textLabel.text = @"Enable Extra Speed Options";
-            UISwitch *enableExtraSpeedOptions = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [enableExtraSpeedOptions addTarget:self action:@selector(toggleExtraSpeedOptions:) forControlEvents:UIControlEventValueChanged];
-            enableExtraSpeedOptions.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableExtraSpeedOptions"];
-            cell.accessoryView = enableExtraSpeedOptions;
+            CREATE_SWITCH(enableExtraSpeedOptions, toggleExtraSpeedOptions, @"kEnableExtraSpeedOptions");
         }
         if (indexPath.row == 11) {
             cell.textLabel.text = @"Disable Double Tap To Skip";
-            UISwitch *disableDoubleTapToSkip = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [disableDoubleTapToSkip addTarget:self action:@selector(toggleDisableDoubleTapToSkip:) forControlEvents:UIControlEventValueChanged];
-            disableDoubleTapToSkip.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableDoubleTapToSkip"];
-            cell.accessoryView = disableDoubleTapToSkip;
+            CREATE_SWITCH(disableDoubleTapToSkip, toggleDisableDoubleTapToSkip, @"kDisableDoubleTapToSkip");
         }
         if (indexPath.row == 12) {
             cell.textLabel.text = @"Enable Custom Double Tap To Skip Duration";
-            UISwitch *enableCustomDoubleTapToSkipDuration = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [enableCustomDoubleTapToSkipDuration addTarget:self action:@selector(toggleEnableCustomDoubleTapToSkipDuration:) forControlEvents:UIControlEventValueChanged];
-            enableCustomDoubleTapToSkipDuration.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableCustomDoubleTapToSkipDuration"];
-            cell.accessoryView = enableCustomDoubleTapToSkipDuration;
+            CREATE_SWITCH(enableCustomDoubleTapToSkipDuration, toggleEnableCustomDoubleTapToSkipDuration, @"kEnableCustomDoubleTapToSkipDuration");
         }
         if (indexPath.row == 13) {
             UIStepper *customDoubleTapToSkipDurationStepper = [[UIStepper alloc] initWithFrame:CGRectZero];
@@ -216,143 +193,59 @@
 }
 
 - (void)toggleEnableNoVideoAds:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kEnableNoVideoAds"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kEnableNoVideoAds"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kEnableNoVideoAds", sender);
 }
 
 - (void)toggleEnableBackgroundPlayback:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kEnableBackgroundPlayback"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kEnableBackgroundPlayback"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kEnableBackgroundPlayback", sender);
 }
 
 - (void)toggleEnablePictureInPicture:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kEnablePictureInPicture"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kEnablePictureInPicture"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kEnablePictureInPicture", sender);
 }
 
 - (void)toggleAllowHDOnCellularData:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kAllowHDOnCellularData"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kAllowHDOnCellularData"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kAllowHDOnCellularData", sender);
 }
 
 - (void)toggleAutoFullScreen:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kAutoFullScreen"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kAutoFullScreen"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kAutoFullScreen", sender);
 }
 
 - (void)toggleDisableVideoEndscreenPopups:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kDisableVideoEndscreenPopups"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kDisableVideoEndscreenPopups"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kDisableVideoEndscreenPopups", sender);
 }
 
 - (void)toggleDisableVideoInfoCards:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kDisableVideoInfoCards"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kDisableVideoInfoCards"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kDisableVideoInfoCards", sender);
 }
 
 - (void)toggleDisableVideoAutoPlay:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kDisableVideoAutoPlay"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kDisableVideoAutoPlay"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kDisableVideoAutoPlay", sender);
 }
 
 - (void)toggleHideChannelWatermark:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kHideChannelWatermark"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kHideChannelWatermark"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kHideChannelWatermark", sender);
 }
 
 - (void)toggleHidePlayerBarHeatwave:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kHidePlayerBarHeatwave"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kHidePlayerBarHeatwave"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kHidePlayerBarHeatwave", sender);
 }
 
 - (void)toggleAlwaysShowPlayerBar:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kAlwaysShowPlayerBarVTwo"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kAlwaysShowPlayerBarVTwo"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kAlwaysShowPlayerBarVTwo", sender);
 }
 
 - (void)toggleExtraSpeedOptions:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kEnableExtraSpeedOptions"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kEnableExtraSpeedOptions"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kEnableExtraSpeedOptions", sender);
 }
 
 - (void)toggleDisableDoubleTapToSkip:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kDisableDoubleTapToSkip"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kDisableDoubleTapToSkip"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kDisableDoubleTapToSkip", sender);
 }
 
 - (void)toggleEnableCustomDoubleTapToSkipDuration:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kEnableCustomDoubleTapToSkipDuration"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kEnableCustomDoubleTapToSkipDuration"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kEnableCustomDoubleTapToSkipDuration", sender);
     [self.tableView reloadData];
 }
 

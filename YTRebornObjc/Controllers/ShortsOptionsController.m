@@ -1,5 +1,21 @@
 #import "ShortsOptionsController.h"
 
+#define BOOL_FOR_KEY(KEY) [[NSUserDefaults standardUserDefaults] boolForKey:KEY]
+#define SET_BOOL_FOR_KEY(KEY, VALUE) [[NSUserDefaults standardUserDefaults] setBool:VALUE forKey:KEY]; [[NSUserDefaults standardUserDefaults] synchronize];
+
+#define TOGGLE_SETTING(KEY, SENDER) \
+if ([SENDER isOn]) { \
+    SET_BOOL_FOR_KEY(KEY, YES); \
+} else { \
+    SET_BOOL_FOR_KEY(KEY, NO); \
+}
+
+#define CREATE_SWITCH(NAME, SELECTOR, KEY) \
+UISwitch *NAME = [[UISwitch alloc] initWithFrame:CGRectZero]; \
+[NAME addTarget:self action:@selector(SELECTOR:) forControlEvents:UIControlEventValueChanged]; \
+NAME.on = BOOL_FOR_KEY(KEY);\
+cell.accessoryView = NAME;
+
 @interface ShortsOptionsController ()
 - (void)coloursView;
 @end
@@ -7,7 +23,7 @@
 @implementation ShortsOptionsController
 
 - (void)loadView {
-	[super loadView];
+    [super loadView];
     [self coloursView];
 
     self.title = @"Shorts Options";
@@ -38,46 +54,30 @@
             cell.backgroundColor = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:1.0];
             cell.textLabel.textColor = [UIColor blackColor];
             cell.detailTextLabel.textColor = [UIColor blackColor];
-        }
-        else {
+        } else {
             cell.backgroundColor = [UIColor colorWithRed:0.110 green:0.110 blue:0.118 alpha:1.0];
             cell.textLabel.textColor = [UIColor whiteColor];
             cell.detailTextLabel.textColor = [UIColor whiteColor];
         }
         if (indexPath.row == 0) {
             cell.textLabel.text = @"Hide Like Button";
-            UISwitch *hideShortsLikeButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [hideShortsLikeButton addTarget:self action:@selector(toggleHideShortsLikeButton:) forControlEvents:UIControlEventValueChanged];
-            hideShortsLikeButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsLikeButton"];
-            cell.accessoryView = hideShortsLikeButton;
+            CREATE_SWITCH(hideShortsLikeButton, toggleHideShortsLikeButton, @"kHideShortsLikeButton");
         }
         if (indexPath.row == 1) {
             cell.textLabel.text = @"Hide Dislike Button";
-            UISwitch *hideShortsDislikeButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [hideShortsDislikeButton addTarget:self action:@selector(toggleHideShortsDislikeButton:) forControlEvents:UIControlEventValueChanged];
-            hideShortsDislikeButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsDislikeButton"];
-            cell.accessoryView = hideShortsDislikeButton;
+            CREATE_SWITCH(hideShortsDislikeButton, toggleHideShortsDislikeButton, @"kHideShortsDislikeButton");
         }
         if (indexPath.row == 2) {
             cell.textLabel.text = @"Hide Comments Button";
-            UISwitch *hideShortsCommentsButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [hideShortsCommentsButton addTarget:self action:@selector(toggleHideShortsCommentsButton:) forControlEvents:UIControlEventValueChanged];
-            hideShortsCommentsButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsCommentsButton"];
-            cell.accessoryView = hideShortsCommentsButton;
+            CREATE_SWITCH(hideShortsCommentsButton, toggleHideShortsCommentsButton, @"kHideShortsCommentsButton");
         }
         if (indexPath.row == 3) {
             cell.textLabel.text = @"Hide Share Button";
-            UISwitch *hideShortsShareButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [hideShortsShareButton addTarget:self action:@selector(toggleHideShortsShareButton:) forControlEvents:UIControlEventValueChanged];
-            hideShortsShareButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsShareButton"];
-            cell.accessoryView = hideShortsShareButton;
+            CREATE_SWITCH(hideShortsShareButton, toggleHideShortsShareButton, @"kHideShortsShareButton");
         }
         if (indexPath.row == 4) {
             cell.textLabel.text = @"Hide More Actions Button";
-            UISwitch *hideShortsMoreActionsButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [hideShortsMoreActionsButton addTarget:self action:@selector(toggleHideShortsMoreActionsButton:) forControlEvents:UIControlEventValueChanged];
-            hideShortsMoreActionsButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsMoreActionsButton"];
-            cell.accessoryView = hideShortsMoreActionsButton;
+            CREATE_SWITCH(hideShortsMoreActionsButton, toggleHideShortsMoreActionsButton, @"kHideShortsMoreActionsButton");
         }
     }
     return cell;
@@ -88,8 +88,7 @@
         self.view.backgroundColor = [UIColor colorWithRed:0.949 green:0.949 blue:0.969 alpha:1.0];
         [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor blackColor]}];
         self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
-    }
-    else {
+    } else {
         self.view.backgroundColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:1.0];
         [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor whiteColor]}];
         self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
@@ -111,53 +110,23 @@
 }
 
 - (void)toggleHideShortsMoreActionsButton:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kHideShortsMoreActionsButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kHideShortsMoreActionsButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kHideShortsMoreActionsButton", sender);
 }
 
 - (void)toggleHideShortsLikeButton:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kHideShortsLikeButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kHideShortsLikeButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kHideShortsLikeButton", sender);
 }
 
 - (void)toggleHideShortsDislikeButton:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kHideShortsDislikeButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kHideShortsDislikeButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kHideShortsDislikeButton", sender);
 }
 
 - (void)toggleHideShortsCommentsButton:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kHideShortsCommentsButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kHideShortsCommentsButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kHideShortsCommentsButton", sender);
 }
 
 - (void)toggleHideShortsShareButton:(UISwitch *)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kHideShortsShareButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kHideShortsShareButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    TOGGLE_SETTING(@"kHideShortsShareButton", sender);
 }
 
 @end
