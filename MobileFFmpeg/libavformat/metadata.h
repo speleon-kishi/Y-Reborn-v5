@@ -1,4 +1,6 @@
 /*
+ * copyright (c) 2009 Michael Niedermayer
+ *
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -16,28 +18,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef AVDEVICE_VERSION_MAJOR_H
-#define AVDEVICE_VERSION_MAJOR_H
+#ifndef AVFORMAT_METADATA_H
+#define AVFORMAT_METADATA_H
 
 /**
  * @file
- * @ingroup lavd
- * Libavdevice version macros
+ * internal metadata API header
+ * see avformat.h or the public API!
  */
 
-#define LIBAVDEVICE_VERSION_MAJOR  61
 
-/**
- * FF_API_* defines may be placed below to indicate public API that will be
- * dropped at a future version bump. The defines themselves are not part of
- * the public API and may change, break or disappear at any time.
- */
+#include "avformat.h"
+#include "../libavutil/dict.h"
 
-// reminder to remove the bktr device on next major bump
-#define FF_API_BKTR_DEVICE (LIBAVDEVICE_VERSION_MAJOR < 62)
-// reminder to remove the opengl device on next major bump
-#define FF_API_OPENGL_DEVICE (LIBAVDEVICE_VERSION_MAJOR < 62)
-// reminder to remove the sdl2 device on next major bump
-#define FF_API_SDL2_DEVICE (LIBAVDEVICE_VERSION_MAJOR < 62)
+typedef struct AVMetadataConv {
+    const char *native;
+    const char *generic;
+} AVMetadataConv;
 
-#endif /* AVDEVICE_VERSION_MAJOR_H */
+void ff_metadata_conv(AVDictionary **pm, const AVMetadataConv *d_conv,
+                                       const AVMetadataConv *s_conv);
+void ff_metadata_conv_ctx(AVFormatContext *ctx, const AVMetadataConv *d_conv,
+                                                const AVMetadataConv *s_conv);
+
+#endif /* AVFORMAT_METADATA_H */
