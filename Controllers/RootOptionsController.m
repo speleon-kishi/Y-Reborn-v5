@@ -229,7 +229,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
     if (section == 2) {
-        return 50;
+        return 80;
     }
     return 0;
 }
@@ -238,7 +238,7 @@
     if (section == 2) {
         NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
         NSString *appVersion = infoDictionary[@"CFBundleShortVersionString"];     
-        return [NSString stringWithFormat:@"YouTube: v%@\nYouTube Reborn: v4.2.8\n\n@ Lillie (@LillieH1000) 2022-2024", appVersion];
+        return [NSString stringWithFormat:@"YouTube: v%@\nYouTube Reborn: v4.2.9\n\n@ Lillie (@LillieH1000) 2022-2024", appVersion];
     }
     return nil;
 }
