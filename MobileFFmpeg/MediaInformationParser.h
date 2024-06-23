@@ -1,50 +1,35 @@
 /*
- * Copyright (c) 2018-2022 Taner Sener
+ * Copyright (c) 2018, 2020 Taner Sener
  *
- * This file is part of FFmpegKit.
+ * This file is part of MobileFFmpeg.
  *
- * FFmpegKit is free software: you can redistribute it and/or modify
+ * MobileFFmpeg is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * FFmpegKit is distributed in the hope that it will be useful,
+ * MobileFFmpeg is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with FFmpegKit.  If not, see <http://www.gnu.org/licenses/>.
+ * along with MobileFFmpeg.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FFMPEG_KIT_MEDIA_INFORMATION_PARSER_H
-#define FFMPEG_KIT_MEDIA_INFORMATION_PARSER_H
+#include <Foundation/Foundation.h>
+#include "MediaInformation.h"
 
-#import <Foundation/Foundation.h>
-#import "MediaInformation.h"
-
-/**
- * A parser that constructs MediaInformation from FFprobe's json output.
- */
-@interface MediaInformationJsonParser : NSObject
+@interface MediaInformationParser : NSObject
 
 /**
- * Extracts <code>MediaInformation</code> from the given FFprobe json output.
- *
- * @param ffprobeJsonOutput FFprobe json output
- * @return created MediaInformation instance of nil if a parsing error occurs
+ * Extracts MediaInformation from the given ffprobe json output.
  */
 + (MediaInformation*)from:(NSString*)ffprobeJsonOutput;
 
 /**
- * Extracts <code>MediaInformation</code> from the given FFprobe json output. If a parsing error occurs an NSException
- * is thrown.
- *
- * @param ffprobeJsonOutput FFprobe json output
- * @return created MediaInformation instance
+ * Extracts MediaInformation from the given ffprobe json output and saves parsing errors in error parameter.
  */
-+ (MediaInformation*)fromWithError:(NSString*)ffprobeJsonOutput;
++ (MediaInformation*)from:(NSString*)ffprobeJsonOutput with:(NSError*)error;
 
 @end
-
-#endif // FFMPEG_KIT_MEDIA_INFORMATION_PARSER_H
