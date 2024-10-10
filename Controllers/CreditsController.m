@@ -26,7 +26,11 @@
         @{@"name": @"Dayanch96", @"role": @"Features: \"Red Progress Bar\", \"Gray Buffer Progress\" \"Stick Navigation Bar\", \"Disable Double tap to skip\"", @"url": @"https://github.com/Dayanch96"},
         @{@"name": @"PoomSmart", @"role": @"Features: \"YouTube-X/Adblock\", \"AutoPlay In Fullscreen\"", @"url": @"https://twitter.com/PoomSmart"},
         @{@"name": @"Snoolie", @"role": @"Features: \"Enable Extra Video Speed\"", @"url": @"https://github.com/0xilis"},
-        @{@"name": @"jkhsjdhjs", @"role": @"Features: \"YouTube Native Share\"", @"url": @"https://github.com/jkhsjdhjs"}
+        @{@"name": @"jkhsjdhjs", @"role": @"Features: \"YouTube Native Share\"", @"url": @"https://github.com/jkhsjdhjs"},
+        @{@"name": @"Deci8BelioS", @"role": @"Localization: \"Spanish\"", @"url": @"https://github.com/Deci8BelioS"},
+        @{@"name": @"SKEIDs", @"role": @"Localization: \"Japanese\"", @"url": @"https://github.com/SKEIDs"},
+        @{@"name": @"thaibm92", @"role": @"Localization: \"Vietnamese\"", @"url": @"https://github.com/thaibm92"},
+        @{@"name": @"xiangfeidexiaohuo", @"role": @"Localization: \"Chinese (Simplified)\"", @"url": @"https://github.com/xiangfeidexiaohuo"}
     ];
 }
 
