@@ -41,7 +41,11 @@
     UINavigationController *audioNavViewController = [[UINavigationController alloc] initWithRootViewController:audioViewController];
     
     if (@available(iOS 18, *)) {
-        [self setupNewTabBarWithControllers:@[videoNavViewController, audioNavViewController]];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self setupNewTabBarWithControllers:@[videoNavViewController, audioNavViewController]];
+        } else {
+            [self setupOldTabBarWithControllers:@[videoNavViewController, audioNavViewController]];
+        }
     } else {
         [self setupOldTabBarWithControllers:@[videoNavViewController, audioNavViewController]];
     }
