@@ -1,6 +1,6 @@
-#import "CreditsViewController.h"
+#import "CreditsController.h"
 
-@interface CreditsViewController ()
+@interface CreditsController ()
 
 @property (strong, nonatomic) NSArray *credits;
 @property (strong, nonatomic) NSArray *roles;
@@ -8,7 +8,7 @@
 
 @end
 
-@implementation CreditsViewController
+@implementation CreditsController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
