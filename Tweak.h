@@ -11,25 +11,37 @@
 #import "Controllers/RootOptionsController.h"
 #import "Controllers/PictureInPictureController.h"
 #import "Controllers/YouTubeDownloadController.h"
-#import "Controllers/DownloadsController.h"
+// YT Headers
+#import "YouTubeHeader/ASCollectionElement.h"
+#import "YouTubeHeader/ASCollectionView.h"
+#import "YouTubeHeader/YTReelModel.h"
+#import "YouTubeHeader/ELMCellNode.h"
+#import "YouTubeHeader/ELMContainerNode.h"
+#import "YouTubeHeader/ELMNodeController.h"
+#import "YouTubeHeader/YTIFormattedString.h"
+#import "YouTubeHeader/GPBMessage.h"
+#import "YouTubeHeader/YTIStringRun.h"
+#import "YouTubeHeader/QTMIcon.h"
+#import "YouTubeHeader/YTColor.h"
+#import "YouTubeHeader/YTColorPalette.h"
+#import "YouTubeHeader/YTCommonColorPalette.h"
+#import "YouTubeHeader/YTPageStyleController.h"
+#import "YouTubeHeader/YTHotConfig.h"
 #import "YouTubeHeader/YTVideoQualitySwitchOriginalController.h"
 #import "YouTubeHeader/YTVideoWithContextNode.h"
 #import "YouTubeHeader/YTIElementRenderer.h"
 #import "YouTubeHeader/YTISectionListRenderer.h"
 #import "YouTubeHeader/YTWatchNextResultsViewController.h"
-#import "YouTubeHeader/YTReelModel.h"
-#import "YouTubeHeader/ELMCellNode.h"
-#import "YouTubeHeader/ELMNodeController.h"
 #import "YouTubeHeader/YTIMenuConditionalServiceItemRenderer.h"
-#import "YouTubeHeader/YTInnerTubeCollectionViewController.h"
-#import "YouTubeHeader/YTIFormattedString.h"
-#import "YouTubeHeader/GPBMessage.h"
-#import "YouTubeHeader/YTIStringRun.h"
-
-@interface YTQTMButton : UIButton
-@property (strong, nonatomic) UIImageView *imageView;
-+ (instancetype)iconButton;
-@end
+#import "YouTubeHeader/YTPlaybackStrippedWatchController.h"
+#import "YouTubeHeader/YTSlimVideoDetailsActionView.h"
+#import "YouTubeHeader/YTSlimVideoScrollableActionBarCellController.h"
+#import "YouTubeHeader/YTSlimVideoScrollableDetailsActionsView.h"
+#import "YouTubeHeader/YTTouchFeedbackController.h"
+#import "YouTubeHeader/YTWatchViewController.h"
+// YT Headers - snackbar
+#import "YouTubeHeader/YTHUDMessage.h"
+#import "YouTubeHeader/GOOHUDManagerInternal.h"
 
 @interface YTPlaybackButton : UIControl
 @end
@@ -43,8 +55,28 @@
 @interface YTCommentDetailHeaderCell : UIView
 @end
 
-@interface YTIPivotBarItemRender : NSObject
+@interface YTIPivotBarItemRenderer : NSObject
 @property(nonatomic, copy) NSArray *tabItems;
+@end
+
+@interface ASCollectionView (Reborn)
+- (id)_viewControllerForAncestor;
+@property (retain, nonatomic) UIButton *rebornOverlayButton;
+@property (retain, nonatomic) YTTouchFeedbackController *rebornTouchController;
+- (id)playPauseButton;
+- (void)didPressPause:(id)button;
+- (void)didPressReborn:(UIButton *)button event:(UIEvent *)event;
+- (void)rebornOptionsAction;
+- (void)rebornVideoDownloader :(NSString *)videoID;
+- (void)rebornAudioDownloader :(NSString *)videoID;
+- (void)rebornPictureInPicture :(NSString *)videoID;
+- (void)rebornPlayInExternalApp :(NSString *)videoID;
+@end
+
+@interface ASCollectionView (YP) // YouPiP
+@property (retain, nonatomic) UIButton *pipButton;
+- (void)didPressPiP:(id)arg;
+- (UIImage *)pipImage;
 @end
 
 @interface _ASCollectionViewCell : UICollectionViewCell
@@ -53,6 +85,10 @@
 
 @interface YTAsyncCollectionView : UICollectionView
 - (void)removeCellsAtIndexPath:(NSIndexPath *)indexPath;
+@end
+
+@interface YTITopbarLogoRenderer : NSObject // Enable Premium logo - @bhackel
+@property(readonly, nonatomic) YTIIcon *iconImage;
 @end
 
 @interface YTRightNavigationButtons : UIView
@@ -72,7 +108,6 @@
 @property(readonly, nonatomic) YTQTMButton *nextButton;
 @property(readonly, nonatomic) ABCSwitch *autonavSwitch;
 @property(readonly, nonatomic) YTQTMButton *closedCaptionsOrSubtitlesButton;
-@property(readonly, nonatomic) YTQTMButton *watchCollapseButton;
 @property(strong, nonatomic) UIButton *rebornOverlayButton;
 - (id)playPauseButton;
 - (void)didPressPause:(id)button;
@@ -87,18 +122,8 @@
 @property(readonly, nonatomic) UIImageView *imageView;
 @end
 
-@protocol YTPlaybackController
-@end
-
-@interface YTPlayerView : UIView
+@interface YTPlayerView (Reborn)
 - (void)downloadVideo;
-@end
-
-@interface YTPlayerViewController : UIViewController <YTPlaybackController>
-- (void)seekToTime:(CGFloat)time;
-- (NSString *)currentVideoID;
-- (CGFloat)currentVideoMediaTime;
-- (void)autoFullscreen;
 @end
 
 @interface YTLocalPlaybackController : NSObject
@@ -119,64 +144,6 @@
 - (void)showFullScreen;
 @end
 
-@interface YTPageStyleController
-+ (NSInteger)pageStyle;
-@end
-
-@interface YTSingleVideoTime : NSObject
-@end
-
-@interface MLHAMQueuePlayer : NSObject
-@property id playerEventCenter;
--(void)setRate:(float)rate;
-@end
-
-@interface YTVarispeedSwitchControllerOption : NSObject
-- (id)initWithTitle:(id)title rate:(float)rate;
-@end
-
-@interface HAMPlayerInternal : NSObject
-- (void)setRate:(float)rate;
-@end
-
-@interface MLPlayerEventCenter : NSObject
-- (void)broadcastRateChange:(float)rate;
-@end
-
-@interface YTPivotBarView : UIView
-@end
-
-@interface YTPivotBarIndicatorView : UIView
-@end
-
-@interface YTPivotBarViewController : UIViewController
-- (void)selectItemWithPivotIdentifier:(id)pivotIndentifier;
-@end
-
-@interface YTPivotBarItemView : UIView
-@property(readonly, nonatomic) YTQTMButton *navigationButton;
-@end
-
-@interface YTIPivotBarItemRenderer : NSObject
-- (NSString *)pivotIdentifier;
-@end
-
-@interface YTIPivotBarIconOnlyItemRenderer : GPBMessage
-- (NSString *)pivotIdentifier;
-@end
-
-@interface YTIPivotBarSupportedRenderers : NSObject
-- (YTIPivotBarItemRenderer *)pivotBarItemRenderer;
-- (YTIPivotBarIconOnlyItemRenderer *)pivotBarIconOnlyItemRenderer;
-@end
-
-@interface YTIPivotBarRenderer : NSObject
-- (NSMutableArray <YTIPivotBarSupportedRenderers *> *)itemsArray;
-@end
-
-@interface YTITopbarLogoRenderer : NSObject
-@property(readonly, nonatomic) YTIIcon *iconImage;
-@end
 @interface YTIIconThumbnailRenderer : GPBMessage
     @property (nonatomic, strong) YTIIcon *icon;
     - (bool)hasIcon;
@@ -214,8 +181,38 @@
     @property(readonly, nonatomic) YTISectionListRenderer *model;
 @end
 
-@interface YTSingleVideo : NSObject
-- (NSString *)videoId;
+@interface YTSingleVideoTime : NSObject
+@end
+
+@interface MLHAMQueuePlayer : NSObject
+@property id playerEventCenter;
+-(void)setRate:(float)rate;
+@end
+
+@interface YTVarispeedSwitchControllerOption : NSObject
+- (id)initWithTitle:(id)title rate:(float)rate;
+@end
+
+@interface HAMPlayerInternal : NSObject
+- (void)setRate:(float)rate;
+@end
+
+@interface MLPlayerEventCenter : NSObject
+- (void)broadcastRateChange:(float)rate;
+@end
+
+@interface YTPivotBarView : UIView
+@end
+
+@interface YTPivotBarIndicatorView : UIView
+@end
+
+@interface YTPivotBarViewController : UIViewController
+- (void)selectItemWithPivotIdentifier:(id)pivotIndentifier;
+@end
+
+@interface YTPivotBarItemView : UIView
+@property(readonly, nonatomic) YTQTMButton *navigationButton;
 @end
 
 @interface YTReelHeaderView : UIView
@@ -252,21 +249,8 @@
 @end
 
 @interface YTInlinePlayerBarContainerView : UIView
-@property(readonly, nonatomic) YTLabel *currentTimeLabel;
 @property(readonly, nonatomic) YTLabel *durationLabel;
-@property (nonatomic, assign, readwrite) BOOL canShowFullscreenButton;
-@property (nonatomic, assign, readwrite) BOOL showOnlyFullscreenButton;
-@property (nonatomic, assign, readwrite) BOOL fullscreenButtonDisabled;
-- (YTQTMButton *)exitFullscreenButton;
-- (YTQTMButton *)enterFullscreenButton;
-@end
-
-@interface YTColorPalette : NSObject
-@property(readonly, nonatomic) long long pageStyle;
-@end
-
-@interface YTCommonColorPalette : NSObject
-@property(readonly, nonatomic) long long pageStyle;
+@property(readonly, nonatomic) YTLabel *currentTimeLabel;
 @end
 
 // YouTube Reborn Settings
