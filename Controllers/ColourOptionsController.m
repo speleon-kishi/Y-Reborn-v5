@@ -1,4 +1,5 @@
 #import "ColourOptionsController.h"
+#import "Localization.h"
 
 @interface ColourOptionsController ()
 - (void)coloursView;
@@ -10,12 +11,12 @@
 	[super loadView];
     [self coloursView];
 
-    self.title = @"Colour Options";
+    self.title = LOC(@"COLOR_OPTIONS");
     
     UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
     self.navigationItem.leftBarButtonItem = doneButton;
 
-    UIBarButtonItem *saveButton = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStylePlain target:self action:@selector(save)];
+    UIBarButtonItem *saveButton = [[UIBarButtonItem alloc] initWithTitle:LOC(@"SAVE_TEXT") style:UIBarButtonItemStylePlain target:self action:@selector(save)];
     self.navigationItem.rightBarButtonItem = saveButton;
 
     self.supportsAlpha = NO;
@@ -57,9 +58,9 @@
     [[NSUserDefaults standardUserDefaults] setObject:colorData forKey:@"kYTRebornColourOptionsVFour"];
     [[NSUserDefaults standardUserDefaults] synchronize];
 
-    UIAlertController *alertSaved = [UIAlertController alertControllerWithTitle:@"Colour Saved" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alertSaved = [UIAlertController alertControllerWithTitle:LOC(@"COLOR_SAVED") message:nil preferredStyle:UIAlertControllerStyleAlert];
 
-    [alertSaved addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+    [alertSaved addAction:[UIAlertAction actionWithTitle:LOC(@"OKAY_TEXT") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
     }]];
 
     [self presentViewController:alertSaved animated:YES completion:nil];
