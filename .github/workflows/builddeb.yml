@@ -7,7 +7,7 @@ on:
     
 jobs:
   build:
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - uses: actions/checkout@main
 
@@ -19,12 +19,12 @@ jobs:
           submodules: recursive
           path: theos
 
-      - name: Checkout chrisharper22/sdks
+      - name: Checkout theos/sdks
         uses: actions/checkout@main
         with:
-          repository: chrisharper22/sdks
+          repository: theos/sdks
           ref: main
-          sparse-checkout: iPhoneOS16.2.sdk
+          sparse-checkout: iPhoneOS16.5.sdk
           path: theos/sdks
 
       - name: Checkout PoomSmart/YouTubeHeader
