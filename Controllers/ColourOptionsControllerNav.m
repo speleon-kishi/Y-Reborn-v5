@@ -11,6 +11,7 @@
 @end
 
 @implementation ColourOptionsControllerNav
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self configureUI];
@@ -28,9 +29,6 @@
 
     [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor labelColor], NSFontAttributeName:[UIFont systemFontOfSize:18]}];
     self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
-
-    self.tabBarController = [[UITabBarController alloc] init];
-    self.tabBarController.delegate = self;
 
     ColourOptionsController *colorViewController = [[ColourOptionsController alloc] init];
     colorViewController.title = LOC(@"CUSTOM_THEME_TAB");
@@ -52,16 +50,43 @@
     colorViewController4.tabBarItem = [[UITabBarItem alloc] initWithTitle:LOC(@"CUSTOM_PROGRESS_BAR_TAB") image:[UIImage systemImageNamed:@"waveform.path.ecg"] tag:3];
     UINavigationController *colorNavViewController4 = [[UINavigationController alloc] initWithRootViewController:colorViewController4];
 
-    self.tabBarController.viewControllers = @[colorNavViewController, colorNavViewController2, colorNavViewController3, colorNavViewController4];
+    if (@available(iOS 18, *)) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self setupNewTabBar];
+        } else {
+            [self setupOldTabBar];
+        }
+    } else {
+        [self setupOldTabBar];
+    }
+    
     [self addChildViewController:self.tabBarController];
     self.tabBarController.view.frame = self.view.bounds;
     [self.view addSubview:self.tabBarController.view];
     [self.tabBarController didMoveToParentViewController:self];
 }
 
-- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
-    UIView *selectedItemView = [tabBarController.tabBar.subviews objectAtIndex:tabBarController.selectedIndex + 1];
-    selectedItemView.backgroundColor = [UIColor systemBlueColor];
+- (void)setupNewTabBar {
+    UITabBarAppearance *tabBarAppearance = [[UITabBarAppearance alloc] init];
+    tabBarAppearance.backgroundEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterial];
+    tabBarAppearance.backgroundColor = [UIColor systemBackgroundColor];
+    self.tabBarController.tabBar.standardAppearance = tabBarAppearance;
+    self.tabBarController.tabBar.scrollEdgeAppearance = tabBarAppearance;
+
+    self.tabBarController.tabBar.layer.cornerRadius = 10;
+    self.tabBarController.tabBar.layer.masksToBounds = YES;
+    self.tabBarController.tabBar.layer.borderColor = [UIColor lightGrayColor].CGColor;
+    self.tabBarController.tabBar.layer.borderWidth = 0.5;
+
+    self.tabBarController.tabBar.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.tabBarController.tabBar.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor constant:-10].active = YES;
+    [self.tabBarController.tabBar.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor constant:10].active = YES;
+    [self.tabBarController.tabBar.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor constant:-10].active = YES;
+}
+
+- (void)setupOldTabBar {
+    self.tabBarController.tabBar.barStyle = UIBarStyleBlack;
+    self.tabBarController.tabBar.tintColor = [UIColor darkGrayColor];
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
