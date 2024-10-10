@@ -1,6 +1,7 @@
 #import <LocalAuthentication/LocalAuthentication.h>
 #import <Foundation/Foundation.h>
 #import <CaptainHook/CaptainHook.h>
+#import <HBLog.h>
 #import <objc/runtime.h>
 #import <UIKit/UIKit.h>
 #import <YouTubeExtractor/YouTubeExtractor.h>
