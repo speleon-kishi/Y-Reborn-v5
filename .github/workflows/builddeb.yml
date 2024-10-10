@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@main
         with:
           repository: theos/sdks
-          ref: main
+          ref: master
           sparse-checkout: iPhoneOS16.5.sdk
           path: theos/sdks
 
