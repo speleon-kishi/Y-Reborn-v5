@@ -2791,8 +2791,6 @@ NSBundle *YouTubeRebornBundle() {
             progressbarHexColor = [progressbarUnarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
             %init(gColourOptions4);
         }
-        NSBundle *tweakBundle = YouTubeRebornBundle();
-        TabBarOPIconPath = [tweakBundle pathForResource:@"ytrebornbuttonblack" ofType:@"png"];
         %init(_ungrouped);
     }
 }
