@@ -170,7 +170,6 @@
 @property (nonatomic, weak, readonly) <YTResponder> *parentResponder;
 - (void)sendCommandResponderEventWithEvent:(id)event fromView:(id)view sendClick:(BOOL)click navigationDate:(id)date;
 - (void)setPivotBarItemStyle:(int)style pivotIdentifier:(NSString *)identifier;
-- (void)setPivotBarItemStyle:(int)  pivotIdentifier:(id);
 - (id)rendererForPivotIdentifier:(NSString *)pivotIdentifier;
 - (id)rendererForPivotIdentifier:(id);
 - (id)pivotBarView;
@@ -192,13 +191,13 @@
 @property (nonatomic, strong, readwrite) YTICommand *navigationEndpoint;
 @property (nonatomic, strong, readwrite) YTICommand *onSelected;
 @property (nonatomic, strong, readwrite) YTICommand *onDeselected;
-@property (nonatomic, strong, readwrite) YTIFormattedString *title;
-@property (nonatomic, strong, readwrite) YTIAccessibilitySupportedDatas *accessibility;
+// @property (nonatomic, strong, readwrite) YTIFormattedString *title;
+// @property (nonatomic, strong, readwrite) YTIAccessibilitySupportedDatas *accessibility;
 @property (nonatomic, strong, readwrite) YTIIcon *icon;
-@property (nonatomic, strong, readwrite) YTIThumbnailDetails *thumbnail;
+// @property (nonatomic, strong, readwrite) YTIThumbnailDetails *thumbnail;
 @property (nonatomic, strong, readwrite) YTIRenderer *avatar;
-@property (nonatomic, strong, readwrite) YTIPivotBarItemPresentationStyle *presentationStyle;
-@property (nonatomic, strong, readwrite) YTIPivotBarItemIndicatorSupportedRenderers *indicator;
+// @property (nonatomic, strong, readwrite) YTIPivotBarItemPresentationStyle *presentationStyle;
+// @property (nonatomic, strong, readwrite) YTIPivotBarItemIndicatorSupportedRenderers *indicator;
 @property (nonatomic, copy, readwrite) NSData *trackingParams;
 @property (nonatomic, assign, readwrite) int navigationType;
 @property (nonatomic, strong, readwrite) YTIRenderer *progressIndicator;
