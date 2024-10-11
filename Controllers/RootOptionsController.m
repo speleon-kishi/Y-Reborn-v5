@@ -49,6 +49,18 @@ if ([currentVersion compare:requiredVersion options:NSNumericSearch] == NSOrdere
     return;
 }
 
+    if ([currentVersion compare:requiredVersion options:NSNumericSearch] == NSOrderedAscending) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            YTHUDMessage *message = [YTHUDMessage messageWithText:[NSString stringWithFormat:@"You are using the Client version %@. Please use at least version %@ or higher.", currentVersion, requiredVersion]];
+            GOOHUDManagerInternal *manager = [GOOHUDManagerInternal sharedInstance];
+            [manager showMessageMainThread:message];
+
+            [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+        });
+        return;
+    }
+}
+
 /* implementation below uses YouTube's HUD but doesn't work due to linker error.
     if ([currentVersion compare:requiredVersion options:NSNumericSearch] == NSOrderedAscending) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -60,14 +72,6 @@ if ([currentVersion compare:requiredVersion options:NSNumericSearch] == NSOrdere
         return;
     }
 */
-
-    self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 44)];
-    self.searchBar.delegate = self;
-
-    UIBarButtonItem *searchButton = [[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"magnifyingglass"] style:UIBarButtonItemStylePlain target:self action:@selector(searchBarButtonPressed)];
-    self.navigationItem.rightBarButtonItem = searchButton;
-    self.filteredItems = [NSArray array];
-    self.isSearching = NO;
 
     UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
     self.navigationItem.leftBarButtonItem = doneButton;
