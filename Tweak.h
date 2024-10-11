@@ -174,8 +174,7 @@
 - (id)rendererForPivotIdentifier:(id);
 - (id)pivotBarView;
 - (id)pivotIdentifiers;
-// custom header below
-- (void)reorderTabsWithTabOrder:(NSArray<NSString *> *)tabOrder;
+- (void)reorderTabsWithTabOrder:(NSArray<NSString *> *)tabOrder; // custom header
 @end
 
 @interface YTPivotBarIndicatorView : UIView
@@ -215,7 +214,7 @@
 @end
 
 @interface YTIPivotBarRenderer : NSObject
-- (NSMutableArray <YTIPivotBarSupportedRenderers *> *)itemsArray;
+@property (nonatomic, strong, readwrite) NSMutableArray<YTIPivotBarItemRenderer *> *itemsArray; // custom header
 @end
 
 @interface YTITopbarLogoRenderer : NSObject
