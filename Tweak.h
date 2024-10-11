@@ -152,7 +152,7 @@
 @property (nonatomic, strong, readwrite) YTPivotBarItemView *itemView6;
 @property (nonatomic, assign, readonly) NSArray *itemViews;
 @property (nonatomic, strong, readwrite) <YTPageStyleProvider> *pageStyleProviderDelegate;
-@property (nonatomic, weak, readwrite) <YTPivotBarItemViewDelegate> *delegate;
+// @property (nonatomic, weak, readwrite) <YTPivotBarItemViewDelegate> *delegate;
 @property (nonatomic, strong, readwrite) YTIPivotBarRenderer *renderer;
 @property (nonatomic, assign, readonly) UIView *contentView;
 @property (nonatomic, strong, readwrite) UIView *scrubberView;
@@ -161,9 +161,9 @@
 @end
 
 @interface YTPivotBarViewController : UIViewController
-@property (nonatomic, weak, readwrite) <YTPivotBarViewControllerDelegate> *delegate;
-@property (nonatomic, weak, readwrite) <YTPivotBarDelegate> *pivotBarDelegate;
-@property (nonatomic, weak, readwrite) <YTPivotBarScrubberDelegate> *scrubberDelegate;
+// @property (nonatomic, weak, readwrite) <YTPivotBarViewControllerDelegate> *delegate;
+// @property (nonatomic, weak, readwrite) <YTPivotBarDelegate> *pivotBarDelegate;
+// @property (nonatomic, weak, readwrite) <YTPivotBarScrubberDelegate> *scrubberDelegate;
 @property (nonatomic, assign, readonly) YTIPivotBarRenderer *renderer;
 @property (nonatomic, assign, readonly) NSString *pivotIdentifier;
 @property (nonatomic, copy, readwrite) NSString *selectedPivotIdentifier;
