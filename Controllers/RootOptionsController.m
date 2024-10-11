@@ -2,7 +2,6 @@
 #import "DownloadsController.h"
 #import "ColourOptionsControllerNav.h"
 #import "VideoOptionsController.h"
-#import "VideoPlayerOptionsController.h"
 #import "OverlayOptionsController.h"
 #import "TabBarOptionsController.h"
 #import "ReorderPivotBarController.h"
@@ -144,7 +143,7 @@ if ([currentVersion compare:requiredVersion options:NSNumericSearch] == NSOrdere
         }
     }
     if (section == 1) {
-        return 7;
+        return 6;
     }
     if (section == 2) {
         return 2;
@@ -205,31 +204,26 @@ if ([currentVersion compare:requiredVersion options:NSNumericSearch] == NSOrdere
 		cell.imageView.tintColor = cell.textLabel.textColor;
             }
             if (indexPath.row == 1) {
-                cell.textLabel.text = LOC(@"VIDEO_PLAYER_OPTIONS");
-		cell.imageView.image = [UIImage systemImageNamed:@"video.square"];
-  		cell.imageView.tintColor = cell.textLabel.textColor;
-            }
-            if (indexPath.row == 2) {
                 cell.textLabel.text = LOC(@"OVERLAY_OPTIONS");
 		cell.imageView.image = [UIImage systemImageNamed:@"square.grid.3x2.fill"];
   		cell.imageView.tintColor = cell.textLabel.textColor;
             }
-            if (indexPath.row == 3) {
+            if (indexPath.row == 2) {
                 cell.textLabel.text = LOC(@"TAB_BAR_OPTIONS");
 		cell.imageView.image = [UIImage systemImageNamed:@"rectangle.3.offgrid.fill"];
   		cell.imageView.tintColor = cell.textLabel.textColor;
             }
-            if (indexPath.row == 4) {
+            if (indexPath.row == 3) {
                 cell.textLabel.text = LOC(@"PICTURE_IN_PICTURE_OPTIONS");
 		cell.imageView.image = [UIImage systemImageNamed:@"pip"];
   		cell.imageView.tintColor = cell.textLabel.textColor;
             }
-            if (indexPath.row == 5) {
+            if (indexPath.row == 4) {
                 cell.textLabel.text = LOC(@"SHORTS_OPTIONS");
 		cell.imageView.image = [UIImage systemImageNamed:@"play.rectangle.on.rectangle.circle.fill"];
   		cell.imageView.tintColor = cell.textLabel.textColor;
             }
-            if (indexPath.row == 6) {
+            if (indexPath.row == 5) {
                 cell.textLabel.text = LOC(@"OTHER_OPTIONS");
 		cell.imageView.image = [UIImage systemImageNamed:@"ellipsis"];
   		cell.imageView.tintColor = cell.textLabel.textColor;
