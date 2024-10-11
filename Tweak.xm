@@ -2623,7 +2623,7 @@ BOOL selectedTabIndex = NO;
 }
 %end
 
-%hook YTIPivotBarItemRender
+%hook YTIPivotBarItemRenderer
 
 - (void)viewDidLoad {
     %orig();
