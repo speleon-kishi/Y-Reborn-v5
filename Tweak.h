@@ -173,6 +173,8 @@
 - (id)pivotBarView;
 - (void)setPivotBarItemStyle:(int)  pivotIdentifier:(id);
 - (id)pivotIdentifiers;
+// custom header below
+- (void)reorderTabsWithTabOrder:(NSArray<NSString *> *)tabOrder;
 @end
 
 @interface YTPivotBarIndicatorView : UIView
