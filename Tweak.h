@@ -281,8 +281,15 @@
 @end
 
 @interface YTInlinePlayerBarContainerView : UIView
-@property(readonly, nonatomic) YTLabel *durationLabel;
-@property(readonly, nonatomic) YTLabel *currentTimeLabel;
+@property (nonatomic, strong, readwrite) YTLabel *durationLabel;
+@property (nonatomic, strong, readwrite) YTLabel *currentTimeLabel;
+@property (nonatomic, strong, readwrite) UIView *multiFeedElementView;
+@property (nonatomic, assign, readwrite) BOOL canShowFullscreenButton;
+@property (nonatomic, assign, readwrite) BOOL showOnlyFullscreenButton;
+@property (nonatomic, assign, readwrite) BOOL fullscreenButtonDisabled;
+@property (nonatomic, assign, readwrite) BOOL shouldDisplayTimeRemaining;
+- (YTQTMButton *)exitFullscreenButton;
+- (YTQTMButton *)enterFullscreenButton;
 @end
 
 // YouTube Reborn Settings
