@@ -38,6 +38,7 @@
     NSString *requiredVersion = @"19.06.2";
     NSString *currentVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
 
+*/
 if ([currentVersion compare:requiredVersion options:NSNumericSearch] == NSOrderedAscending) {
     dispatch_async(dispatch_get_main_queue(), ^{
          UIAlertController *alert = [UIAlertController alertControllerWithTitle:LOC(@"WARNING_TEXT") message:[NSString stringWithFormat:LOC(@"You are using the Client version %@. Please use at least version %@ or higher."), currentVersion, requiredVersion] preferredStyle:UIAlertControllerStyleAlert];
@@ -48,6 +49,7 @@ if ([currentVersion compare:requiredVersion options:NSNumericSearch] == NSOrdere
     });
     return;
 }
+*/
 
     if ([currentVersion compare:requiredVersion options:NSNumericSearch] == NSOrderedAscending) {
         dispatch_async(dispatch_get_main_queue(), ^{
