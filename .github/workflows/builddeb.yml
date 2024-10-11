@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@main
 
-      - name: Checkout RootHide/theos
+      - name: Checkout theos/theos
         uses: actions/checkout@main
         with:
           repository: theos/theos
@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@main
         with:
           repository: theos/sdks
-          ref: master
+          ref: 5bfdc3cb7133ec1cab43182115d902e2b57c9eac
           sparse-checkout: iPhoneOS16.5.sdk
           path: theos/sdks
 
