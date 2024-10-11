@@ -2619,12 +2619,15 @@ BOOL selectedTabIndex = NO;
 }
 %end
 
-%hook YTIPivotBarItemRenderer
-
+%hook YTPivotBarViewController
 - (void)viewDidLoad {
     %orig();
     NSArray *tabOrder = [[NSUserDefaults standardUserDefaults] objectForKey:@"kTabOrder"];
-    
+    if (tabOrder) {
+        [self reorderTabsWithTabOrder:tabOrder];
+    }
+}
+- (void)reorderTabsWithTabOrder:(NSArray<NSString *> *)tabOrder {
     NSDictionary *tabPositions = @{
         @"FEwhat_to_watch": @(0), // Home
         @"FEshorts": @(1), // Shorts
@@ -2637,19 +2640,17 @@ BOOL selectedTabIndex = NO;
         NSNumber *position2 = tabPositions[obj2];
         return [position1 compare:position2];
     }];
+
     NSMutableArray *reorderedTabs = [NSMutableArray array];
     for (NSString *tabIdentifier in sortedTabOrder) {
-        for (id tabItem in self.tabItems) {
-            if ([tabItem respondsToSelector:@selector(pivotIdentifier)]) {
-                NSString *pivotIdentifier = [tabItem pivotIdentifier];
-                if ([pivotIdentifier isEqualToString:tabIdentifier]) {
-                    [reorderedTabs addObject:tabItem];
-                    break;
-                }
+        for (YTIPivotBarItemRenderer *tabItem in self.renderer.itemsArray) {
+            if ([tabItem.pivotIdentifier isEqualToString:tabIdentifier]) {
+                [reorderedTabs addObject:tabItem];
+                break;
             }
         }
     }
-    [self setTabItems:reorderedTabs];
+    self.renderer.itemsArray = reorderedTabs;
 }
 %end
 
