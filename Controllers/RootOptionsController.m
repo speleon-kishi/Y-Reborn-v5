@@ -7,7 +7,6 @@
 #import "ReorderPivotBarController.h"
 #import "PictureInPictureOptionsController.h"
 #import "ShortsOptionsController.h"
-#import "SponsorBlockOptionsController.h"
 #import "OtherOptionsController.h"
 #import "RebornSettingsController.h"
 #import "CreditsController.h"
@@ -284,27 +283,20 @@ if ([currentVersion compare:requiredVersion options:NSNumericSearch] == NSOrdere
             [self presentViewController:videoOptionsControllerView animated:YES completion:nil];
         }
         if (indexPath.row == 1) {
-            VideoPlayerOptionsController *videoPlayerOptionsController = [[VideoPlayerOptionsController alloc] init];
-            UINavigationController *videoPlayerOptionsControllerView = [[UINavigationController alloc] initWithRootViewController:videoPlayerOptionsController];
-            videoPlayerOptionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
-
-            [self presentViewController:videoPlayerOptionsControllerView animated:YES completion:nil];
-        }
-        if (indexPath.row == 2) {
             OverlayOptionsController *overlayOptionsController = [[OverlayOptionsController alloc] init];
             UINavigationController *overlayOptionsControllerView = [[UINavigationController alloc] initWithRootViewController:overlayOptionsController];
             overlayOptionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
 
             [self presentViewController:overlayOptionsControllerView animated:YES completion:nil];
         }
-        if (indexPath.row == 3) {
+        if (indexPath.row == 2) {
             TabBarOptionsController *tabBarOptionsController = [[TabBarOptionsController alloc] init];
             UINavigationController *tabBarOptionsControllerView = [[UINavigationController alloc] initWithRootViewController:tabBarOptionsController];
             tabBarOptionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
 
             [self presentViewController:tabBarOptionsControllerView animated:YES completion:nil];
         }
-        if (indexPath.row == 4) {
+        if (indexPath.row == 3) {
             if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"15.0")) {
                 PictureInPictureOptionsController *pictureInPictureOptionsController = [[PictureInPictureOptionsController alloc] init];
                 UINavigationController *pictureInPictureOptionsControllerView = [[UINavigationController alloc] initWithRootViewController:pictureInPictureOptionsController];
@@ -320,14 +312,14 @@ if ([currentVersion compare:requiredVersion options:NSNumericSearch] == NSOrdere
                 [self presentViewController:alertError animated:YES completion:nil];
             }
         }
-        if (indexPath.row == 5) {
+        if (indexPath.row == 4) {
             ShortsOptionsController *shortsOptionsController = [[ShortsOptionsController alloc] init];
             UINavigationController *shortsOptionsControllerView = [[UINavigationController alloc] initWithRootViewController:shortsOptionsController];
             shortsOptionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
 	    
             [self presentViewController:shortsOptionsControllerView animated:YES completion:nil];
         }
-        if (indexPath.row == 6) {
+        if (indexPath.row == 5) {
             OtherOptionsController *otherOptionsController = [[OtherOptionsController alloc] init];
             UINavigationController *otherOptionsControllerView = [[UINavigationController alloc] initWithRootViewController:otherOptionsController];
             otherOptionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
