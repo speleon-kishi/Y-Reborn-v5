@@ -144,40 +144,40 @@
 @end
 
 @interface YTIIconThumbnailRenderer : GPBMessage
-    @property (nonatomic, strong) YTIIcon *icon;
-    - (bool)hasIcon;
+@property (nonatomic, strong) YTIIcon *icon;
+- (bool)hasIcon;
 @end
 @interface YTICompactListItemThumbnailSupportedRenderers : GPBMessage
-    @property (nonatomic, strong) YTIIconThumbnailRenderer *iconThumbnailRenderer;
-    - (bool)hasIconThumbnailRenderer;
+@property (nonatomic, strong) YTIIconThumbnailRenderer *iconThumbnailRenderer;
+- (bool)hasIconThumbnailRenderer;
 @end
 @interface YTICompactListItemRenderer : GPBMessage
-    @property (nonatomic, strong) YTICompactListItemThumbnailSupportedRenderers *thumbnail;
-    @property (nonatomic, strong) YTIFormattedString *title;
-    - (bool)hasThumbnail;
-    - (bool)hasTitle;
+@property (nonatomic, strong) YTICompactListItemThumbnailSupportedRenderers *thumbnail;
+@property (nonatomic, strong) YTIFormattedString *title;
+- (bool)hasThumbnail;
+- (bool)hasTitle;
 @end
 @interface YTIIcon (uYouEnhanced)
-    - (bool)hasIconType;
+- (bool)hasIconType;
 @end
 @interface YTICompactLinkRenderer : GPBMessage
-    @property (nonatomic, strong) YTIIcon *icon;
-    @property (nonatomic, strong) YTIFormattedString *title;
-    @property (nonatomic, strong) YTICompactListItemThumbnailSupportedRenderers *thumbnail;
-    - (bool)hasIcon;
-    - (bool)hasThumbnail;
+@property (nonatomic, strong) YTIIcon *icon;
+@property (nonatomic, strong) YTIFormattedString *title;
+@property (nonatomic, strong) YTICompactListItemThumbnailSupportedRenderers *thumbnail;
+- (bool)hasIcon;
+- (bool)hasThumbnail;
 @end
 @interface YTIItemSectionSupportedRenderers (uYouEnhanced)
-    @property(readonly, nonatomic) YTICompactLinkRenderer *compactLinkRenderer;
-    @property(readonly, nonatomic) YTICompactListItemRenderer *compactListItemRenderer;
-    - (bool)hasCompactLinkRenderer;
-    - (bool)hasCompactListItemRenderer;
+@property(readonly, nonatomic) YTICompactLinkRenderer *compactLinkRenderer;
+@property(readonly, nonatomic) YTICompactListItemRenderer *compactListItemRenderer;
+- (bool)hasCompactLinkRenderer;
+- (bool)hasCompactListItemRenderer;
 @end
 @interface YTAppCollectionViewController : YTInnerTubeCollectionViewController
 - (void)uYouEnhancedFakePremiumModel:(YTISectionListRenderer *)model;
 @end
 @interface YTInnerTubeCollectionViewController (uYouEnhanced)
-    @property(readonly, nonatomic) YTISectionListRenderer *model;
+@property(readonly, nonatomic) YTISectionListRenderer *model;
 @end
 
 @interface YTSingleVideoTime : NSObject
@@ -201,6 +201,20 @@
 @end
 
 @interface YTPivotBarView : UIView
+@property (nonatomic, assign, readonly) YTPivotBarView *root;
+@property (nonatomic, strong, readwrite) UIView *separatorView;
+@property (nonatomic, strong, readwrite) UIVisualEffectView *blurView;
+@property (nonatomic, strong, readwrite) YTPivotBarItemView *itemView1;
+@property (nonatomic, strong, readwrite) YTPivotBarItemView *itemView2;
+@property (nonatomic, strong, readwrite) YTPivotBarItemView *itemView3;
+@property (nonatomic, strong, readwrite) YTPivotBarItemView *itemView4;
+@property (nonatomic, strong, readwrite) YTPivotBarItemView *itemView5;
+@property (nonatomic, strong, readwrite) YTPivotBarItemView *itemView6;
+@property (nonatomic, assign, readonly) NSArray *itemViews;
+@property (nonatomic, assign, readonly) UIView *contentView;
+@property (nonatomic, strong, readwrite) UIView *scrubberView;
+@property (nonatomic, assign, readonly) UIPanGestureRecognizer *scrubGestureRecognizer;
+@property (nonatomic, assign, readonly) NSInteger pageStyle;
 @end
 
 @interface YTPivotBarIndicatorView : UIView
@@ -212,6 +226,23 @@
 
 @interface YTPivotBarItemView : UIView
 @property(readonly, nonatomic) YTQTMButton *navigationButton;
+@end
+
+@interface YTIPivotBarItemRenderer : NSObject
+- (NSString *)pivotIdentifier;
+@end
+
+@interface YTIPivotBarIconOnlyItemRenderer : GPBMessage
+- (NSString *)pivotIdentifier;
+@end
+
+@interface YTIPivotBarSupportedRenderers : NSObject
+- (YTIPivotBarItemRenderer *)pivotBarItemRenderer;
+- (YTIPivotBarIconOnlyItemRenderer *)pivotBarIconOnlyItemRenderer;
+@end
+
+@interface YTIPivotBarRenderer : NSObject
+- (NSMutableArray <YTIPivotBarSupportedRenderers *> *)itemsArray;
 @end
 
 @interface YTReelHeaderView : UIView
