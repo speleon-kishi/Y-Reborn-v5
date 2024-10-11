@@ -57,10 +57,6 @@
     self.tabBarController.view.frame = self.view.bounds;
     [self.view addSubview:self.tabBarController.view];
     [self.tabBarController didMoveToParentViewController:self];
-
-    if (@available(iOS 15, *)) {
-        self.tabBarController.tabBar.scrollEdgeAppearance = tabBarAppearance;
-    }
 }
 
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
