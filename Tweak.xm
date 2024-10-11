@@ -2619,6 +2619,7 @@ BOOL selectedTabIndex = NO;
 }
 %end
 
+/*
 %hook YTPivotBarViewController
 - (void)viewDidLoad {
     %orig();
@@ -2640,6 +2641,7 @@ BOOL selectedTabIndex = NO;
         NSNumber *position2 = tabPositions[obj2];
         return [position1 compare:position2];
     }];
+*/
 
     NSMutableArray *reorderedTabs = [NSMutableArray array];
     for (NSString *tabIdentifier in sortedTabOrder) {
