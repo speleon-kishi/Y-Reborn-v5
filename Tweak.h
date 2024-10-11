@@ -31,6 +31,7 @@
 #import "YouTubeHeader/YTIElementRenderer.h"
 #import "YouTubeHeader/YTISectionListRenderer.h"
 #import <YouTubeHeader/YTInnerTubeCollectionViewController.h>
+#import <YouTubeHeader/YTInlinePlayerBarContainerView.h>
 #import "YouTubeHeader/YTWatchNextResultsViewController.h"
 #import "YouTubeHeader/YTIMenuConditionalServiceItemRenderer.h"
 #import "YouTubeHeader/YTPlaybackStrippedWatchController.h"
