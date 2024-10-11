@@ -2641,7 +2641,6 @@ BOOL selectedTabIndex = NO;
         NSNumber *position2 = tabPositions[obj2];
         return [position1 compare:position2];
     }];
-*/
 
     NSMutableArray *reorderedTabs = [NSMutableArray array];
     for (NSString *tabIdentifier in sortedTabOrder) {
@@ -2655,6 +2654,7 @@ BOOL selectedTabIndex = NO;
     self.renderer.itemsArray = reorderedTabs;
 }
 %end
+*/
 
 %hook YTColdConfig
 - (BOOL)shouldUseAppThemeSetting {
