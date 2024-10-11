@@ -168,10 +168,12 @@
 @property (nonatomic, assign, readonly) NSString *pivotIdentifier;
 @property (nonatomic, copy, readwrite) NSString *selectedPivotIdentifier;
 @property (nonatomic, weak, readonly) <YTResponder> *parentResponder;
-- (void)sendCommandResponderEventWithEvent:(id)  fromView:(id)  sendClick:(BOOL)  navigationDate:(id);
+- (void)sendCommandResponderEventWithEvent:(id)event fromView:(id)view sendClick:(BOOL)click navigationDate:(id)date;
+- (void)setPivotBarItemStyle:(int)style pivotIdentifier:(NSString *)identifier;
+- (void)setPivotBarItemStyle:(int)  pivotIdentifier:(id);
+- (id)rendererForPivotIdentifier:(NSString *)pivotIdentifier;
 - (id)rendererForPivotIdentifier:(id);
 - (id)pivotBarView;
-- (void)setPivotBarItemStyle:(int)  pivotIdentifier:(id);
 - (id)pivotIdentifiers;
 // custom header below
 - (void)reorderTabsWithTabOrder:(NSArray<NSString *> *)tabOrder;
