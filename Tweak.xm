@@ -1020,9 +1020,15 @@ static NSMutableArray <YTIItemSectionRenderer *> *filteredArray(NSArray <YTIItem
 %end
 %end
 
-%group gLowContrastMode // Low Contrast Mode v1.4.2 (Compatible with only YouTube v17.33.2-v17.38.10)
+%group gColourOptions2 // (Compatible with only YouTube v16.05.7-v17.38.10)
 %hook UIColor
 + (UIColor *)whiteColor { // Dark Theme Color
+    if (lcmHexColor) {
+        return lcmHexColor;
+    }
+    return [UIColor colorWithRed: 0.56 green: 0.56 blue: 0.56 alpha: 1.00];
+}
++ (UIColor *)systemGrayColor {
     if (lcmHexColor) {
         return lcmHexColor;
     }
@@ -1141,13 +1147,6 @@ static NSMutableArray <YTIItemSectionRenderer *> *filteredArray(NSArray <YTIItem
 }
 - (UIColor *)buttonBackgroundColor {
     return [UIColor whiteColor];
-}
-%end
-%hook YTQTMButton
-- (void)setImage:(UIImage *)image {
-    UIImage *currentImage = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    [self setTintColor:[UIColor whiteColor]];
-    %orig(currentImage);
 }
 %end
 %hook UIExtendedSRGColorSpace
@@ -2277,6 +2276,35 @@ static NSMutableArray <YTIItemSectionRenderer *> *filteredArray(NSArray <YTIItem
 %end
 %end
 
+%group gColourOptions3 // Custom SystemBlue color
+%hook UIColor
++ (UIColor *)systemBlueColor {
+    if (systemBlueHexColor) {
+        return systemBlueHexColor;
+    } else {
+        return [UIColor systemBlueColor];
+    }
+}
+%end
+%end
+
+%group gColourOptions4 // Custom Progress Bar color
+%hook YTInlinePlayerBarContainerView
+- (id)quietProgressBarColor {
+    return progressbarHexColor;
+}
+%end
+
+%hook YTSegmentableInlinePlayerBarView
+- (UIColor *)progressBarColor {
+    return progressbarHexColor;
+}
+- (UIColor *)userIsScrubbingProgressBarColor {
+    return progressbarHexColor;
+}
+%end
+%end
+
 %group gAutoFullScreen
 %hook YTPlayerViewController
 - (void)loadWithPlayerTransition:(id)arg1 playbackConfig:(id)arg2 {
@@ -2725,6 +2753,32 @@ BOOL selectedTabIndex = NO;
             rebornHexColour = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
             %init(gColourOptions);
         }
+        NSData *lcmColorData = [[NSUserDefaults standardUserDefaults] objectForKey:@"kYTLcmColourOptionVFive"];
+        NSKeyedUnarchiver *lcmUnarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:lcmColorData error:nil];
+        [lcmUnarchiver setRequiresSecureCoding:NO];
+        NSString *lcmHexString = [lcmUnarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+        if (lcmHexString != nil) {
+            lcmHexColor = [lcmUnarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+            %init(gColourOptions2);
+        }
+        NSData *systemBlueColorData = [[NSUserDefaults standardUserDefaults] objectForKey:@"kCustomSystemBlueColor"];
+        NSKeyedUnarchiver *systemBlueUnarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:systemBlueColorData error:nil];
+        [systemBlueUnarchiver setRequiresSecureCoding:NO];
+        NSString *systemBlueHexString = [systemBlueUnarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+        if (systemBlueHexString != nil) {
+            systemBlueHexColor = [systemBlueUnarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+            %init(gColourOptions3);
+        }
+        NSData *progressbarColorData = [[NSUserDefaults standardUserDefaults] objectForKey:@"kYTProgreessBarColourOption"];
+        NSKeyedUnarchiver *progressbarUnarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:progressbarColorData error:nil];
+        [progressbarUnarchiver setRequiresSecureCoding:NO];
+        NSString *progressbarHexString = [progressbarUnarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+        if (progressbarHexString != nil) {
+            progressbarHexColor = [progressbarUnarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+            %init(gColourOptions4);
+        }
+        NSBundle *tweakBundle = YouTubeRebornBundle();
+        TabBarOPIconPath = [tweakBundle pathForResource:@"ytrebornbuttonblack" ofType:@"png"];
         %init(_ungrouped);
     }
 }
