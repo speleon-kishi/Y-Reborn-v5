@@ -76,39 +76,6 @@
     ]];
 }
 
-- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
-    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle:LOC(@"CANCEL_TEXT") style:UIBarButtonItemStylePlain target:self action:@selector(cancelButtonPressed)];
-    self.navigationItem.rightBarButtonItem = cancelButton;
-}
-
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
-    [searchBar resignFirstResponder];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonPressed)];
-}
-
-- (void)cancelButtonPressed {
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchBarButtonPressed)];
-    self.searchBar.text = @"";
-    self.isSearching = NO;
-    [self.tableView reloadData];
-    [self.searchBar resignFirstResponder];
-}
-
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-    [self.searchBar resignFirstResponder];
-    NSString *searchText = searchBar.text;
-
-    if (searchText.length > 0) {
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF CONTAINS[cd] %@", searchText];
-        self.filteredItems = [self.allItems filteredArrayUsingPredicate:predicate];
-        self.isSearching = YES;
-    } else {
-        self.filteredItems = [NSArray array];
-        self.isSearching = NO;
-    }
-    [self.tableView reloadData];
-}
-
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 3;
 }
@@ -126,14 +93,7 @@
     }
     if (section == 2) {
         return 2;
-    }
-    
-    if (self.isSearching) {
-        return self.filteredItems.count;
-    } else {
-        return self.allItems.count;
-    }
-    
+    }   
     return 0;
 }
 
