@@ -19,6 +19,7 @@
 #import "YouTubeHeader/YTReelModel.h"
 #import "YouTubeHeader/ELMCellNode.h"
 #import "YouTubeHeader/ELMNodeController.h"
+#import "YouTubeHeader/YTICommand.h"
 #import "YouTubeHeader/YTIMenuConditionalServiceItemRenderer.h"
 #import "YouTubeHeader/YTInnerTubeCollectionViewController.h"
 #import "YouTubeHeader/YTIFormattedString.h"
@@ -42,6 +43,10 @@
 @end
 
 @interface YTCommentDetailHeaderCell : UIView
+@end
+
+@interface YTIPivotBarItemRender : NSObject
+@property(nonatomic, copy) NSArray *tabItems;
 @end
 
 @interface _ASCollectionViewCell : UICollectionViewCell
@@ -141,43 +146,14 @@
 @end
 
 @interface YTPivotBarView : UIView
-@property (nonatomic, assign, readonly) YTPivotBarView *root;
-@property (nonatomic, strong, readwrite) UIView *separatorView;
-@property (nonatomic, strong, readwrite) UIVisualEffectView *blurView;
-@property (nonatomic, strong, readwrite) YTPivotBarItemView *itemView1;
-@property (nonatomic, strong, readwrite) YTPivotBarItemView *itemView2;
-@property (nonatomic, strong, readwrite) YTPivotBarItemView *itemView3;
-@property (nonatomic, strong, readwrite) YTPivotBarItemView *itemView4;
-@property (nonatomic, strong, readwrite) YTPivotBarItemView *itemView5;
-@property (nonatomic, strong, readwrite) YTPivotBarItemView *itemView6;
-@property (nonatomic, assign, readonly) NSArray *itemViews;
-@property (nonatomic, strong, readwrite) <YTPageStyleProvider> *pageStyleProviderDelegate;
-// @property (nonatomic, weak, readwrite) <YTPivotBarItemViewDelegate> *delegate;
-@property (nonatomic, strong, readwrite) YTIPivotBarRenderer *renderer;
-@property (nonatomic, assign, readonly) UIView *contentView;
-@property (nonatomic, strong, readwrite) UIView *scrubberView;
-@property (nonatomic, assign, readonly) UIPanGestureRecognizer *scrubGestureRecognizer;
-@property (nonatomic, assign, readonly) NSInteger pageStyle;
-@end
-
-@interface YTPivotBarViewController : UIViewController
-// @property (nonatomic, weak, readwrite) <YTPivotBarViewControllerDelegate> *delegate;
-// @property (nonatomic, weak, readwrite) <YTPivotBarDelegate> *pivotBarDelegate;
-// @property (nonatomic, weak, readwrite) <YTPivotBarScrubberDelegate> *scrubberDelegate;
-@property (nonatomic, assign, readonly) YTIPivotBarRenderer *renderer;
-@property (nonatomic, assign, readonly) NSString *pivotIdentifier;
-@property (nonatomic, copy, readwrite) NSString *selectedPivotIdentifier;
-@property (nonatomic, weak, readonly) <YTResponder> *parentResponder;
-- (void)sendCommandResponderEventWithEvent:(id)event fromView:(id)view sendClick:(BOOL)click navigationDate:(id)date;
-- (void)setPivotBarItemStyle:(int)style pivotIdentifier:(NSString *)identifier;
-- (id)rendererForPivotIdentifier:(NSString *)pivotIdentifier;
-- (id)rendererForPivotIdentifier:(id);
-- (id)pivotBarView;
-- (id)pivotIdentifiers;
-- (void)reorderTabsWithTabOrder:(NSArray<NSString *> *)tabOrder; // custom header
 @end
 
 @interface YTPivotBarIndicatorView : UIView
+@end
+
+@interface YTPivotBarViewController : UIViewController
+- (void)selectItemWithPivotIdentifier:(id)pivotIndentifier;
+- (void)reorderTabsWithTabOrder:(NSArray<NSString *> *)tabOrder;
 @end
 
 @interface YTPivotBarItemView : UIView
@@ -185,23 +161,7 @@
 @end
 
 @interface YTIPivotBarItemRenderer : NSObject
-@property (nonatomic, copy, readwrite) NSString *pivotIdentifier;
-@property (nonatomic, copy, readwrite) NSString *targetId;
-@property (nonatomic, strong, readwrite) YTICommand *navigationEndpoint;
-@property (nonatomic, strong, readwrite) YTICommand *onSelected;
-@property (nonatomic, strong, readwrite) YTICommand *onDeselected;
-// @property (nonatomic, strong, readwrite) YTIFormattedString *title;
-// @property (nonatomic, strong, readwrite) YTIAccessibilitySupportedDatas *accessibility;
-@property (nonatomic, strong, readwrite) YTIIcon *icon;
-// @property (nonatomic, strong, readwrite) YTIThumbnailDetails *thumbnail;
-@property (nonatomic, strong, readwrite) YTIRenderer *avatar;
-// @property (nonatomic, strong, readwrite) YTIPivotBarItemPresentationStyle *presentationStyle;
-// @property (nonatomic, strong, readwrite) YTIPivotBarItemIndicatorSupportedRenderers *indicator;
-@property (nonatomic, copy, readwrite) NSData *trackingParams;
-@property (nonatomic, assign, readwrite) int navigationType;
-@property (nonatomic, strong, readwrite) YTIRenderer *progressIndicator;
-@property (nonatomic, assign, readwrite) BOOL isDisabled;
-@property (nonatomic, strong, readwrite) YTICommand *onLongPress;
+- (NSString *)pivotIdentifier;
 @end
 
 @interface YTIPivotBarIconOnlyItemRenderer : GPBMessage
@@ -214,7 +174,7 @@
 @end
 
 @interface YTIPivotBarRenderer : NSObject
-@property (nonatomic, strong, readwrite) NSMutableArray<YTIPivotBarItemRenderer *> *itemsArray; // custom header
+- (NSMutableArray <YTIPivotBarSupportedRenderers *> *)itemsArray;
 @end
 
 @interface YTITopbarLogoRenderer : NSObject
