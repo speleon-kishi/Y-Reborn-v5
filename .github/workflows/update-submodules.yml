@@ -18,7 +18,6 @@ jobs:
 
       - name: Update submodules
         run: |
-          git submodule set-url YouTubeHeader https://github.com/arichornloverALT/YouTubeHeader.git
           git submodule update --init --recursive --remote YouTubeHeader
           git add .
           git commit -m "Updated YouTubeHeader"
