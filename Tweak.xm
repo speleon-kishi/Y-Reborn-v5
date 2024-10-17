@@ -1481,6 +1481,40 @@ NSData *cellDividerData;
 %end
 %end
 
+%hook YTIPivotBarRenderer
+- (void)viewDidLoad {
+    %orig();
+    NSArray *tabOrder = [[NSUserDefaults standardUserDefaults] objectForKey:@"kTabOrder"];
+    if (tabOrder) {
+        [self reorderTabsWithTabOrder:tabOrder];
+    }
+}
+- (void)reorderTabsWithTabOrder:(NSArray<NSString *> *)tabOrder {
+    NSDictionary *tabPositions = @{
+        @"FEwhat_to_watch": @(0), // Home
+        @"FEshorts": @(1), // Shorts
+        @"FEuploads": @(2), // Create
+        @"FEsubscriptions": @(3), // Subscriptions
+        @"FElibrary": @(4) // You
+    };
+    NSArray *sortedTabOrder = [tabOrder sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSNumber *position1 = tabPositions[obj1];
+        NSNumber *position2 = tabPositions[obj2];
+        return [position1 compare:position2];
+    }];
+    NSMutableArray *reorderedTabs = [NSMutableArray array];
+    for (NSString *tabIdentifier in sortedTabOrder) {
+        for (YTIPivotBarItemRenderer *tabItem in self.itemsArray) {
+            if ([tabItem.pivotIdentifier isEqualToString:tabIdentifier]) {
+                [reorderedTabs addObject:tabItem];
+                break;
+            }
+        }
+    }
+    self.itemsArray = reorderedTabs;
+}
+%end
+
 %group gDisableDoubleTapToSkip
 %hook YTMainAppVideoPlayerOverlayViewController
 - (BOOL)allowDoubleTapToSeekGestureRecognizer {
