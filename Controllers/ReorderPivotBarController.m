@@ -1,4 +1,3 @@
-/*
 #import "ReorderPivotBarController.h"
 #import "Localization.h"
 
@@ -82,6 +81,10 @@
     return YES;
 }
 
+- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
+}
+
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath {
     NSInteger destinationIndex = destinationIndexPath.row;
     NSInteger sourceIndex = sourceIndexPath.row;
@@ -90,31 +93,18 @@
     [self.tabOrder insertObject:tabIdentifier atIndex:destinationIndex];
 }
 
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    return YES;
-}
-
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
     if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
         CGPoint location = [gestureRecognizer locationInView:self.tableView];
         NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
         if (indexPath && indexPath.section == 0) {
             [self.tableView setEditing:YES animated:YES];
-            NSInteger destinationIndex = [self.tableView numberOfRowsInSection:0] - 1;
-            NSIndexPath *destinationIndexPath = [NSIndexPath indexPathForRow:destinationIndex inSection:0];
-            [self.tableView moveRowAtIndexPath:indexPath toIndexPath:destinationIndexPath];
         }
     }
 }
 
 - (void)reset {
-    self.tabOrder = [@[
-        LOC(@"HOME_TEXT"),
-        LOC(@"SHORTS_TEXT"),
-        LOC(@"CREATE_TEXT"),
-        LOC(@"SUB_TEXT"),
-        LOC(@"YOU_TEXT")
-    ] mutableCopy];
+    self.tabOrder = [@[LOC(@"HOME_TEXT"), LOC(@"SHORTS_TEXT"), LOC(@"CREATE_TEXT"), LOC(@"SUB_TEXT"), LOC(@"YOU_TEXT")] mutableCopy];
     [self.tableView reloadData];
     [self save];
 }
@@ -130,4 +120,3 @@
 }
 
 @end
-*/
