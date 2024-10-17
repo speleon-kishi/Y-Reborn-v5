@@ -24,6 +24,7 @@
 #import "YouTubeHeader/YTIFormattedString.h"
 #import "YouTubeHeader/GPBMessage.h"
 #import "YouTubeHeader/YTIStringRun.h"
+#import "YouTubeHeader/YTIPivotBarRenderer.h"
 
 @interface YTQTMButton : UIButton
 @property (strong, nonatomic) UIImageView *imageView;
@@ -167,10 +168,6 @@
 @interface YTIPivotBarSupportedRenderers : NSObject
 - (YTIPivotBarItemRenderer *)pivotBarItemRenderer;
 - (YTIPivotBarIconOnlyItemRenderer *)pivotBarIconOnlyItemRenderer;
-@end
-
-@interface YTIPivotBarRenderer : NSObject
-- (NSMutableArray <YTIPivotBarSupportedRenderers *> *)itemsArray;
 @end
 
 @interface YTITopbarLogoRenderer : NSObject
