@@ -153,11 +153,6 @@
 @property(readonly, nonatomic) YTQTMButton *navigationButton;
 @end
 
-@interface YTIPivotBarSupportedRenderers : NSObject
-- (YTIPivotBarItemRenderer *)pivotBarItemRenderer;
-- (YTIPivotBarIconOnlyItemRenderer *)pivotBarIconOnlyItemRenderer;
-@end
-
 @interface YTITopbarLogoRenderer : NSObject
 @property(readonly, nonatomic) YTIIcon *iconImage;
 @end
