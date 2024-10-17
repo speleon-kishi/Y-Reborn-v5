@@ -43,10 +43,6 @@
 @interface YTCommentDetailHeaderCell : UIView
 @end
 
-@interface YTIPivotBarItemRender : NSObject
-@property(nonatomic, copy) NSArray *tabItems;
-@end
-
 @interface _ASCollectionViewCell : UICollectionViewCell
 - (id)node;
 @end
@@ -155,14 +151,6 @@
 
 @interface YTPivotBarItemView : UIView
 @property(readonly, nonatomic) YTQTMButton *navigationButton;
-@end
-
-@interface YTIPivotBarItemRenderer : NSObject
-- (NSString *)pivotIdentifier;
-@end
-
-@interface YTIPivotBarIconOnlyItemRenderer : GPBMessage
-- (NSString *)pivotIdentifier;
 @end
 
 @interface YTIPivotBarSupportedRenderers : NSObject
