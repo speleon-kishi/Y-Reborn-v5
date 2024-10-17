@@ -9,15 +9,13 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
     self.title = LOC(@"REORDER_TABS");
-
     UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
     UIBarButtonItem *saveButton = [[UIBarButtonItem alloc] initWithTitle:LOC(@"SAVE_TEXT") style:UIBarButtonItemStylePlain target:self action:@selector(save)];
     UIBarButtonItem *resetButton = [[UIBarButtonItem alloc] initWithTitle:LOC(@"RESET_TEXT") style:UIBarButtonItemStylePlain target:self action:@selector(reset)];
-    self.navigationItem.leftBarButtonItems = doneButton;
-    self.navigationItem.rightBarButtonItem = @[resetButton, saveButton];
-
+    self.navigationItem.leftBarButtonItem = doneButton;
+    self.navigationItem.rightBarButtonItems = @[resetButton, saveButton];
+    
     UITableViewStyle style;
     if (@available(iOS 13, *)) {
         style = UITableViewStyleInsetGrouped;
@@ -30,7 +28,6 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
-
     [NSLayoutConstraint activateConstraints:@[
         [self.tableView.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
         [self.tableView.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor],
@@ -41,7 +38,6 @@
     NSArray *savedTabOrder = [[NSUserDefaults standardUserDefaults] objectForKey:@"kTabOrder"];
     if (savedTabOrder != nil) {
         self.tabOrder = [NSMutableArray arrayWithArray:savedTabOrder];
-
         UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
         [self.tableView addGestureRecognizer:longPressGesture];
     }
@@ -52,16 +48,12 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (section == 0) {
-        return 5;
-    }
-    return 0;
+    return 5;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"TabBarTableViewCell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
         cell.textLabel.adjustsFontSizeToFitWidth = YES;
@@ -78,14 +70,11 @@
             cell.detailTextLabel.textColor = [UIColor whiteColor];
         }
     }
-
     if (indexPath.section == 0) {
         NSString *tabIdentifier = self.tabOrder[indexPath.row];
         cell.textLabel.text = tabIdentifier;
-
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
-
     return cell;
 }
 
@@ -96,10 +85,13 @@
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath {
     NSInteger destinationIndex = destinationIndexPath.row;
     NSInteger sourceIndex = sourceIndexPath.row;
-
     NSString *tabIdentifier = self.tabOrder[sourceIndex];
     [self.tabOrder removeObjectAtIndex:sourceIndex];
     [self.tabOrder insertObject:tabIdentifier atIndex:destinationIndex];
+}
+
+- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
 }
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
