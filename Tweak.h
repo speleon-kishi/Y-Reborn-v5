@@ -154,16 +154,10 @@
 @end
 
 @interface YTPivotBarViewController : UIViewController
-- (void)selectItemWithPivotIdentifier:(id)pivotIndentifier;
-- (void)reorderTabsWithTabOrder:(NSArray<NSString *> *)tabOrder;
 @end
 
 @interface YTPivotBarItemView : UIView
 @property(readonly, nonatomic) YTQTMButton *navigationButton;
-@end
-
-@interface YTIPivotBarItemRenderer : NSObject
-- (NSString *)pivotIdentifier;
 @end
 
 @interface YTIPivotBarIconOnlyItemRenderer : GPBMessage
@@ -173,10 +167,6 @@
 @interface YTIPivotBarSupportedRenderers : NSObject
 - (YTIPivotBarItemRenderer *)pivotBarItemRenderer;
 - (YTIPivotBarIconOnlyItemRenderer *)pivotBarIconOnlyItemRenderer;
-@end
-
-@interface YTIPivotBarRenderer : NSObject
-- (NSMutableArray <YTIPivotBarSupportedRenderers *> *)itemsArray;
 @end
 
 @interface YTITopbarLogoRenderer : NSObject
