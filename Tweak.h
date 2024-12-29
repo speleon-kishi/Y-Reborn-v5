@@ -1,16 +1,20 @@
-#import <LocalAuthentication/LocalAuthentication.h>
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#import <LocalAuthentication/LocalAuthentication.h>
 #import <CaptainHook/CaptainHook.h>
 #import <HBLog.h>
 #import <objc/runtime.h>
-#import <UIKit/UIKit.h>
 #import <YouTubeExtractor/YouTubeExtractor.h>
 #import <dlfcn.h>
 #import <rootless.h>
+
+// Controllers
 #import "Controllers/RootOptionsController.h"
 #import "Controllers/PictureInPictureController.h"
 #import "Controllers/YouTubeDownloadController.h"
 #import "Controllers/DownloadsController.h"
+
+// YouTube Headers
 #import "YouTubeHeader/YTVideoQualitySwitchOriginalController.h"
 #import "YouTubeHeader/YTVideoWithContextNode.h"
 #import "YouTubeHeader/YTIElementRenderer.h"
@@ -32,6 +36,7 @@
 #import "YouTubeHeader/YTHUDMessage.h"
 #import "YouTubeHeader/GOOHUDManagerInternal.h"
 
+// Interfaces
 @interface YTQTMButton : UIButton
 @property (strong, nonatomic) UIImageView *imageView;
 + (instancetype)iconButton;
@@ -162,23 +167,28 @@
 @interface YTITopbarLogoRenderer : NSObject
 @property(readonly, nonatomic) YTIIcon *iconImage;
 @end
+
 @interface YTIIconThumbnailRenderer : GPBMessage
 @property (nonatomic, strong) YTIIcon *icon;
 - (bool)hasIcon;
 @end
+
 @interface YTICompactListItemThumbnailSupportedRenderers : GPBMessage
 @property (nonatomic, strong) YTIIconThumbnailRenderer *iconThumbnailRenderer;
 - (bool)hasIconThumbnailRenderer;
 @end
+
 @interface YTICompactListItemRenderer : GPBMessage
 @property (nonatomic, strong) YTICompactListItemThumbnailSupportedRenderers *thumbnail;
 @property (nonatomic, strong) YTIFormattedString *title;
 - (bool)hasThumbnail;
 - (bool)hasTitle;
 @end
+
 @interface YTIIcon (uYouEnhanced)
 - (bool)hasIconType;
 @end
+
 @interface YTICompactLinkRenderer : GPBMessage
 @property (nonatomic, strong) YTIIcon *icon;
 @property (nonatomic, strong) YTIFormattedString *title;
@@ -186,15 +196,18 @@
 - (bool)hasIcon;
 - (bool)hasThumbnail;
 @end
+
 @interface YTIItemSectionSupportedRenderers (uYouEnhanced)
 @property(readonly, nonatomic) YTICompactLinkRenderer *compactLinkRenderer;
 @property(readonly, nonatomic) YTICompactListItemRenderer *compactListItemRenderer;
 - (bool)hasCompactLinkRenderer;
 - (bool)hasCompactListItemRenderer;
 @end
+
 @interface YTAppCollectionViewController : YTInnerTubeCollectionViewController
 - (void)uYouEnhancedFakePremiumModel:(YTISectionListRenderer *)model;
 @end
+
 @interface YTInnerTubeCollectionViewController (uYouEnhanced)
 @property(readonly, nonatomic) YTISectionListRenderer *model;
 @end
