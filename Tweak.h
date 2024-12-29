@@ -163,28 +163,6 @@
 @property(readonly, nonatomic) YTIIcon *iconImage;
 @end
 
-@interface YTICompactListItemRenderer : GPBMessage
-@property (nonatomic, strong) YTICompactListItemThumbnailSupportedRenderers *thumbnail;
-@property (nonatomic, strong) YTIFormattedString *title;
-- (bool)hasThumbnail;
-- (bool)hasTitle;
-@end
-
-@interface YTICompactLinkRenderer : GPBMessage
-@property (nonatomic, strong) YTIIcon *icon;
-@property (nonatomic, strong) YTIFormattedString *title;
-@property (nonatomic, strong) YTICompactListItemThumbnailSupportedRenderers *thumbnail;
-- (bool)hasIcon;
-- (bool)hasThumbnail;
-@end
-
-@interface YTIItemSectionSupportedRenderers (uYouEnhanced)
-@property(readonly, nonatomic) YTICompactLinkRenderer *compactLinkRenderer;
-@property(readonly, nonatomic) YTICompactListItemRenderer *compactListItemRenderer;
-- (bool)hasCompactLinkRenderer;
-- (bool)hasCompactListItemRenderer;
-@end
-
 @interface YTAppCollectionViewController : YTInnerTubeCollectionViewController
 - (void)uYouEnhancedFakePremiumModel:(YTISectionListRenderer *)model;
 @end
