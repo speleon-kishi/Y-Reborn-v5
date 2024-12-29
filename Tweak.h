@@ -28,6 +28,7 @@
 #import "YouTubeHeader/YTIPivotBarRenderer.h"
 #import "YouTubeHeader/YTIPivotBarSupportedRenderers.h"
 #import "YouTubeHeader/YTPivotBarItemView.h"
+#import "YouTubeHeader/YTPivotBarView.h"
 #import "YouTubeHeader/YTIIcon.h"
 #import "YouTubeHeader/YTIMenuConditionalServiceItemRenderer.h"
 #import "YouTubeHeader/YTInnerTubeCollectionViewController.h"
