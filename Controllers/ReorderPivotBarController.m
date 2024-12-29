@@ -1,6 +1,6 @@
 #import "ReorderPivotBarController.h"
 
-@interface ReorderPivotBarController () <UITableViewDelegate>
+@interface ReorderPivotBarController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) NSMutableArray *tabOrder;
 
@@ -29,20 +29,18 @@
 }
 
 - (void)setupView {
+    self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.view addSubview:self.tableView];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (section == 0) {
-        return 1;
-    }
-    if (section == 1) {
-        return 4;
-    }
-    return 0;
+    return self.tabOrder.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -66,70 +64,46 @@
         }
     }
     
-    if (indexPath.section == 0) {
-        cell.textLabel.text = @"Home";
-    } else if (indexPath.section == 1) {
-        if (indexPath.row == 0) {
-            cell.textLabel.text = @"Shorts";
-        } else if (indexPath.row == 1) {
-            cell.textLabel.text = @"Create";
-        } else if (indexPath.row == 2) {
-            cell.textLabel.text = @"Subscriptions";
-        } else if (indexPath.row == 3) {
-            cell.textLabel.text = @"You";
-        }
-        
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    }
+    cell.textLabel.text = self.tabOrder[indexPath.row];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     return cell;
 }
 
+- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath {
+    NSString *movedObject = self.tabOrder[sourceIndexPath.row];
+    [self.tabOrder removeObjectAtIndex:sourceIndexPath.row];
+    [self.tabOrder insertObject:movedObject atIndex:destinationIndexPath.row];
+    [self save];
+}
+
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)gestureRecognizer {
-    CGPoint location = [gestureRecognizer locationInView:self.tableView];
-    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
-    
-    if (gestureRecognizer.state == UIGestureRecognizerStateBegan && indexPath.section == 1) {
-        NSIndexPath *destinationIndexPath = [NSIndexPath indexPathForRow:self.tabOrder.count - 1 inSection:1];
-        
-        if (indexPath.row != self.tabOrder.count - 1) {
-            [self.tableView beginUpdates];
-            
-            NSString *movedTabIdentifier = self.tabOrder[indexPath.row];
-            [self.tabOrder removeObjectAtIndex:indexPath.row];
-            [self.tabOrder insertObject:movedTabIdentifier atIndex:destinationIndexPath.row];
-            
-            // Update the pivot bar's tabs
-            NSMutableArray *reorderedTabs = [NSMutableArray array];
-            
-            for (NSString *tabIdentifier in self.tabOrder) {
-                if ([tabIdentifier isEqualToString:@"FEshorts"]) {
-                    [reorderedTabs addObject:@"Shorts"];
-                }
-                else if ([tabIdentifier isEqualToString:@"FEuploads"]) {
-                    [reorderedTabs addObject:@"Create"];
-                }
-                else if ([tabIdentifier isEqualToString:@"FEsubscriptions"]) {
-                    [reorderedTabs addObject:@"Subscriptions"];
-                }
-                else if ([tabIdentifier isEqualToString:@"FElibrary"]) {
-                    [reorderedTabs addObject:@"You"];
-                }
-            }
-            
-            // Set the new tab order
-            [self setTabOrder:reorderedTabs];
-            
-            [self.tableView moveRowAtIndexPath:indexPath toIndexPath:destinationIndexPath];
-            [self.tableView endUpdates];
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        CGPoint location = [gestureRecognizer locationInView:self.tableView];
+        NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
+        if (indexPath) {
+            [self.tableView setEditing:YES animated:YES];
         }
     }
 }
-- (void)save {
-    [[NSUserDefaults standardUserDefaults] setObject:self.tabOrder forKey:@"kTabOrder"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+
+- (void)reset {
+    self.tabOrder = [@[LOC(@"HOME_TEXT"), LOC(@"SHORTS_TEXT"), LOC(@"CREATE_TEXT"), LOC(@"SUB_TEXT"), LOC(@"YOU_TEXT")] mutableCopy];
+    [self.tableView reloadData];
+    [self save];
 }
-- (void)done {   
+
+- (void)save {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:self.tabOrder forKey:@"kTabOrder"];
+    [defaults synchronize];
+}
+
+- (void)done {
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
