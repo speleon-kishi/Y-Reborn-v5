@@ -27,10 +27,10 @@ jobs:
           sparse-checkout: iPhoneOS16.5.sdk
           path: theos/sdks
 
-      - name: Checkout PoomSmart/YouTubeHeader
+      - name: Checkout arichornloverALT/YouTubeHeader
         uses: actions/checkout@main
         with:
-          repository: PoomSmart/YouTubeHeader
+          repository: arichornloverALT/YouTubeHeader
           ref: main
           path: YouTubeHeader
 
