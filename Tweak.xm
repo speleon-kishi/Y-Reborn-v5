@@ -972,7 +972,7 @@ static NSMutableArray <YTIItemSectionRenderer *> *filteredArray(NSArray <YTIItem
 %group gHidePlayNextInQueue
 %hook YTMenuItemVisibilityHandler
 - (BOOL)shouldShowServiceItemRenderer:(YTIMenuConditionalServiceItemRenderer *)renderer {
-    return renderer.icon.iconType == 251 ? NO : %orig;
+    return renderer.icon.iconType == YT_QUEUE_PLAY_NEXT ? NO : %orig;
 }
 %end
 %end
@@ -2400,7 +2400,7 @@ static NSMutableArray <YTIItemSectionRenderer *> *filteredArray(NSArray <YTIItem
                 YTICompactLinkRenderer *compactLinkRenderer = [itemSectionSupportedRenderers compactLinkRenderer];
                 if ([compactLinkRenderer hasIcon]) {
                     YTIIcon *icon = [compactLinkRenderer icon];
-                    if ([icon hasIconType] && icon.iconType == 741) {
+                    if ([icon hasIconType] && icon.iconType == YT_PREMIUM_STANDALONE) {
                         if ([((YTIStringRun *)(compactLinkRenderer.title.runsArray.firstObject)).text isEqualToString:@"Downloads"]) {
                             DownloadsController *downloadsController = [[DownloadsController alloc] init];
                             [self.navigationController pushViewController:downloadsController animated:YES];
@@ -2417,7 +2417,7 @@ static NSMutableArray <YTIItemSectionRenderer *> *filteredArray(NSArray <YTIItem
                         YTIIconThumbnailRenderer *iconThumbnailRenderer = thumbnail.iconThumbnailRenderer;
                         if ([iconThumbnailRenderer hasIcon]) {
                             YTIIcon *icon = iconThumbnailRenderer.icon;
-                            if ([icon hasIconType] && icon.iconType == 658) {
+                            if ([icon hasIconType] && icon.iconType == YT_MY_VIDEOS) {
                                 yourVideosCellIndex = [subContentsArray indexOfObject:itemSectionSupportedRenderers];
                             }
                         }
@@ -2428,7 +2428,7 @@ static NSMutableArray <YTIItemSectionRenderer *> *filteredArray(NSArray <YTIItem
         if (yourVideosCellIndex != -1 && subContentsArray[yourVideosCellIndex].accessibilityLabel == nil) {
             YTIItemSectionSupportedRenderers *newItemSectionSupportedRenderers = [subContentsArray[yourVideosCellIndex] copy];
             ((YTIStringRun *)(newItemSectionSupportedRenderers.compactListItemRenderer.title.runsArray.firstObject)).text = @"Downloads";
-            newItemSectionSupportedRenderers.compactListItemRenderer.thumbnail.iconThumbnailRenderer.icon.iconType = 147;
+            newItemSectionSupportedRenderers.compactListItemRenderer.thumbnail.iconThumbnailRenderer.icon.iconType = YT_DOWNLOADS_OUTLINE;
             [subContentsArray insertObject:newItemSectionSupportedRenderers atIndex:yourVideosCellIndex + 1];
             subContentsArray[yourVideosCellIndex].accessibilityLabel = @"uYouEnhanced Modified";
             yourVideosCellIndex = -1;
