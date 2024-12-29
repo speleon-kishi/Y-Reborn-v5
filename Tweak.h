@@ -21,6 +21,8 @@
 #import "YouTubeHeader/ELMNodeController.h"
 #import "YouTubeHeader/YTICommand.h"
 #import "YouTubeHeader/YTIPivotBarItemRenderer.h"
+#import "YouTubeHeader/YTIPivotBarRenderer.h"
+#import "YouTubeHeader/YTIPivotBarSupportedRenderers.h"
 #import "YouTubeHeader/YTIcon.h"
 #import "YouTubeHeader/YTIMenuConditionalServiceItemRenderer.h"
 #import "YouTubeHeader/YTInnerTubeCollectionViewController.h"
@@ -145,28 +147,6 @@
 
 @interface MLPlayerEventCenter : NSObject
 - (void)broadcastRateChange:(float)rate;
-@end
-
-@interface YTPivotBarView : UIView
-@end
-
-@interface YTPivotBarIndicatorView : UIView
-@end
-
-@interface YTPivotBarViewController : UIViewController
-@end
-
-@interface YTPivotBarItemView : UIView
-@property(readonly, nonatomic) YTQTMButton *navigationButton;
-@end
-
-@interface YTIPivotBarIconOnlyItemRenderer : GPBMessage
-- (NSString *)pivotIdentifier;
-@end
-
-@interface YTIPivotBarSupportedRenderers : NSObject
-- (YTIPivotBarItemRenderer *)pivotBarItemRenderer;
-- (YTIPivotBarIconOnlyItemRenderer *)pivotBarIconOnlyItemRenderer;
 @end
 
 @interface YTITopbarLogoRenderer : NSObject
