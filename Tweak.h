@@ -49,6 +49,14 @@
 @interface YTCommentDetailHeaderCell : UIView
 @end
 
+@interface YTPivotBarIndicatorView : UIView
+@end
+
+@interface YTPivotBarItemView : UIView
+@property(readonly, nonatomic) YTQTMButton *navigationButton;
+@end
+
+
 @interface YTIPivotBarItemRender : NSObject
 @property(nonatomic, copy) NSArray *tabItems;
 @end
