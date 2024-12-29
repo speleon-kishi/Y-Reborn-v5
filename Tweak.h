@@ -52,6 +52,9 @@
 @interface YTPivotBarIndicatorView : UIView
 @end
 
+@interface YTPivotBarViewController : UIViewController
+@end
+
 @interface YTPivotBarItemView : UIView
 @property(readonly, nonatomic) YTQTMButton *navigationButton;
 @end
