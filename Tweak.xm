@@ -2364,10 +2364,10 @@ static NSMutableArray <YTIItemSectionRenderer *> *filteredArray(NSArray <YTIItem
 
 // YouTube Premium Logo - @arichornlover & @bhackel
 %group gPremiumYouTubeLogo
-%hook YTHeaderLogoController
+%hook YTHeaderLogoControllerImpl // originally was "YTHeaderLogoController"
 - (void)setTopbarLogoRenderer:(YTITopbarLogoRenderer *)renderer {
     YTIIcon *iconImage = renderer.iconImage;
-    iconImage.iconType = 537;
+    iconImage.iconType = YT_PREMIUM_LOGO;
     %orig;
 }
 - (void)setPremiumLogo:(BOOL)isPremiumLogo {
