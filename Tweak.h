@@ -27,7 +27,8 @@
 #import "YouTubeHeader/YTIPivotBarItemRenderer.h"
 #import "YouTubeHeader/YTIPivotBarRenderer.h"
 #import "YouTubeHeader/YTIPivotBarSupportedRenderers.h"
-#import "YouTubeHeader/YTIcon.h"
+#import "YouTubeHeader/YTPivotBarItemView.h"
+#import "YouTubeHeader/YTIIcon.h"
 #import "YouTubeHeader/YTIMenuConditionalServiceItemRenderer.h"
 #import "YouTubeHeader/YTInnerTubeCollectionViewController.h"
 #import "YouTubeHeader/YTIFormattedString.h"
@@ -59,14 +60,6 @@
 
 @interface YTPivotBarViewController : UIViewController
 - (void)selectItemWithPivotIdentifier:(id)pivotIdentifier;
-@end
-
-@interface YTPivotBarItemView : UIView
-@property(readonly, nonatomic) YTQTMButton *navigationButton;
-@end
-
-@interface YTIPivotBarItemRender : NSObject
-@property(nonatomic, copy) NSArray *tabItems;
 @end
 
 @interface _ASCollectionViewCell : UICollectionViewCell
@@ -184,10 +177,6 @@
 @property (nonatomic, strong) YTIFormattedString *title;
 - (bool)hasThumbnail;
 - (bool)hasTitle;
-@end
-
-@interface YTIIcon (uYouEnhanced)
-- (bool)hasIconType;
 @end
 
 @interface YTICompactLinkRenderer : GPBMessage
