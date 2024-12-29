@@ -20,6 +20,8 @@
 #import "YouTubeHeader/ELMCellNode.h"
 #import "YouTubeHeader/ELMNodeController.h"
 #import "YouTubeHeader/YTICommand.h"
+#import "YouTubeHeader/YTIPivotBarItemRenderer.h"
+#import "YouTubeHeader/YTIcon.h"
 #import "YouTubeHeader/YTIMenuConditionalServiceItemRenderer.h"
 #import "YouTubeHeader/YTInnerTubeCollectionViewController.h"
 #import "YouTubeHeader/YTIFormattedString.h"
