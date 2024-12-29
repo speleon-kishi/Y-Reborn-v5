@@ -58,6 +58,7 @@
 @end
 
 @interface YTPivotBarViewController : UIViewController
+- (void)selectItemWithPivotIdentifier:(id)pivotIdentifier;
 @end
 
 @interface YTPivotBarItemView : UIView
