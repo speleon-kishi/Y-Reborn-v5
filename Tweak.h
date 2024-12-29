@@ -56,7 +56,6 @@
 @property(readonly, nonatomic) YTQTMButton *navigationButton;
 @end
 
-
 @interface YTIPivotBarItemRender : NSObject
 @property(nonatomic, copy) NSArray *tabItems;
 @end
