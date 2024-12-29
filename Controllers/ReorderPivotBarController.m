@@ -1,4 +1,5 @@
 #import "ReorderPivotBarController.h"
+#import "Localization.h"
 
 @interface ReorderPivotBarController () <UITableViewDelegate, UITableViewDataSource>
 
