@@ -163,16 +163,6 @@
 @property(readonly, nonatomic) YTIIcon *iconImage;
 @end
 
-@interface YTIIconThumbnailRenderer : GPBMessage
-@property (nonatomic, strong) YTIIcon *icon;
-- (bool)hasIcon;
-@end
-
-@interface YTICompactListItemThumbnailSupportedRenderers : GPBMessage
-@property (nonatomic, strong) YTIIconThumbnailRenderer *iconThumbnailRenderer;
-- (bool)hasIconThumbnailRenderer;
-@end
-
 @interface YTICompactListItemRenderer : GPBMessage
 @property (nonatomic, strong) YTICompactListItemThumbnailSupportedRenderers *thumbnail;
 @property (nonatomic, strong) YTIFormattedString *title;
