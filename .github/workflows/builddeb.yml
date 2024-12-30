@@ -24,7 +24,7 @@ jobs:
         with:
           repository: aricloverEXALT/sdks
           ref: master
-          sparse-checkout: iPhoneOS17.5.sdk
+          sparse-checkout: iPhoneOS16.4.sdk
           path: theos/sdks
 
       - name: Checkout aricloverEXALT/YouTubeHeader
