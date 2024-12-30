@@ -15,22 +15,22 @@ jobs:
         uses: actions/checkout@main
         with:
           repository: theos/theos
-          ref: 5bfdc3cb7133ec1cab43182115d902e2b57c9eac
+          ref: master
           submodules: recursive
           path: theos
 
-      - name: Checkout theos/sdks
+      - name: Checkout aricloverEXALT/sdks
         uses: actions/checkout@main
         with:
-          repository: theos/sdks
+          repository: aricloverEXALT/sdks
           ref: master
-          sparse-checkout: iPhoneOS16.5.sdk
-          path: theos/sdks
+          sparse-checkout: iPhoneOS17.5.sdk
+          path: aricloverEXALT/sdks
 
-      - name: Checkout arichornloverALT/YouTubeHeader
+      - name: Checkout aricloverEXALT/YouTubeHeader
         uses: actions/checkout@main
         with:
-          repository: arichornloverALT/YouTubeHeader
+          repository: aricloverEXALT/YouTubeHeader
           ref: main
           path: YouTubeHeader
 
