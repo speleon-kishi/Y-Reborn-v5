@@ -459,7 +459,7 @@ static NSString *accessGroupID() {
     NSURL *audioLow;
     for (NSDictionary *format in innertubeAdaptiveFormats) {
         if (([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"2160"]) || 
-            ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:@"quality"]] isEqual:@"hd2160"])) {
+            ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:@"quality"]] isEqual:@"hd2160"]))) {
             if (video2160p == nil) {
                 video2160p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
             }
