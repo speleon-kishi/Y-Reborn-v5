@@ -25,7 +25,7 @@ jobs:
           repository: aricloverEXALT/sdks
           ref: master
           sparse-checkout: iPhoneOS17.5.sdk
-          path: aricloverEXALT/sdks
+          path: theos/sdks
 
       - name: Checkout aricloverEXALT/YouTubeHeader
         uses: actions/checkout@main
