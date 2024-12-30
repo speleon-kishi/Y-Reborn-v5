@@ -1,4 +1,4 @@
-TARGET = iphone:clang:17.5:15.0
+TARGET = iphone:clang:17.5:14.0
 export SDK_PATH = $(THEOS)/sdks/iPhoneOS17.5.sdk/
 export SYSROOT = $(SDK_PATH)
 YouTubeReborn_USE_FLEX = 0
