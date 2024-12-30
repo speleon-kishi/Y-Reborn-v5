@@ -9,7 +9,7 @@ MODULES = jailed
 FINALPACKAGE = 1
 CODESIGN_IPA = 0
 
-PACKAGE_NAME = $(TWEAK_NAME)
+PACKAGE_NAME = YouTubeReborn
 TWEAK_NAME = YouTubeReborn
 DISPLAY_NAME = YouTube
 BUNDLE_ID = com.google.ios.youtube
