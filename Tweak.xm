@@ -7,6 +7,7 @@ static inline NSString *LOC(NSString *key) {
     return [tweakBundle localizedStringForKey:key value:nil table:nil];
 }
 
+#define CHECK_VIDEO_CONDITION(format, key, value) ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:key]] isEqual:value])
 #define SYSTEM_VERSION_EQUAL_TO(v)                  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedSame)
 #define SYSTEM_VERSION_GREATER_THAN(v)              ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedDescending)
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
@@ -458,38 +459,31 @@ static NSString *accessGroupID() {
     NSURL *audioMedium;
     NSURL *audioLow;
     for (NSDictionary *format in innertubeAdaptiveFormats) {
-        if (([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"2160"]) || 
-            ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:@"quality"]] isEqual:@"hd2160"]))) {
+        if (CHECK_VIDEO_CONDITION(format, @"height", @"2160") || CHECK_VIDEO_CONDITION(format, @"quality", @"hd2160")) {
             if (video2160p == nil) {
                 video2160p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
             }
-        } else if (([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"1440"]) || 
-                   ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:@"quality"]] isEqual:@"hd1440"]))) {
+        } else if (CHECK_VIDEO_CONDITION(format, @"height", @"1440") || CHECK_VIDEO_CONDITION(format, @"quality", @"hd1440")) {
             if (video1440p == nil) {
                 video1440p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
             }
-        } else if (([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"1080"]) || 
-                   ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:@"quality"]] isEqual:@"hd1080"]))) {
+        } else if (CHECK_VIDEO_CONDITION(format, @"height", @"1080") || CHECK_VIDEO_CONDITION(format, @"quality", @"hd1080")) {
             if (video1080p == nil) {
                 video1080p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
             }
-        } else if (([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"720"]) || 
-                   ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:@"quality"]] isEqual:@"hd720"]))) {
+        } else if (CHECK_VIDEO_CONDITION(format, @"height", @"720") || CHECK_VIDEO_CONDITION(format, @"quality", @"hd720")) {
             if (video720p == nil) {
                 video720p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
             }
-        } else if (([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"480"]) || 
-                   ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:@"qualityLabel"]] isEqual:@"480p"]))) {
+        } else if (CHECK_VIDEO_CONDITION(format, @"height", @"480") || CHECK_VIDEO_CONDITION(format, @"qualityLabel", @"480p")) {
             if (video480p == nil) {
                 video480p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
             }
-        } else if (([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"360"]) || 
-                   ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:@"qualityLabel"]] isEqual:@"360p"]))) {
+        } else if (CHECK_VIDEO_CONDITION(format, @"height", @"360") || CHECK_VIDEO_CONDITION(format, @"qualityLabel", @"360p")) {
             if (video360p == nil) {
                 video360p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
             }
-        } else if (([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"240"]) || 
-                   ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] && [[NSString stringWithFormat:@"%@", [format objectForKey:@"qualityLabel"]] isEqual:@"240p"]))) {
+        } else if (CHECK_VIDEO_CONDITION(format, @"height", @"240") || CHECK_VIDEO_CONDITION(format, @"qualityLabel", @"240p")) {
             if (video240p == nil) {
                 video240p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
             }
