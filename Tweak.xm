@@ -2680,7 +2680,7 @@ NSBundle *YouTubeRebornBundle() {
         if (tweakBundlePath)
             bundle = [NSBundle bundleWithPath:tweakBundlePath];
         else
-            bundle = [NSBundle bundleWithPath:JBROOT_PATH_NSSTRING(@"/Library/Application Support/YouTubeReborn.bundle")];
+            bundle = [NSBundle bundleWithPath:ROOT_PATH_NS(@"/Library/Application Support/YouTubeReborn.bundle")];
     });
     return bundle;
 }
