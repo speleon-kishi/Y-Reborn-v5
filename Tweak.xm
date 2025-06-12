@@ -287,18 +287,13 @@ static NSString *accessGroupID() {
 }
 %new
 - (void)rebornRootOptionsAction {
-    RootOptionsController *optionsController = [[RootOptionsController alloc] initWithStyle:UITableViewStyleGrouped];
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:optionsController];
-    navController.modalPresentationStyle = UIModalPresentationFullScreen;
+    RootOptionsController *rootOptionsController = [[RootOptionsController alloc] initWithStyle:UITableViewStyleGrouped];
+    UINavigationController *rootOptionsControllerView = [[UINavigationController alloc] initWithRootViewController:rootOptionsController];
+    rootOptionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
 
-    UIViewController *ancestorController = [self _viewControllerForAncestor];
-    if (ancestorController) {
-        [ancestorController presentViewController:navController animated:YES completion:nil];
-    } else {
-        [self showAlertWithTitle:@"Error" message:@"Unable to present options."];
-    }
+    UIViewController *rootPrefsViewController = [self _viewControllerForAncestor];
+    [rootPrefsViewController presentViewController:rootOptionsControllerView animated:YES completion:nil];
 }
-
 %end
 
 @interface UIViewController (YouTubeReborn)
@@ -2264,7 +2259,7 @@ NSData *cellDividerData;
         if (yourVideosCellIndex != -1 && subContentsArray[yourVideosCellIndex].accessibilityLabel == nil) {
             YTIItemSectionSupportedRenderers *newItemSectionSupportedRenderers = [subContentsArray[yourVideosCellIndex] copy];
             ((YTIStringRun *)(newItemSectionSupportedRenderers.compactListItemRenderer.title.runsArray.firstObject)).text = @"Downloads";
-            newItemSectionSupportedRenderers.compactListItemRenderer.thumbnail.iconThumbnailRenderer.icon.iconType = 147;
+            newItemSectionSupportedRenderers.compactListItemRenderer.thumbnail.iconThumbnailRenderer.icon.iconType = YT_DOWNLOADS_OUTLINE;
             [subContentsArray insertObject:newItemSectionSupportedRenderers atIndex:yourVideosCellIndex + 1];
             subContentsArray[yourVideosCellIndex].accessibilityLabel = @"uYouEnhanced Modified";
             yourVideosCellIndex = -1;
