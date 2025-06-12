@@ -23,8 +23,8 @@
 
 @implementation RootOptionsController
 
-- (void)loadView {
-	[super loadView];
+- (void)viewDidLoad {
+	[super viewDidLoad];
     [self coloursView];
 
     self.title = @"YouTube Reborn";
@@ -35,9 +35,25 @@
     UIBarButtonItem *applyButton = [[UIBarButtonItem alloc] initWithTitle:@"Apply" style:UIBarButtonItemStylePlain target:self action:@selector(apply)];
     self.navigationItem.rightBarButtonItem = applyButton;
 
-	if (@available(iOS 15.0, *)) {
-    	[self.tableView setSectionHeaderTopPadding:0.0f];
-	}
+    UITableViewStyle style;
+        if (@available(iOS 13, *)) {
+            style = UITableViewStyleInsetGrouped;
+        } else {
+            style = UITableViewStyleGrouped;
+        }
+
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:style];
+    self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.tableView.dataSource = self;
+    self.tableView.delegate = self;
+    [self.view addSubview:self.tableView];
+    
+    [NSLayoutConstraint activateConstraints:@[
+        [self.tableView.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
+        [self.tableView.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor],
+        [self.tableView.widthAnchor constraintEqualToAnchor:self.view.widthAnchor],
+        [self.tableView.heightAnchor constraintEqualToAnchor:self.view.heightAnchor]
+    ]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -85,42 +101,64 @@
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             if (indexPath.row == 0) {
                 cell.textLabel.text = @"View Downloads";
+                cell.imageView.image = [UIImage systemImageNamed:@"arrow.down.circle"];
+		cell.imageView.tintColor = cell.textLabel.textColor;
             }
             if (indexPath.row == 1) {
                 cell.textLabel.text = @"View Downloads In Filza";
+		cell.imageView.image = [UIImage systemImageNamed:@"square.and.arrow.up.on.square"];
+		cell.imageView.tintColor = cell.textLabel.textColor;
             }
         }
         if (indexPath.section == 1) {
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             if (indexPath.row == 0) {
                 cell.textLabel.text = @"Video Options";
+		cell.imageView.image = [UIImage systemImageNamed:@"play.rectangle"];
+		cell.imageView.tintColor = cell.textLabel.textColor;
             }
             if (indexPath.row == 1) {
                 cell.textLabel.text = @"Overlay Options";
+		cell.imageView.image = [UIImage systemImageNamed:@"square.grid.3x2.fill"];
+		cell.imageView.tintColor = cell.textLabel.textColor;
             }
             if (indexPath.row == 2) {
                 cell.textLabel.text = @"Tab Bar Options";
+		cell.imageView.image = [UIImage systemImageNamed:@"rectangle.3.offgrid.fill"];
+		cell.imageView.tintColor = cell.textLabel.textColor;
             }
             if (indexPath.row == 3) {
                 cell.textLabel.text = @"Colour Options";
+                cell.imageView.image = [UIImage systemImageNamed:@"slider.horizontal.3"];
+		cell.imageView.tintColor = cell.textLabel.textColor;
             }
             if (indexPath.row == 4) {
                 cell.textLabel.text = @"Picture In Picture Options";
+		cell.imageView.image = [UIImage systemImageNamed:@"pip"];
+		cell.imageView.tintColor = cell.textLabel.textColor;
             }
             if (indexPath.row == 5) {
                 cell.textLabel.text = @"Shorts Options";
+		cell.imageView.image = [UIImage systemImageNamed:@"play.rectangle.on.rectangle.circle.fill"];
+		cell.imageView.tintColor = cell.textLabel.textColor;
             }
             if (indexPath.row == 6) {
                 cell.textLabel.text = @"Other Options";
+		cell.imageView.image = [UIImage systemImageNamed:@"ellipsis"];
+		cell.imageView.tintColor = cell.textLabel.textColor;
             }
         }
         if (indexPath.section == 2) {
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             if (indexPath.row == 0) {
                 cell.textLabel.text = @"Reborn Settings";
+		cell.imageView.image = [UIImage systemImageNamed:@"switch.2"];
+		cell.imageView.tintColor = cell.textLabel.textColor;
             }
             if (indexPath.row == 1) {
                 cell.textLabel.text = @"Credits";
+		cell.imageView.image = [UIImage systemImageNamed:@"star.fill"];
+		cell.imageView.tintColor = cell.textLabel.textColor;
             }
         }
     }
@@ -238,7 +276,7 @@
     if (section == 2) {
         NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
         NSString *appVersion = infoDictionary[@"CFBundleShortVersionString"];     
-        return [NSString stringWithFormat:@"YouTube: v%@\nYouTube Reborn: v4.2.8\n\n@ Lillie (@LillieH1000) 2022-2024", appVersion];
+        return [NSString stringWithFormat:@"YouTube: v%@\nYouTube Reborn: v4.2.9\n\n@ Lillie (@LillieH1000) 2022-2025", appVersion];
     }
     return nil;
 }
@@ -272,34 +310,6 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    self.view.layer.cornerRadius = 10.0;
-    self.view.layer.masksToBounds = YES;
-}
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self setBorderPropertiesForView:self.tableView];
-    [self setBorderPropertiesForView:self.view];
-    self.tableView.contentInset = UIEdgeInsetsMake(10.0, 0.0, 0.0, 0.0);
-    self.tableView.layer.borderWidth = 1.0;
-    self.tableView.layer.borderColor = [UIColor blackColor].CGColor;
-    self.tableView.layer.cornerRadius = 10.0;
-    self.tableView.layer.masksToBounds = true;
-    self.view.layer.borderWidth = 1.0;
-    self.view.layer.borderColor = [UIColor blackColor].CGColor;
-    UITableView *tableView = self.tableView;
-    tableView.contentInset = UIEdgeInsetsMake(10.0, 0.0, 0.0, 0.0);
-    tableView.layer.maskedCorners = kCALayerMinXMinYCorner;
-    self.view.layer.borderWidth = 1.0;
-    self.view.layer.borderColor = [UIColor blackColor].CGColor;
-    self.view.layer.cornerRadius = 10.0;
-    self.view.layer.masksToBounds = true;
-    self.view.layer.maskedCorners = kCALayerMaxXMinYCorner | kCALayerMinXMinYCorner;
-}
-
-- (void)setBorderPropertiesForView:(UIView *)view {
-    view.layer.borderWidth = 1.0;
-    view.layer.borderColor = [UIColor blackColor].CGColor;
 }
 
 @end
