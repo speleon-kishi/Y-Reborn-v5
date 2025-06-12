@@ -379,7 +379,7 @@ static NSString *accessGroupID() {
                                                 handler:^(UIAlertAction *action) {
         [self rebornPlayInExternalApp:videoID];
     }]];
-    [alertMenu addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+    [alertMenu addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
 
     alertMenu.modalPresentationStyle = UIModalPresentationPopover;
     alertMenu.popoverPresentationController.sourceView = self;
@@ -415,7 +415,7 @@ static NSString *accessGroupID() {
         return;
     }
 
-    UIAlertController *qualitySelector = [UIAlertController alertControllerWithTitle:@"选择画质" 
+    UIAlertController *qualitySelector = [UIAlertController alertControllerWithTitle:@"Select Quality" 
                                                                              message:nil 
                                                                       preferredStyle:UIAlertControllerStyleActionSheet];
     
@@ -441,7 +441,7 @@ static NSString *accessGroupID() {
         }
     }
 
-    [qualitySelector addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+    [qualitySelector addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
     qualitySelector.modalPresentationStyle = UIModalPresentationPopover;
     qualitySelector.popoverPresentationController.sourceView = self;
     qualitySelector.popoverPresentationController.sourceRect = self.bounds;
@@ -497,29 +497,29 @@ static NSString *accessGroupID() {
     }
 
     NSURL *hlsURL = [NSURL URLWithString:hlsURLString];
-    UIAlertController *appChooser = [UIAlertController alertControllerWithTitle:@"选择应用" 
+    UIAlertController *appChooser = [UIAlertController alertControllerWithTitle:@"Choose App" 
                                                                         message:nil 
                                                                  preferredStyle:UIAlertControllerStyleAlert];
 
-    [appChooser addAction:[UIAlertActionTitle:@"在 Infuse 中播放" 
-                                       style:UIAlertActionStyleDefault 
-                                     handler:^(UIAlertAction *action) {
+    [appChooser addAction:[UIAlertAction actionWithTitle:@"Play in Infuse" 
+                                                  style:UIAlertActionStyleDefault 
+                                                handler:^(UIAlertAction *action) {
         NSString *infuseURLString = [NSString stringWithFormat:@"infuse://x-callback-url/play?url=%@", hlsURL.absoluteString];
         NSURL *infuseURL = [NSURL URLWithString:[infuseURLString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
         [[UIApplication sharedApplication] openURL:infuseURL options:@{} completionHandler:nil];
-    }];
+    }]];
 
-    [appChooser addAction:[UIAlertActionTitle:@"在 VLC 中播放" 
-                                       style:UIAlertActionStyleDefault 
-                                     handler:^(UIAlertAction *action) {
+    [appChooser addAction:[UIAlertAction actionWithTitle:@"Play in VLC" 
+                                                  style:UIAlertActionStyleDefault 
+                                                handler:^(UIAlertAction *action) {
         NSString *vlcURLString = [NSString stringWithFormat:@"vlc-x-callback://x-callback-url/stream?url=%@", hlsURL.absoluteString];
         NSURL *vlcURL = [NSURL URLWithString:[vlcURLString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
         [[UIApplication sharedApplication] openURL:vlcURL options:@{} completionHandler:nil];
-    }];
+    }]];
 
-    [appChooser addAction:[UIAlertActionTitle:@"取消" style:UIAlertActionStyleCancel handler:nil];
+    [appChooser addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
 
-    UIViewController *ancestorController = [self _viewController];
+    UIViewController *ancestorController = [self _viewControllerForAncestor];
     if (ancestorController) {
         [ancestorController presentViewController:appChooser animated:YES completion:nil];
     }
@@ -531,13 +531,13 @@ static NSString *accessGroupID() {
 }
 
 %new
-- (NSURL *)highestQualityThumbnailURL:(NSArray *)thumbnails {
+- (NSURL *)highestQualityThumbnailURLFromArray:(NSArray *)thumbnails {
     if (!thumbnails.count) return nil;
     return [NSURL URLWithString:thumbnails.lastObject[@"url"]];
 }
 
 %new
-- (NSDictionary *)bestVideoInfoFromArray:(NSArray *)forms {
+- (NSDictionary *)bestVideoInfoFromFormats:(NSArray *)formats {
     NSMutableDictionary *videoURLs = [NSMutableDictionary dictionary];
     NSArray *resolutions = @[@"2160", @"1440", @"1080", @"720", @"480", @"360", @"240"];
     NSArray *qualityLabels = @[@"hd2160", @"hd1440", @"hd1080", @"hd720", @"480p", @"360p", @"240p"];
@@ -550,7 +550,7 @@ static NSString *accessGroupID() {
             NSString *mimeType = format[@"mimeType"];
             NSString *height = [format[@"height"] stringValue];
             NSString *formatQuality = format[@"quality"];
-            NSString *qualityLabel = format[@"qualityLabel"];
+            String *qualityLabel = format[@"qualityLabel"];
             NSString *urlString = format[@"url"];
 
             if ([mimeType containsString:@"video/mp4"] && 
@@ -594,7 +594,7 @@ static NSString *accessGroupID() {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title 
                                                                    message:message 
                                                             preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"完成" 
+    [alert addAction:[UIAlertAction actionWithTitle:@"OK" 
                                               style:UIAlertActionStyleDefault 
                                             handler:nil]];
     UIViewController *ancestorController = [self _viewControllerForAncestor];
@@ -2334,7 +2334,7 @@ NSData *cellDividerData;
 %hook YTHeaderLogoController
 - (void)setTopbarLogoRenderer:(YTITopbarLogoRenderer *)renderer {
     YTIIcon *iconImage = renderer.iconImage;
-    iconImage.iconType = 537;
+    iconImage.iconType = YT_PREMIUM_LOGO;
     %orig;
 }
 - (void)setPremiumLogo:(BOOL)isPremiumLogo {
@@ -2367,7 +2367,7 @@ NSData *cellDividerData;
                 YTICompactLinkRenderer *compactLinkRenderer = [itemSectionSupportedRenderers compactLinkRenderer];
                 if ([compactLinkRenderer hasIcon]) {
                     YTIIcon *icon = [compactLinkRenderer icon];
-                    if ([icon hasIconType] && icon.iconType == 741) {
+                    if ([icon hasIconType] && icon.iconType == YT_PREMIUM_STANDALONE) {
                         if ([((YTIStringRun *)(compactLinkRenderer.title.runsArray.firstObject)).text isEqualToString:@"Downloads"]) {
                             DownloadsController *downloadsController = [[DownloadsController alloc] init];
                             [self.navigationController pushViewController:downloadsController animated:YES];
@@ -2384,7 +2384,7 @@ NSData *cellDividerData;
                         YTIIconThumbnailRenderer *iconThumbnailRenderer = thumbnail.iconThumbnailRenderer;
                         if ([iconThumbnailRenderer hasIcon]) {
                             YTIIcon *icon = iconThumbnailRenderer.icon;
-                            if ([icon hasIconType] && icon.iconType == 658) {
+                            if ([icon hasIconType] && icon.iconType == YT_MY_VIDEOS) {
                                 yourVideosCellIndex = [subContentsArray indexOfObject:itemSectionSupportedRenderers];
                             }
                         }
