@@ -627,33 +627,33 @@ static NSString *accessGroupID() {
 - (void)rebornOptionsAction {
     NSString *videoID = [shortsPlayingVideoID videoId];
     if (!videoID.length) {
-        [self showAlertWithTitle:@"错误" message:@"无法获取视频 ID。"];
+        [self showAlertWithTitle:@"Error" message:@"Unable to retrieve video ID."];
         return;
     }
 
     UIAlertController *alertMenu = [UIAlertController alertControllerWithTitle:nil 
-                                                                       message:@"请先暂停视频。" 
+                                                                       message:@"Please pause the video before continuing." 
                                                                 preferredStyle:UIAlertControllerStyleActionSheet];
 
     if (![[NSUserDefaults standardUserDefaults] boolForKey:@"kRebornIHaveYouTubePremium"]) {
-        [alertMenu addAction:[UIAlertAction actionWithTitle:@"下载音频" 
+        [alertMenu addAction:[UIAlertAction actionWithTitle:@"Download Audio" 
                                                       style:UIAlertActionStyleDefault 
                                                     handler:^(UIAlertAction *action) {
             [self rebornAudioDownloader:videoID];
         }]];
-        [alertMenu addAction:[UIAlertAction actionWithTitle:@"下载视频" 
+        [alertMenu addAction:[UIAlertAction actionWithTitle:@"Download Video" 
                                                       style:UIAlertActionStyleDefault 
                                                     handler:^(UIAlertAction *action) {
             [self rebornVideoDownloader:videoID];
         }]];
     }
 
-    [alertMenu addAction:[UIAlertAction actionWithTitle:@"在外部应用中播放" 
+    [alertMenu addAction:[UIAlertAction actionWithTitle:@"Play in External App" 
                                                   style:UIAlertActionStyleDefault 
                                                 handler:^(UIAlertAction *action) {
         [self rebornPlayInExternalApp:videoID];
     }]];
-    [alertMenu addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+    [alertMenu addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
 
     alertMenu.modalPresentationStyle = UIModalPresentationPopover;
     alertMenu.popoverPresentationController.sourceView = self;
@@ -663,7 +663,7 @@ static NSString *accessGroupID() {
     if (ancestorController) {
         [ancestorController presentViewController:alertMenu animated:YES completion:nil];
     } else {
-        [self showAlertWithTitle:@"错误" message:@"无法显示选项。"];
+        [self showAlertWithTitle:@"Error" message:@"Unable to display options."];
     }
 }
 
@@ -671,7 +671,7 @@ static NSString *accessGroupID() {
 - (void)rebornVideoDownloader:(NSString *)videoID {
     NSDictionary *playerResponse = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
     if (![self validatePlayerResponse:playerResponse]) {
-        [self showAlertWithTitle:@"错误" message:@"无法获取视频详情。"];
+        [self showAlertWithTitle:@"Error" message:@"Failed to fetch video details."];
         return;
     }
 
@@ -685,7 +685,7 @@ static NSString *accessGroupID() {
     NSDictionary *bestVideo = [self bestVideoInfoFromFormats:[formats arrayByAddingObjectsFromArray:adaptiveFormats]];
 
     if (!bestVideo[@"url"] || !videoTitle.length || !artworkURL) {
-        [self showAlertWithTitle:@"错误" message:@"无法准备视频下载。"];
+        [self showAlertWithTitle:@"Error" message:@"Unable to prepare video download."];
         return;
     }
 
@@ -707,7 +707,7 @@ static NSString *accessGroupID() {
 - (void)rebornAudioDownloader:(NSString *)videoID {
     NSDictionary *playerResponse = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
     if (![self validatePlayerResponse:playerResponse]) {
-        [self showAlertWithTitle:@"错误" message:@"无法获取音频详情。"];
+        [self showAlertWithTitle:@"Error" message:@"Failed to fetch audio details."];
         return;
     }
 
@@ -720,7 +720,7 @@ static NSString *accessGroupID() {
     NSDictionary *audioInfo = [self bestAudioInfoFromFormats:adaptiveFormats];
 
     if (!audioInfo[@"url"] || !videoTitle.length || !artworkURL) {
-        [self showAlertWithTitle:@"错误" message:@"无法准备音频下载。"];
+        [self showAlertWithTitle:@"Error" message:@"Unable to prepare audio download."];
         return;
     }
 
@@ -743,16 +743,16 @@ static NSString *accessGroupID() {
     NSDictionary *playerResponse = [YouTubeExtractor youtubePlayerRequest:@"ios":videoID];
     NSString *hlsURLString = playerResponse[@"streamingData"][@"hlsManifestUrl"];
     if (!hlsURLString.length) {
-        [self showAlertWithTitle:@"错误" message:@"无法获取播放链接。"];
+        [self showAlertWithTitle:@"Error" message:@"Failed to fetch playback URL."];
         return;
     }
 
     NSURL *hlsURL = [NSURL URLWithString:hlsURLString];
-    UIAlertController *appChooser = [UIAlertController alertControllerWithTitle:@"选择应用" 
+    UIAlertController *appChooser = [UIAlertController alertControllerWithTitle:@"Choose App" 
                                                                         message:nil 
                                                                  preferredStyle:UIAlertControllerStyleAlert];
 
-    [appChooser addAction:[UIAlertAction actionWithTitle:@"在 Infuse 中播放" 
+    [appChooser addAction:[UIAlertAction actionWithTitle:@"Play in Infuse" 
                                                    style:UIAlertActionStyleDefault 
                                                  handler:^(UIAlertAction *action) {
         NSString *infuseURLString = [NSString stringWithFormat:@"infuse://x-callback-url/play?url=%@", hlsURL.absoluteString];
@@ -760,7 +760,7 @@ static NSString *accessGroupID() {
         [[UIApplication sharedApplication] openURL:infuseURL options:@{} completionHandler:nil];
     }]];
 
-    [appChooser addAction:[UIAlertAction actionWithTitle:@"在 VLC 中播放" 
+    [appChooser addAction:[UIAlertAction actionWithTitle:@"Play in VLC" 
                                                    style:UIAlertActionStyleDefault 
                                                  handler:^(UIAlertAction *action) {
         NSString *vlcURLString = [NSString stringWithFormat:@"vlc-x-callback://x-callback-url/stream?url=%@", hlsURL.absoluteString];
@@ -768,7 +768,7 @@ static NSString *accessGroupID() {
         [[UIApplication sharedApplication] openURL:vlcURL options:@{} completionHandler:nil];
     }]];
 
-    [appChooser addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+    [appChooser addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
 
     UIViewController *ancestorController = [self _viewControllerForAncestor];
     if (ancestorController) {
@@ -845,7 +845,7 @@ static NSString *accessGroupID() {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title 
                                                                    message:message 
                                                             preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"完成" 
+    [alert addAction:[UIAlertAction actionWithTitle:@"OK" 
                                               style:UIAlertActionStyleDefault 
                                             handler:nil]];
     UIViewController *ancestorController = [self _viewControllerForAncestor];
