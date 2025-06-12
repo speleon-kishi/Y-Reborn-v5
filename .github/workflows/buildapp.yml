@@ -70,12 +70,12 @@ jobs:
         id: SDK
         uses: actions/cache@v4.2.3
         env:
-          cache-name: iOS-16.4-SDK
+          cache-name: iOS-17.5-SDK
         with:
           path: theos/sdks/
           key: ${{ env.cache-name }}
 
-      - name: Download iOS 16.4 SDK
+      - name: Download iOS 17.5 SDK
         if: steps.SDK.outputs.cache-hit != 'true'
         run: |
           git clone -n --depth=1 --filter=tree:0 https://github.com/arichornlover/sdks.git && cd sdks
