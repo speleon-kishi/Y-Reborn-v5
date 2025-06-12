@@ -301,8 +301,23 @@ static NSString *accessGroupID() {
 
 %end
 
-%hook YTMainAppControlsOverlayView
+@interface UIViewController (YouTubeReborn)
+- (void)showAlertWithTitle:(NSString *)title message:(NSString *)message;
+@end
 
+@implementation UIViewController (YouTubeReborn)
+- (void)showAlertWithTitle:(NSString *)title message:(NSString *)message {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title 
+                                                                   message:message 
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"OK" 
+                                              style:UIAlertActionStyleDefault 
+                                            handler:nil]];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+@end
+
+%hook YTMainAppControlsOverlayView
 %property (nonatomic, strong) UIButton *rebornOverlayButton;
 
 - (instancetype)initWithDelegate:(id)delegate {
@@ -349,7 +364,8 @@ static NSString *accessGroupID() {
 
     NSString *videoID = [playingVideoID currentVideoID];
     if (!videoID.length) {
-        [self showAlertWithTitle:@"Error" message:@"Unable to retrieve video ID."];
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Unable to retrieve video ID."];
         return;
     }
 
@@ -385,29 +401,31 @@ static NSString *accessGroupID() {
     if (ancestorController) {
         [ancestorController presentViewController:alertMenu animated:YES completion:nil];
     } else {
-        [self showAlertWithTitle:@"Error" message:@"Unable to present options."];
+        [ancestorController showAlertWithTitle:@"Error" message:@"Unable to present options."];
     }
 }
 
 %new
 - (void)rebornVideoDownloader:(NSString *)videoID {
     NSDictionary *playerResponse = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
-    if (![self validatePlayerResponse:playerResponse]) {
-        [self showAlertWithTitle:@"Error" message:@"Failed to fetch video details."];
+    if (![YouTubeUtils validatePlayerResponse:playerResponse]) {
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Failed to fetch video details."];
         return;
     }
 
     NSDictionary *videoDetails = playerResponse[@"videoDetails"];
     NSString *videoTitle = videoDetails[@"title"];
     NSArray *thumbnails = videoDetails[@"thumbnail"][@"thumbnails"];
-    NSURL *artworkURL = [self highestQualityThumbnailURLFromArray:thumbnails];
+    NSURL *artworkURL = [YouTubeUtils highestQualityThumbnailURLFromArray:thumbnails];
 
     NSArray *adaptiveFormats = playerResponse[@"streamingData"][@"adaptiveFormats"];
-    NSDictionary *bestVideo = [self bestVideoInfoFromFormats:adaptiveFormats];
-    NSDictionary *bestAudio = [self bestAudioInfoFromFormats:adaptiveFormats];
+    NSDictionary *bestVideo = [YouTubeUtils bestVideoInfoFromFormats:adaptiveFormats];
+    NSDictionary *bestAudio = [YouTubeUtils bestAudioInfoFromFormats:adaptiveFormats];
 
     if (!bestVideo[@"url"] || !videoTitle.length || !artworkURL) {
-        [self showAlertWithTitle:@"Error" message:@"Unable to prepare video download."];
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Unable to prepare video download."];
         return;
     }
 
@@ -451,21 +469,23 @@ static NSString *accessGroupID() {
 %new
 - (void)rebornAudioDownloader:(NSString *)videoID {
     NSDictionary *playerResponse = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
-    if (![self validatePlayerResponse:playerResponse]) {
-        [self showAlertWithTitle:@"Error" message:@"Failed to fetch audio details."];
+    if (![YouTubeUtils validatePlayerResponse:playerResponse]) {
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Failed to fetch audio details."];
         return;
     }
 
     NSDictionary *videoDetails = playerResponse[@"videoDetails"];
     NSString *videoTitle = videoDetails[@"title"];
     NSArray *thumbnails = videoDetails[@"thumbnail"][@"thumbnails"];
-    NSURL *artworkURL = [self highestQualityThumbnailURLFromArray:thumbnails];
+    NSURL *artworkURL = [YouTubeUtils highestQualityThumbnailURLFromArray:thumbnails];
 
     NSArray *adaptiveFormats = playerResponse[@"streamingData"][@"adaptiveFormats"];
-    NSDictionary *audioInfo = [self bestAudioInfoFromFormats:adaptiveFormats];
+    NSDictionary *audioInfo = [YouTubeUtils bestAudioInfoFromFormats:adaptiveFormats];
 
     if (!audioInfo[@"url"] || !videoTitle.length || !artworkURL) {
-        [self showAlertWithTitle:@"Error" message:@"Unable to prepare audio download."];
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Unable to prepare audio download."];
         return;
     }
 
@@ -488,7 +508,8 @@ static NSString *accessGroupID() {
     NSDictionary *playerResponse = [YouTubeExtractor youtubePlayerRequest:@"ios":videoID];
     NSString *hlsURLString = playerResponse[@"streamingData"][@"hlsManifestUrl"];
     if (!hlsURLString.length) {
-        [self showAlertWithTitle:@"Error" message:@"Failed to fetch playback URL."];
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Failed to fetch playback URL."];
         return;
     }
 
@@ -520,89 +541,9 @@ static NSString *accessGroupID() {
         [ancestorController presentViewController:appChooser animated:YES completion:nil];
     }
 }
-
-%new
-- (BOOL)validatePlayerResponse:(NSDictionary *)response {
-    return response && response[@"streamingData"] && response[@"videoDetails"];
-}
-
-%new
-- (NSURL *)highestQualityThumbnailURLFromArray:(NSArray *)thumbnails {
-    if (!thumbnails.count) return nil;
-    return [NSURL URLWithString:thumbnails.lastObject[@"url"]];
-}
-
-%new
-- (NSDictionary *)bestVideoInfoFromFormats:(NSArray *)formats {
-    NSMutableDictionary *videoURLs = [NSMutableDictionary dictionary];
-    NSArray *resolutions = @[@"2160", @"1440", @"1080", @"720", @"480", @"360", @"240"];
-    NSArray *qualityLabels = @[@"hd2160", @"hd1440", @"hd1080", @"hd720", @"480p", @"360p", @"240p"];
-
-    for (NSUInteger i = 0; i < resolutions.count; i++) {
-        NSString *resolution = resolutions[i];
-        NSString *quality = qualityLabels[i];
-
-        for (NSDictionary *format in formats) {
-            NSString *mimeType = format[@"mimeType"];
-            NSString *height = [format[@"height"] stringValue];
-            NSString *formatQuality = format[@"quality"];
-            String *qualityLabel = format[@"qualityLabel"];
-            NSString *urlString = format[@"url"];
-
-            if ([mimeType containsString:@"video/mp4"] && 
-                ((height && [height isEqualToString:resolution]) || 
-                 (formatQuality && [formatQuality isEqualToString:quality]) || 
-                 (qualityLabel && [qualityLabel isEqualToString:qualityLabel]))) {
-                videoURLs[[resolutions[i] stringByAppendingString:@"p"]] = [NSURL URLWithString:urlString];
-                break;
-            }
-        }
-    }
-    return videoURLs;
-}
-
-%new
-- (NSDictionary *)bestAudioInfoFromFormats:(NSArray *)formats {
-    NSMutableDictionary *audioInfo = [NSMutableDictionary dictionary];
-    NSArray *qualities = @[@"AUDIO_QUALITY_HIGH", @"AUDIO_QUALITY_MEDIUM", @"AUDIO_QUALITY_LOW"];
-
-    for (NSString *quality in qualities) {
-        for (NSDictionary *format in formats) {
-            NSString *mimeType = format[@"mimeType"];
-            NSString *audioQuality = format[@"audioQuality"];
-            NSString *urlString = format[@"url"];
-
-            if ([mimeType containsString:@"audio/mp4"] && 
-                audioQuality && [audioQuality isEqualToString:quality] && 
-                (!audioInfo[@"url"] || 
-                 [qualities indexOfObject:audioInfo[@"quality"]] > [qualities indexOfObject:quality])) {
-                audioInfo[@"quality"] = quality;
-                audioInfo[@"url"] = [NSURL URLWithString:urlString];
-            }
-        }
-        if (audioInfo[@"url"]) break;
-    }
-    return audioInfo;
-}
-
-%new
-- (void)showAlertWithTitle:(NSString *)title message:(NSString *)message {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title 
-                                                                   message:message 
-                                                            preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"OK" 
-                                              style:UIAlertActionStyleDefault 
-                                            handler:nil]];
-    UIViewController *ancestorController = [self _viewControllerForAncestor];
-    if (ancestorController) {
-        [ancestorController presentViewController:alert animated:YES completion:nil];
-    }
-}
-
 %end
 
 %hook YTReelHeaderView
-
 %property (nonatomic, strong) UIButton *rebornOverlayButton;
 
 - (void)layoutSubviews {
@@ -623,7 +564,8 @@ static NSString *accessGroupID() {
 - (void)rebornOptionsAction {
     NSString *videoID = [shortsPlayingVideoID videoId];
     if (!videoID.length) {
-        [self showAlertWithTitle:@"Error" message:@"Unable to retrieve video ID."];
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Unable to retrieve video ID."];
         return;
     }
 
@@ -659,29 +601,31 @@ static NSString *accessGroupID() {
     if (ancestorController) {
         [ancestorController presentViewController:alertMenu animated:YES completion:nil];
     } else {
-        [self showAlertWithTitle:@"Error" message:@"Unable to display options."];
+        [ancestorController showAlertWithTitle:@"Error" message:@"Unable to display options."];
     }
 }
 
 %new
 - (void)rebornVideoDownloader:(NSString *)videoID {
     NSDictionary *playerResponse = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
-    if (![self validatePlayerResponse:playerResponse]) {
-        [self showAlertWithTitle:@"Error" message:@"Failed to fetch video details."];
+    if (![YouTubeUtils validatePlayerResponse:playerResponse]) {
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Failed to fetch video details."];
         return;
     }
 
     NSDictionary *videoDetails = playerResponse[@"videoDetails"];
     NSString *videoTitle = videoDetails[@"title"];
     NSArray *thumbnails = videoDetails[@"thumbnail"][@"thumbnails"];
-    NSURL *artworkURL = [self highestQualityThumbnailURLFromArray:thumbnails];
+    NSURL *artworkURL = [YouTubeUtils highestQualityThumbnailURLFromArray:thumbnails];
 
     NSArray *formats = playerResponse[@"streamingData"][@"formats"];
     NSArray *adaptiveFormats = playerResponse[@"streamingData"][@"adaptiveFormats"];
-    NSDictionary *bestVideo = [self bestVideoInfoFromFormats:[formats arrayByAddingObjectsFromArray:adaptiveFormats]];
+    NSDictionary *bestVideo = [YouTubeUtils bestVideoInfoFromFormats:[formats arrayByAddingObjectsFromArray:adaptiveFormats]];
 
     if (!bestVideo[@"url"] || !videoTitle.length || !artworkURL) {
-        [self showAlertWithTitle:@"Error" message:@"Unable to prepare video download."];
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Unable to prepare video download."];
         return;
     }
 
@@ -702,21 +646,23 @@ static NSString *accessGroupID() {
 %new
 - (void)rebornAudioDownloader:(NSString *)videoID {
     NSDictionary *playerResponse = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
-    if (![self validatePlayerResponse:playerResponse]) {
-        [self showAlertWithTitle:@"Error" message:@"Failed to fetch audio details."];
+    if (![YouTubeUtils validatePlayerResponse:playerResponse]) {
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Failed to fetch audio details."];
         return;
     }
 
     NSDictionary *videoDetails = playerResponse[@"videoDetails"];
     NSString *videoTitle = videoDetails[@"title"];
     NSArray *thumbnails = videoDetails[@"thumbnail"][@"thumbnails"];
-    NSURL *artworkURL = [self highestQualityThumbnailURLFromArray:thumbnails];
+    NSURL *artworkURL = [YouTubeUtils highestQualityThumbnailURLFromArray:thumbnails];
 
     NSArray *adaptiveFormats = playerResponse[@"streamingData"][@"adaptiveFormats"];
-    NSDictionary *audioInfo = [self bestAudioInfoFromFormats:adaptiveFormats];
+    NSDictionary *audioInfo = [YouTubeUtils bestAudioInfoFromFormats:adaptiveFormats];
 
     if (!audioInfo[@"url"] || !videoTitle.length || !artworkURL) {
-        [self showAlertWithTitle:@"Error" message:@"Unable to prepare audio download."];
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Unable to prepare audio download."];
         return;
     }
 
@@ -739,7 +685,8 @@ static NSString *accessGroupID() {
     NSDictionary *playerResponse = [YouTubeExtractor youtubePlayerRequest:@"ios":videoID];
     NSString *hlsURLString = playerResponse[@"streamingData"][@"hlsManifestUrl"];
     if (!hlsURLString.length) {
-        [self showAlertWithTitle:@"Error" message:@"Failed to fetch playback URL."];
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Failed to fetch playback URL."];
         return;
     }
 
@@ -771,85 +718,6 @@ static NSString *accessGroupID() {
         [ancestorController presentViewController:appChooser animated:YES completion:nil];
     }
 }
-
-%new
-- (BOOL)validatePlayerResponse:(NSDictionary *)response {
-    return response && response[@"streamingData"] && response[@"videoDetails"];
-}
-
-%new
-- (NSURL *)highestQualityThumbnailURLFromArray:(NSArray *)thumbnails {
-    if (!thumbnails.count) return nil;
-    return [NSURL URLWithString:thumbnails.lastObject[@"url"]];
-}
-
-%new
-- (NSDictionary *)bestVideoInfoFromFormats:(NSArray *)formats {
-    NSMutableDictionary *videoInfo = [NSMutableDictionary dictionary];
-    NSArray *resolutions = @[@"2160", @"1440", @"1080", @"720", @"480", @"360", @"240"];
-    NSArray *qualityLabels = @[@"hd2160", @"hd1440", @"hd1080", @"hd720", @"480p", @"360p", @"240p"];
-
-    for (NSUInteger i = 0; i < resolutions.count; i++) {
-        NSString *resolution = resolutions[i];
-        NSString *quality = qualityLabels[i];
-
-        for (NSDictionary *format in formats) {
-            NSString *mimeType = format[@"mimeType"];
-            NSString *height = [format[@"height"] stringValue];
-            NSString *formatQuality = format[@"quality"];
-            NSString *qualityLabel = format[@"qualityLabel"];
-            NSString *urlString = format[@"url"];
-
-            if ([mimeType containsString:@"video/mp4"] && 
-                ((height && [height isEqualToString:resolution]) || 
-                 (formatQuality && [formatQuality isEqualToString:quality]) || 
-                 (qualityLabel && [qualityLabel isEqualToString:qualityLabel]))) {
-                videoInfo[@"url"] = [NSURL URLWithString:urlString];
-                return videoInfo;
-            }
-        }
-    }
-    return videoInfo;
-}
-
-%new
-- (NSDictionary *)bestAudioInfoFromFormats:(NSArray *)formats {
-    NSMutableDictionary *audioInfo = [NSMutableDictionary dictionary];
-    NSArray *qualities = @[@"AUDIO_QUALITY_HIGH", @"AUDIO_QUALITY_MEDIUM", @"AUDIO_QUALITY_LOW"];
-
-    for (NSString *quality in qualities) {
-        for (NSDictionary *format in formats) {
-            NSString *mimeType = format[@"mimeType"];
-            NSString *audioQuality = format[@"audioQuality"];
-            NSString *urlString = format[@"url"];
-
-            if ([mimeType containsString:@"audio/mp4"] && 
-                audioQuality && [audioQuality isEqualToString:quality] && 
-                (!audioInfo[@"url"] || 
-                 [qualities indexOfObject:audioInfo[@"quality"]] > [qualities indexOfObject:quality])) {
-                audioInfo[@"quality"] = quality;
-                audioInfo[@"url"] = [NSURL URLWithString:urlString];
-            }
-        }
-        if (audioInfo[@"url"]) break;
-    }
-    return audioInfo;
-}
-
-%new
-- (void)showAlertWithTitle:(NSString *)title message:(NSString *)message {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title 
-                                                                   message:message 
-                                                            preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"OK" 
-                                              style:UIAlertActionStyleDefault 
-                                            handler:nil]];
-    UIViewController *ancestorController = [self _viewControllerForAncestor];
-    if (ancestorController) {
-        [ancestorController presentViewController:alert animated:YES completion:nil];
-    }
-}
-
 %end
 
 // No YouTube Ads
