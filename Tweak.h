@@ -24,6 +24,10 @@
 #import "YouTubeHeader/YTIFormattedString.h"
 #import "YouTubeHeader/GPBMessage.h"
 #import "YouTubeHeader/YTIStringRun.h"
+#import "YouTubeHeader/YTIIconThumbnailRenderer.h"
+#import "YouTubeHeader/YTICompactListItemThumbnailSupportedRenderers.h"
+#import "YouTubeHeader/YTICompactListItemRenderer.h"
+#import "YouTubeHeader/YTICompactLinkRenderer.h"
 
 @interface YTQTMButton : UIButton
 @property (strong, nonatomic) UIImageView *imageView;
@@ -76,10 +80,10 @@
 - (id)playPauseButton;
 - (void)didPressPause:(id)button;
 - (void)rebornOptionsAction;
-- (void)rebornVideoDownloader :(NSString *)videoID;
-- (void)rebornAudioDownloader :(NSString *)videoID;
-- (void)rebornPictureInPicture :(NSString *)videoID;
-- (void)rebornPlayInExternalApp :(NSString *)videoID;
+- (void)rebornVideoDownloader:(NSString *)videoID;
+- (void)rebornAudioDownloader:(NSString *)videoID;
+- (void)rebornPictureInPicture:(NSString *)videoID;
+- (void)rebornPlayInExternalApp:(NSString *)videoID;
 @end
 
 @interface YTMainAppSkipVideoButton
@@ -176,41 +180,24 @@
 @interface YTITopbarLogoRenderer : NSObject
 @property(readonly, nonatomic) YTIIcon *iconImage;
 @end
-@interface YTIIconThumbnailRenderer : GPBMessage
-    @property (nonatomic, strong) YTIIcon *icon;
-    - (bool)hasIcon;
-@end
-@interface YTICompactListItemThumbnailSupportedRenderers : GPBMessage
-    @property (nonatomic, strong) YTIIconThumbnailRenderer *iconThumbnailRenderer;
-    - (bool)hasIconThumbnailRenderer;
-@end
-@interface YTICompactListItemRenderer : GPBMessage
-    @property (nonatomic, strong) YTICompactListItemThumbnailSupportedRenderers *thumbnail;
-    @property (nonatomic, strong) YTIFormattedString *title;
-    - (bool)hasThumbnail;
-    - (bool)hasTitle;
-@end
+
 @interface YTIIcon (uYouEnhanced)
-    - (bool)hasIconType;
+- (bool)hasIconType;
 @end
-@interface YTICompactLinkRenderer : GPBMessage
-    @property (nonatomic, strong) YTIIcon *icon;
-    @property (nonatomic, strong) YTIFormattedString *title;
-    @property (nonatomic, strong) YTICompactListItemThumbnailSupportedRenderers *thumbnail;
-    - (bool)hasIcon;
-    - (bool)hasThumbnail;
-@end
+
 @interface YTIItemSectionSupportedRenderers (uYouEnhanced)
-    @property(readonly, nonatomic) YTICompactLinkRenderer *compactLinkRenderer;
-    @property(readonly, nonatomic) YTICompactListItemRenderer *compactListItemRenderer;
-    - (bool)hasCompactLinkRenderer;
-    - (bool)hasCompactListItemRenderer;
+@property(readonly, nonatomic) YTICompactLinkRenderer *compactLinkRenderer;
+@property(readonly, nonatomic) YTICompactListItemRenderer *compactListItemRenderer;
+- (bool)hasCompactLinkRenderer;
+- (bool)hasCompactListItemRenderer;
 @end
+
 @interface YTAppCollectionViewController : YTInnerTubeCollectionViewController
 - (void)uYouEnhancedFakePremiumModel:(YTISectionListRenderer *)model;
 @end
+
 @interface YTInnerTubeCollectionViewController (uYouEnhanced)
-    @property(readonly, nonatomic) YTISectionListRenderer *model;
+@property(readonly, nonatomic) YTISectionListRenderer *model;
 @end
 
 @interface YTSingleVideo : NSObject
@@ -220,10 +207,10 @@
 @interface YTReelHeaderView : UIView
 - (id)_viewControllerForAncestor;
 - (void)rebornOptionsAction;
-- (void)rebornVideoDownloader :(NSString *)videoID;
-- (void)rebornAudioDownloader :(NSString *)videoID;
-- (void)rebornPictureInPicture :(NSString *)videoID;
-- (void)rebornPlayInExternalApp :(NSString *)videoID;
+- (void)rebornVideoDownloader:(NSString *)videoID;
+- (void)rebornAudioDownloader:(NSString *)videoID;
+- (void)rebornPictureInPicture:(NSString *)videoID;
+- (void)rebornPlayInExternalApp:(NSString *)videoID;
 @end
 
 @interface YTReelPlayerMoreButton : YTQTMButton
