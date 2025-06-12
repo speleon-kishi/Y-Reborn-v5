@@ -720,16 +720,20 @@ static NSString *accessGroupID() {
 }
 %end
 
-// No YouTube Ads
+// No YouTube Ads - @PoomSmart (YouTube-X)
 %group gNoVideoAds
 %hook YTHotConfig
-- (BOOL)disableAfmaIdfaCollection { return NO; }
+- (BOOL)clientInfraClientConfigIosEnableFillingEncodedHacksInnertubeContext { return NO; }
 %end
 %hook YTIPlayerResponse
 - (BOOL)isMonetized { return NO; }
 %end
-%hook YTDataUtils
+%hook YTAdShieldUtils
 + (id)spamSignalsDictionary { return @{}; }
++ (id)spamSignalsDictionaryWithoutIDFA { return @{}; }
+%end
+%hook YTDataUtils
++ (id)spamSignalsDictionary { return @{ @"ms": @"" }; }
 + (id)spamSignalsDictionaryWithoutIDFA { return @{}; }
 %end
 %hook YTAdsInnerTubeContextDecorator
@@ -738,11 +742,53 @@ static NSString *accessGroupID() {
 %hook YTAccountScopedAdsInnerTubeContextDecorator
 - (void)decorateContext:(id)context { %orig(nil); }
 %end
+%hook YTReelDataSource
+- (YTReelModel *)makeContentModelForEntry:(id)entry {
+    YTReelModel *model = %orig;
+    if ([model respondsToSelector:@selector(videoType)] && model.videoType == 3)
+        return nil;
+    return model;
+}
+%end
 %hook YTReelInfinitePlaybackDataSource
+- (YTReelModel *)makeContentModelForEntry:(id)entry {
+    YTReelModel *model = %orig;
+    if ([model respondsToSelector:@selector(videoType)] && model.videoType == 3)
+        return nil;
+    return model;
+}
 - (void)setReels:(NSMutableOrderedSet <YTReelModel *> *)reels {
     [reels removeObjectsAtIndexes:[reels indexesOfObjectsPassingTest:^BOOL(YTReelModel *obj, NSUInteger idx, BOOL *stop) {
         return [obj respondsToSelector:@selector(videoType)] ? obj.videoType == 3 : NO;
     }]];
+    %orig;
+}
+%end
+static BOOL isProductList(YTICommand *command) {
+    if ([command respondsToSelector:@selector(yt_showEngagementPanelEndpoint)]) {
+        YTIShowEngagementPanelEndpoint *endpoint = [command yt_showEngagementPanelEndpoint];
+        return [endpoint.identifier.tag isEqualToString:@"PAproduct_list"];
+    }
+    return NO;
+}
+%hook YTWatchNextResponseViewController
+- (void)loadWithModel:(YTIWatchNextResponse *)model {
+    YTICommand *onUiReady = model.onUiReady;
+    if ([onUiReady respondsToSelector:@selector(yt_commandExecutorCommand)]) {
+        YTICommandExecutorCommand *commandExecutorCommand = [onUiReady yt_commandExecutorCommand];
+        NSMutableArray <YTICommand *> *commandsArray = commandExecutorCommand.commandsArray;
+        [commandsArray removeObjectsAtIndexes:[commandsArray indexesOfObjectsPassingTest:^BOOL(YTICommand *command, NSUInteger idx, BOOL *stop) {
+            return isProductList(command);
+        }]];
+    }
+    if (isProductList(onUiReady))
+        model.onUiReady = nil;
+    %orig;
+}
+%end
+%hook YTMainAppVideoPlayerOverlayViewController
+- (void)playerOverlayProvider:(YTPlayerOverlayProvider *)provider didInsertPlayerOverlay:(YTPlayerOverlay *)overlay {
+    if ([[overlay overlayIdentifier] isEqualToString:@"player_overlay_product_in_video"]) return;
     %orig;
 }
 %end
