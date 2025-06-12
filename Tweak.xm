@@ -318,40 +318,49 @@ static NSString *accessGroupID() {
 @end
 
 %hook YTMainAppControlsOverlayView
-%property (nonatomic, strong) UIButton *rebornOverlayButton;
 
-- (instancetype)initWithDelegate:(id)delegate {
-    if (@available(iOS 15.0, *)) {
-        if (![[NSUserDefaults standardUserDefaults] boolForKey:@"kRebornIHaveYouTubePremium"] && 
-            [[NSUserDefaults standardUserDefaults] boolForKey:@"kEnablePictureInPictureVTwo"]) {
-            %init(gPictureInPicture);
-        }
+%property(retain, nonatomic) UIButton *rebornOverlayButton;
+
+- (id)initWithDelegate:(id)delegate {
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"15.0") && [[NSUserDefaults standardUserDefaults] boolForKey:@"kRebornIHaveYouTubePremium"] == NO && [[NSUserDefaults standardUserDefaults] boolForKey:@"kEnablePictureInPictureVTwo"] == YES) {
+        %init(gPictureInPicture);
     }
     self = %orig;
     if (self) {
-        self.rebornOverlayButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        self.rebornOverlayButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        [self.rebornOverlayButton addTarget:self action:@selector(rebornOptionsAction) forControlEvents:UIControlEventTouchUpInside];
         [self.rebornOverlayButton setTitle:@"OP" forState:UIControlStateNormal];
-        [self.rebornOverlayButton addTarget:self 
-                                     action:@selector(rebornOptionsAction) 
-                           forControlEvents:UIControlEventTouchUpInside];
-
-        BOOL showStatusBar = [[NSUserDefaults standardUserDefaults] boolForKey:@"kShowStatusBarInOverlay"];
-        BOOL iPadStyle = [[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableiPadStyleOniPhone"];
-        self.rebornOverlayButton.frame = showStatusBar 
-            ? (iPadStyle ? CGRectMake(40, 9, 40, 30) : CGRectMake(40, 24, 40, 30))
-            : CGRectMake(40, 9, 40, 30);
-
-        self.rebornOverlayButton.hidden = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideRebornOPButtonVTwo"];
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kShowStatusBarInOverlay"] == YES) {
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableiPadStyleOniPhone"] == YES) {
+                self.rebornOverlayButton.frame = CGRectMake(40, 9, 40.0, 30.0);
+            } else {
+                self.rebornOverlayButton.frame = CGRectMake(40, 24, 40.0, 30.0);
+            }
+        } else {
+            self.rebornOverlayButton.frame = CGRectMake(40, 9, 40.0, 30.0);
+        }
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideRebornOPButtonVTwo"] == YES) {
+            self.rebornOverlayButton.hidden = YES;
+        }
         [self addSubview:self.rebornOverlayButton];
     }
     return self;
 }
 
 - (void)setTopOverlayVisible:(BOOL)visible isAutonavCanceledState:(BOOL)canceledState {
-    if (canceledState || [layoutOut playerViewLayout] != 2) {
-        self.rebornOverlayButton.alpha = 0.0;
-    } else if (!self.rebornOverlayButton.hidden) {
-        self.rebornOverlayButton.alpha = visible ? 1.0 : 0.0;
+    if (canceledState) {
+        if (!self.rebornOverlayButton.hidden) {
+            self.rebornOverlayButton.alpha = 0.0;
+        }
+    } else {
+        if (!self.rebornOverlayButton.hidden) {
+            int rotation = [layoutOut playerViewLayout];
+            if (rotation == 2) {
+                self.rebornOverlayButton.alpha = visible ? 1.0 : 0.0;
+            } else {
+                self.rebornOverlayButton.alpha = 0.0;
+            }
+        }
     }
     %orig;
 }
@@ -544,20 +553,16 @@ static NSString *accessGroupID() {
 %end
 
 %hook YTReelHeaderView
-%property (nonatomic, strong) UIButton *rebornOverlayButton;
-
 - (void)layoutSubviews {
-    %orig;
-    if (!self.rebornOverlayButton) {
-        self.rebornOverlayButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [self.rebornOverlayButton setTitle:@"OP" forState:UIControlStateNormal];
-        self.rebornOverlayButton.frame = CGRectMake(40, 5, 40, 30);
-        [self.rebornOverlayButton addTarget:self 
-                                     action:@selector(rebornOptionsAction) 
-                           forControlEvents:UIControlEventTouchUpInside];
-        self.rebornOverlayButton.hidden = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideRebornShortsOPButton"];
-        [self addSubview:self.rebornOverlayButton];
+	%orig();
+    UIButton *rebornOverlayButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [rebornOverlayButton addTarget:self action:@selector(rebornOptionsAction) forControlEvents:UIControlEventTouchUpInside];
+    [rebornOverlayButton setTitle:@"OP" forState:UIControlStateNormal];
+    rebornOverlayButton.frame = CGRectMake(40, 5, 40.0, 30.0);
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideRebornShortsOPButton"] == YES) {
+        rebornOverlayButton.hidden = YES;
     }
+    [self addSubview:rebornOverlayButton];
 }
 
 %new
@@ -2613,10 +2618,10 @@ BOOL selectedTabIndex = NO;
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableCustomDoubleTapToSkipDuration"] == YES) %init(gEnableCustomDoubleTapToSkipDuration);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideCurrentTime"] == YES) %init(gHideCurrentTimeLabel);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideDuration"] == YES) %init(gHideDurationLabel);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableRelatedVideosInOverlay"] == YES & [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideOverlayQuickActions"] == YES & [[NSUserDefaults standardUserDefaults] boolForKey:@"kAlwaysShowPlayerBarVTwo"] == YES) {
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableRelatedVideosInOverlay"] == YES && [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideOverlayQuickActions"] == YES && [[NSUserDefaults standardUserDefaults] boolForKey:@"kAlwaysShowPlayerBarVTwo"] == YES) {
             %init(gAlwaysShowPlayerBar);
         }
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableiPadStyleOniPhone"] == NO & hasDeviceNotch() == NO & [[NSUserDefaults standardUserDefaults] boolForKey:@"kShowStatusBarInOverlay"] == YES) {
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableiPadStyleOniPhone"] == NO && hasDeviceNotch() == NO && [[NSUserDefaults standardUserDefaults] boolForKey:@"kShowStatusBarInOverlay"] == YES) {
             %init(gShowStatusBarInOverlay);
         }
         NSData *colorData = [[NSUserDefaults standardUserDefaults] objectForKey:@"kYTRebornColourOptionsVFour"];
