@@ -28,6 +28,7 @@
 #import "YouTubeHeader/YTICompactListItemThumbnailSupportedRenderers.h"
 #import "YouTubeHeader/YTICompactListItemRenderer.h"
 #import "YouTubeHeader/YTICompactLinkRenderer.h"
+#import "YouTubeHeader/YTPlayerOverlay.h"
 
 @interface YTQTMButton : UIButton
 @property (strong, nonatomic) UIImageView *imageView;
