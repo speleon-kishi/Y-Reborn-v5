@@ -253,12 +253,8 @@ static NSString *accessGroupID() {
         youtubeRebornLightSettingsPath = [tweakBundle pathForResource:@"ytrebornbuttonwhite" ofType:@"png"];
 		youtubeRebornDarkSettingsPath = [tweakBundle pathForResource:@"ytrebornbuttonblack" ofType:@"png"];
     } else {
-// RootHide
-                youtubeRebornLightSettingsPath = jbroot(@"/Library/Application Support/YouTubeReborn.bundle/ytrebornbuttonwhite.png");
-        youtubeRebornDarkSettingsPath = jbroot(@"/Library/Application Support/YouTubeReborn.bundle/ytrebornbuttonblack.png");
-// Rootless 
-//		youtubeRebornLightSettingsPath = ROOT_PATH_NS(@"/Library/Application Support/YouTubeReborn.bundle/ytrebornbuttonwhite.png");
-//      youtubeRebornDarkSettingsPath = ROOT_PATH_NS(@"/Library/Application Support/YouTubeReborn.bundle/ytrebornbuttonblack.png");
+		youtubeRebornLightSettingsPath = ROOT_PATH_NS(@"/Library/Application Support/YouTubeReborn.bundle/ytrebornbuttonwhite.png");
+        youtubeRebornDarkSettingsPath = ROOT_PATH_NS(@"/Library/Application Support/YouTubeReborn.bundle/ytrebornbuttonblack.png");
     }
     NSMutableArray *retVal = %orig.mutableCopy;
     [self.youtubeRebornButton removeFromSuperview];
@@ -289,7 +285,7 @@ static NSString *accessGroupID() {
     }
     return retVal;
 }
-%new;
+%new
 - (void)rebornRootOptionsAction {
     RootOptionsController *rootOptionsController = [[RootOptionsController alloc] initWithStyle:UITableViewStyleGrouped];
     UINavigationController *rootOptionsControllerView = [[UINavigationController alloc] initWithRootViewController:rootOptionsController];
@@ -299,6 +295,22 @@ static NSString *accessGroupID() {
     [rootPrefsViewController presentViewController:rootOptionsControllerView animated:YES completion:nil];
 }
 %end
+
+@interface UIViewController (YouTubeReborn)
+- (void)showAlertWithTitle:(NSString *)title message:(NSString *)message;
+@end
+
+@implementation UIViewController (YouTubeReborn)
+- (void)showAlertWithTitle:(NSString *)title message:(NSString *)message {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title 
+                                                                   message:message 
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"OK" 
+                                              style:UIAlertActionStyleDefault 
+                                            handler:nil]];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+@end
 
 %hook YTMainAppControlsOverlayView
 
@@ -348,278 +360,190 @@ static NSString *accessGroupID() {
     %orig;
 }
 
-%new;
+%new
 - (void)rebornOptionsAction {
-    NSInteger videoStatus = [stateOut playerState];
-    if (videoStatus == 3) {
+    if ([stateOut playerState] == 3) {
         [self didPressPause:[self playPauseButton]];
     }
 
-    NSString *videoIdentifier = [playingVideoID currentVideoID];
+    NSString *videoID = [playingVideoID currentVideoID];
+    if (!videoID.length) {
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Unable to retrieve video ID."];
+        return;
+    }
 
-    UIAlertController *alertMenu = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *alertMenu = [UIAlertController alertControllerWithTitle:nil 
+                                                                       message:nil 
+                                                                preferredStyle:UIAlertControllerStyleActionSheet];
 
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kRebornIHaveYouTubePremium"] == NO) {
-        [alertMenu addAction:[UIAlertAction actionWithTitle:@"Download Audio" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [self rebornAudioDownloader:videoIdentifier];
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"kRebornIHaveYouTubePremium"]) {
+        [alertMenu addAction:[UIAlertAction actionWithTitle:@"Download Audio" 
+                                                      style:UIAlertActionStyleDefault 
+                                                    handler:^(UIAlertAction *action) {
+            [self rebornAudioDownloader:videoID];
         }]];
-
-        [alertMenu addAction:[UIAlertAction actionWithTitle:@"Download Video" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [self rebornVideoDownloader:videoIdentifier];
+        [alertMenu addAction:[UIAlertAction actionWithTitle:@"Download Video" 
+                                                      style:UIAlertActionStyleDefault 
+                                                    handler:^(UIAlertAction *action) {
+            [self rebornVideoDownloader:videoID];
         }]];
     }
 
-    [alertMenu addAction:[UIAlertAction actionWithTitle:@"Play In External App" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        [self rebornPlayInExternalApp:videoIdentifier];
+    [alertMenu addAction:[UIAlertAction actionWithTitle:@"Play in External App" 
+                                                  style:UIAlertActionStyleDefault 
+                                                handler:^(UIAlertAction *action) {
+        [self rebornPlayInExternalApp:videoID];
     }]];
+    [alertMenu addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
 
-    [alertMenu addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-    }]];
+    alertMenu.modalPresentationStyle = UIModalPresentationPopover;
+    alertMenu.popoverPresentationController.sourceView = self;
+    alertMenu.popoverPresentationController.sourceRect = self.bounds;
 
-    [alertMenu setModalPresentationStyle:UIModalPresentationPopover];
-    UIPopoverPresentationController *popPresenter = [alertMenu popoverPresentationController];
-    popPresenter.sourceView = self;
-    popPresenter.sourceRect = self.bounds;
-
-    UIViewController *menuViewController = [self _viewControllerForAncestor];
-    [menuViewController presentViewController:alertMenu animated:YES completion:nil];
+    UIViewController *ancestorController = [self _viewControllerForAncestor];
+    if (ancestorController) {
+        [ancestorController presentViewController:alertMenu animated:YES completion:nil];
+    } else {
+        [ancestorController showAlertWithTitle:@"Error" message:@"Unable to present options."];
+    }
 }
 
-%new;
-- (void)rebornVideoDownloader :(NSString *)videoID {
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
-    NSString *videoTitle = [NSString stringWithFormat:@"%@", youtubePlayerRequest[@"videoDetails"][@"title"]];
-    NSArray *videoArtworkArray = youtubePlayerRequest[@"videoDetails"][@"thumbnail"][@"thumbnails"];
-    NSURL *videoArtwork = [NSURL URLWithString:[NSString stringWithFormat:@"%@", videoArtworkArray[([videoArtworkArray count] - 1)][@"url"]]];
-    NSDictionary *innertubeAdaptiveFormats = youtubePlayerRequest[@"streamingData"][@"adaptiveFormats"];
-    NSURL *video2160p;
-    NSURL *video1440p;
-    NSURL *video1080p;
-    NSURL *video720p;
-    NSURL *video480p;
-    NSURL *video360p;
-    NSURL *video240p;
-    NSURL *audioHigh;
-    NSURL *audioMedium;
-    NSURL *audioLow;
-    for (NSDictionary *format in innertubeAdaptiveFormats) {
-        if ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"2160"] || [[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"quality"]] isEqual:@"hd2160"]) {
-            if (video2160p == nil) {
-                video2160p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
-            }
-        } else if ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"1440"] || [[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"quality"]] isEqual:@"hd1440"]) {
-            if (video1440p == nil) {
-                video1440p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
-            }
-        } else if ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"1080"] || [[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"quality"]] isEqual:@"hd1080"]) {
-            if (video1080p == nil) {
-                video1080p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
-            }
-        } else if ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"720"] || [[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"quality"]] isEqual:@"hd720"]) {
-            if (video720p == nil) {
-                video720p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
-            }
-        } else if ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"480"] || [[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"qualityLabel"]] isEqual:@"480p"]) {
-            if (video480p == nil) {
-                video480p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
-            }
-        } else if ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"360"] || [[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"qualityLabel"]] isEqual:@"360p"]) {
-            if (video360p == nil) {
-                video360p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
-            }
-        } else if ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"240"] || [[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"qualityLabel"]] isEqual:@"240p"]) {
-            if (video240p == nil) {
-                video240p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
-            }
-        } else if ([[format objectForKey:@"mimeType"] containsString:@"audio/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"audioQuality"]] isEqual:@"AUDIO_QUALITY_HIGH"]) {
-            if (audioHigh == nil) {
-                audioHigh = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
-            }
-        } else if ([[format objectForKey:@"mimeType"] containsString:@"audio/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"audioQuality"]] isEqual:@"AUDIO_QUALITY_MEDIUM"]) {
-            if (audioMedium == nil) {
-                audioMedium = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
-            }
-        } else if ([[format objectForKey:@"mimeType"] containsString:@"audio/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"audioQuality"]] isEqual:@"AUDIO_QUALITY_LOW"]) {
-            if (audioLow == nil) {
-                audioLow = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
-            }
-        }
+%new
+- (void)rebornVideoDownloader:(NSString *)videoID {
+    NSDictionary *playerResponse = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
+    if (![YouTubeUtils validatePlayerResponse:playerResponse]) {
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Failed to fetch video details."];
+        return;
     }
 
-    NSURL *audioURL;
-    if (audioHigh != nil) {
-        audioURL = audioHigh;
-    } else if (audioMedium != nil) {
-        audioURL = audioMedium;
-    } else if (audioLow != nil) {
-        audioURL = audioLow;
+    NSDictionary *videoDetails = playerResponse[@"videoDetails"];
+    NSString *videoTitle = videoDetails[@"title"];
+    NSArray *thumbnails = videoDetails[@"thumbnail"][@"thumbnails"];
+    NSURL *artworkURL = [YouTubeUtils highestQualityThumbnailURLFromArray:thumbnails];
+
+    NSArray *adaptiveFormats = playerResponse[@"streamingData"][@"adaptiveFormats"];
+    NSDictionary *bestVideo = [YouTubeUtils bestVideoInfoFromFormats:adaptiveFormats];
+    NSDictionary *bestAudio = [YouTubeUtils bestAudioInfoFromFormats:adaptiveFormats];
+
+    if (!bestVideo[@"url"] || !videoTitle.length || !artworkURL) {
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Unable to prepare video download."];
+        return;
     }
 
-    UIAlertController *alertQualitySelector = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *qualitySelector = [UIAlertController alertControllerWithTitle:@"Select Quality" 
+                                                                             message:nil 
+                                                                      preferredStyle:UIAlertControllerStyleActionSheet];
     
-    if (video240p != nil) {
-        [alertQualitySelector addAction:[UIAlertAction actionWithTitle:@"240p" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            YouTubeDownloadController *rebornYouTubeDownloadController = [[YouTubeDownloadController alloc] init];
-            rebornYouTubeDownloadController.downloadTitle = videoTitle;
-            rebornYouTubeDownloadController.videoURL = video240p;
-            rebornYouTubeDownloadController.audioURL = audioURL;
-            rebornYouTubeDownloadController.dualURL = nil;
-            rebornYouTubeDownloadController.artworkURL = videoArtwork;
-            rebornYouTubeDownloadController.downloadOption = 0;
+    NSArray *resolutions = @[@"2160p", @"1440p", @"1080p", @"720p", @"480p", @"360p", @"240p"];
+    for (NSString *resolution in resolutions) {
+        if (bestVideo[resolution]) {
+            [qualitySelector addAction:[UIAlertAction actionWithTitle:resolution 
+                                                               style:UIAlertActionStyleDefault 
+                                                             handler:^(UIAlertAction *action) {
+                YouTubeDownloadController *downloadController = [[YouTubeDownloadController alloc] init];
+                downloadController.downloadTitle = videoTitle;
+                downloadController.videoURL = bestVideo[resolution];
+                downloadController.audioURL = bestAudio[@"url"];
+                downloadController.dualURL = nil;
+                downloadController.artworkURL = artworkURL;
+                downloadController.downloadOption = 0;
 
-            UIViewController *rebornYouTubeDownloadViewController = self._viewControllerForAncestor;
-            [rebornYouTubeDownloadViewController presentViewController:rebornYouTubeDownloadController animated:YES completion:nil];
-        }]];
-    }
-    if (video360p != nil) {
-        [alertQualitySelector addAction:[UIAlertAction actionWithTitle:@"360p" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            YouTubeDownloadController *rebornYouTubeDownloadController = [[YouTubeDownloadController alloc] init];
-            rebornYouTubeDownloadController.downloadTitle = videoTitle;
-            rebornYouTubeDownloadController.videoURL = video360p;
-            rebornYouTubeDownloadController.audioURL = audioURL;
-            rebornYouTubeDownloadController.dualURL = nil;
-            rebornYouTubeDownloadController.artworkURL = videoArtwork;
-            rebornYouTubeDownloadController.downloadOption = 0;
-
-            UIViewController *rebornYouTubeDownloadViewController = self._viewControllerForAncestor;
-            [rebornYouTubeDownloadViewController presentViewController:rebornYouTubeDownloadController animated:YES completion:nil];
-        }]];
-    }
-    if (video480p != nil) {
-        [alertQualitySelector addAction:[UIAlertAction actionWithTitle:@"480p" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            YouTubeDownloadController *rebornYouTubeDownloadController = [[YouTubeDownloadController alloc] init];
-            rebornYouTubeDownloadController.downloadTitle = videoTitle;
-            rebornYouTubeDownloadController.videoURL = video480p;
-            rebornYouTubeDownloadController.audioURL = audioURL;
-            rebornYouTubeDownloadController.dualURL = nil;
-            rebornYouTubeDownloadController.artworkURL = videoArtwork;
-            rebornYouTubeDownloadController.downloadOption = 0;
-
-            UIViewController *rebornYouTubeDownloadViewController = self._viewControllerForAncestor;
-            [rebornYouTubeDownloadViewController presentViewController:rebornYouTubeDownloadController animated:YES completion:nil];
-        }]];
-    }
-    if (video720p != nil) {
-        [alertQualitySelector addAction:[UIAlertAction actionWithTitle:@"720p" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            YouTubeDownloadController *rebornYouTubeDownloadController = [[YouTubeDownloadController alloc] init];
-            rebornYouTubeDownloadController.downloadTitle = videoTitle;
-            rebornYouTubeDownloadController.videoURL = video720p;
-            rebornYouTubeDownloadController.audioURL = audioURL;
-            rebornYouTubeDownloadController.dualURL = nil;
-            rebornYouTubeDownloadController.artworkURL = videoArtwork;
-            rebornYouTubeDownloadController.downloadOption = 0;
-
-            UIViewController *rebornYouTubeDownloadViewController = self._viewControllerForAncestor;
-            [rebornYouTubeDownloadViewController presentViewController:rebornYouTubeDownloadController animated:YES completion:nil];
-        }]];
-    }
-    if (video1080p != nil) {
-        [alertQualitySelector addAction:[UIAlertAction actionWithTitle:@"1080p" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            YouTubeDownloadController *rebornYouTubeDownloadController = [[YouTubeDownloadController alloc] init];
-            rebornYouTubeDownloadController.downloadTitle = videoTitle;
-            rebornYouTubeDownloadController.videoURL = video1080p;
-            rebornYouTubeDownloadController.audioURL = audioURL;
-            rebornYouTubeDownloadController.dualURL = nil;
-            rebornYouTubeDownloadController.artworkURL = videoArtwork;
-            rebornYouTubeDownloadController.downloadOption = 0;
-
-            UIViewController *rebornYouTubeDownloadViewController = self._viewControllerForAncestor;
-            [rebornYouTubeDownloadViewController presentViewController:rebornYouTubeDownloadController animated:YES completion:nil];
-        }]];
-    }
-    if (video1440p != nil) {
-        [alertQualitySelector addAction:[UIAlertAction actionWithTitle:@"1440p" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            YouTubeDownloadController *rebornYouTubeDownloadController = [[YouTubeDownloadController alloc] init];
-            rebornYouTubeDownloadController.downloadTitle = videoTitle;
-            rebornYouTubeDownloadController.videoURL = video1440p;
-            rebornYouTubeDownloadController.audioURL = audioURL;
-            rebornYouTubeDownloadController.dualURL = nil;
-            rebornYouTubeDownloadController.artworkURL = videoArtwork;
-            rebornYouTubeDownloadController.downloadOption = 0;
-
-            UIViewController *rebornYouTubeDownloadViewController = self._viewControllerForAncestor;
-            [rebornYouTubeDownloadViewController presentViewController:rebornYouTubeDownloadController animated:YES completion:nil];
-        }]];
-    }
-    if (video2160p != nil) {
-        [alertQualitySelector addAction:[UIAlertAction actionWithTitle:@"2160p" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            YouTubeDownloadController *rebornYouTubeDownloadController = [[YouTubeDownloadController alloc] init];
-            rebornYouTubeDownloadController.downloadTitle = videoTitle;
-            rebornYouTubeDownloadController.videoURL = video2160p;
-            rebornYouTubeDownloadController.audioURL = audioURL;
-            rebornYouTubeDownloadController.dualURL = nil;
-            rebornYouTubeDownloadController.artworkURL = videoArtwork;
-            rebornYouTubeDownloadController.downloadOption = 0;
-
-            UIViewController *rebornYouTubeDownloadViewController = self._viewControllerForAncestor;
-            [rebornYouTubeDownloadViewController presentViewController:rebornYouTubeDownloadController animated:YES completion:nil];
-        }]];
-    }
-
-    [alertQualitySelector addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-    }]];
-
-    [alertQualitySelector setModalPresentationStyle:UIModalPresentationPopover];
-    UIPopoverPresentationController *popPresenter = [alertQualitySelector popoverPresentationController];
-    popPresenter.sourceView = self;
-    popPresenter.sourceRect = self.bounds;
-
-    UIViewController *qualitySelectorViewController = [self _viewControllerForAncestor];
-    [qualitySelectorViewController presentViewController:alertQualitySelector animated:YES completion:nil];
-}
-
-%new;
-- (void)rebornAudioDownloader :(NSString *)videoID {
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
-    NSArray *videoArtworkArray = youtubePlayerRequest[@"videoDetails"][@"thumbnail"][@"thumbnails"];
-    NSArray *innertubeAdaptiveFormats = youtubePlayerRequest[@"streamingData"][@"adaptiveFormats"];
-
-    NSMutableDictionary *qualityInfo = [[NSMutableDictionary alloc] init];
-    for (NSDictionary *format in innertubeAdaptiveFormats) {
-        if ([format[@"mimeType"] containsString:@"audio/mp4"] && [format[@"audioQuality"] isEqual:@"AUDIO_QUALITY_HIGH"] && (qualityInfo[@"audioQuality"] == nil || [qualityInfo[@"audioQuality"] isEqual:@""] || [qualityInfo[@"audioQuality"] isEqual:@"medium"] || [qualityInfo[@"audioQuality"] isEqual:@"low"])) {
-            qualityInfo[@"audioQuality"] = @"high";
-            qualityInfo[@"audioUrl"] = [NSURL URLWithString:format[@"url"]];
-        } else if ([format[@"mimeType"] containsString:@"audio/mp4"] && [format[@"audioQuality"] isEqual:@"AUDIO_QUALITY_MEDIUM"] && (qualityInfo[@"audioQuality"] == nil || [qualityInfo[@"audioQuality"] isEqual:@""] || [qualityInfo[@"audioQuality"] isEqual:@"low"])) {
-            qualityInfo[@"audioQuality"] = @"medium";
-            qualityInfo[@"audioUrl"] = [NSURL URLWithString:format[@"url"]];
-        } else if ([format[@"mimeType"] containsString:@"audio/mp4"] && [format[@"audioQuality"] isEqual:@"AUDIO_QUALITY_LOW"] && (qualityInfo[@"audioQuality"] == nil || [qualityInfo[@"audioQuality"] isEqual:@""])) {
-            qualityInfo[@"audioQuality"] = @"low";
-            qualityInfo[@"audioUrl"] = [NSURL URLWithString:format[@"url"]];
+                UIViewController *ancestorController = [self _viewControllerForAncestor];
+                if (ancestorController) {
+                    [ancestorController presentViewController:downloadController animated:YES completion:nil];
+                }
+            }]];
         }
     }
 
-    YouTubeDownloadController *rebornYouTubeDownloadController = [[YouTubeDownloadController alloc] init];
-    rebornYouTubeDownloadController.downloadTitle = youtubePlayerRequest[@"videoDetails"][@"title"];
-    rebornYouTubeDownloadController.videoURL = nil;
-    rebornYouTubeDownloadController.audioURL = qualityInfo[@"audioUrl"];
-    rebornYouTubeDownloadController.dualURL = nil;
-    rebornYouTubeDownloadController.artworkURL = [NSURL URLWithString:videoArtworkArray[([videoArtworkArray count] - 1)][@"url"]];
-    rebornYouTubeDownloadController.downloadOption = 1;
+    [qualitySelector addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    qualitySelector.modalPresentationStyle = UIModalPresentationPopover;
+    qualitySelector.popoverPresentationController.sourceView = self;
+    qualitySelector.popoverPresentationController.sourceRect = self.bounds;
 
-    UIViewController *rebornYouTubeDownloadViewController = self._viewControllerForAncestor;
-    [rebornYouTubeDownloadViewController presentViewController:rebornYouTubeDownloadController animated:YES completion:nil];
+    UIViewController *ancestorController = [self _viewControllerForAncestor];
+    if (ancestorController) {
+        [ancestorController presentViewController:qualitySelector animated:YES completion:nil];
+    }
 }
 
-%new;
-- (void)rebornPlayInExternalApp :(NSString *)videoID {
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"ios":videoID];
-    NSURL *videoPath = [NSURL URLWithString:[NSString stringWithFormat:@"%@", youtubePlayerRequest[@"streamingData"][@"hlsManifestUrl"]]];
+%new
+- (void)rebornAudioDownloader:(NSString *)videoID {
+    NSDictionary *playerResponse = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
+    if (![YouTubeUtils validatePlayerResponse:playerResponse]) {
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Failed to fetch audio details."];
+        return;
+    }
 
-    UIAlertController *alertApp = [UIAlertController alertControllerWithTitle:@"Choose App" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    NSDictionary *videoDetails = playerResponse[@"videoDetails"];
+    NSString *videoTitle = videoDetails[@"title"];
+    NSArray *thumbnails = videoDetails[@"thumbnail"][@"thumbnails"];
+    NSURL *artworkURL = [YouTubeUtils highestQualityThumbnailURLFromArray:thumbnails];
 
-    [alertApp addAction:[UIAlertAction actionWithTitle:@"Play In Infuse" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"infuse://x-callback-url/play?url=%@", videoPath]] options:@{} completionHandler:nil];
+    NSArray *adaptiveFormats = playerResponse[@"streamingData"][@"adaptiveFormats"];
+    NSDictionary *audioInfo = [YouTubeUtils bestAudioInfoFromFormats:adaptiveFormats];
+
+    if (!audioInfo[@"url"] || !videoTitle.length || !artworkURL) {
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Unable to prepare audio download."];
+        return;
+    }
+
+    YouTubeDownloadController *downloadController = [[YouTubeDownloadController alloc] init];
+    downloadController.downloadTitle = videoTitle;
+    downloadController.videoURL = nil;
+    downloadController.audioURL = audioInfo[@"url"];
+    downloadController.dualURL = nil;
+    downloadController.artworkURL = artworkURL;
+    downloadController.downloadOption = 1;
+
+    UIViewController *ancestorController = [self _viewControllerForAncestor];
+    if (ancestorController) {
+        [ancestorController presentViewController:downloadController animated:YES completion:nil];
+    }
+}
+
+%new
+- (void)rebornPlayInExternalApp:(NSString *)videoID {
+    NSDictionary *playerResponse = [YouTubeExtractor youtubePlayerRequest:@"ios":videoID];
+    NSString *hlsURLString = playerResponse[@"streamingData"][@"hlsManifestUrl"];
+    if (!hlsURLString.length) {
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Failed to fetch playback URL."];
+        return;
+    }
+
+    NSURL *hlsURL = [NSURL URLWithString:hlsURLString];
+    UIAlertController *appChooser = [UIAlertController alertControllerWithTitle:@"Choose App" 
+                                                                        message:nil 
+                                                                 preferredStyle:UIAlertControllerStyleAlert];
+
+    [appChooser addAction:[UIAlertAction actionWithTitle:@"Play in Infuse" 
+                                                  style:UIAlertActionStyleDefault 
+                                                handler:^(UIAlertAction *action) {
+        NSString *infuseURLString = [NSString stringWithFormat:@"infuse://x-callback-url/play?url=%@", hlsURL.absoluteString];
+        NSURL *infuseURL = [NSURL URLWithString:[infuseURLString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+        [[UIApplication sharedApplication] openURL:infuseURL options:@{} completionHandler:nil];
     }]];
 
-    [alertApp addAction:[UIAlertAction actionWithTitle:@"Play In VLC" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"vlc-x-callback://x-callback-url/stream?url=%@", videoPath]] options:@{} completionHandler:nil];
+    [appChooser addAction:[UIAlertAction actionWithTitle:@"Play in VLC" 
+                                                  style:UIAlertActionStyleDefault 
+                                                handler:^(UIAlertAction *action) {
+        NSString *vlcURLString = [NSString stringWithFormat:@"vlc-x-callback://x-callback-url/stream?url=%@", hlsURL.absoluteString];
+        NSURL *vlcURL = [NSURL URLWithString:[vlcURLString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+        [[UIApplication sharedApplication] openURL:vlcURL options:@{} completionHandler:nil];
     }]];
 
-    [alertApp addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-    }]];
+    [appChooser addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
 
-    UIViewController *alertAppViewController = [self _viewControllerForAncestor];
-    [alertAppViewController presentViewController:alertApp animated:YES completion:nil];
+    UIViewController *ancestorController = [self _viewControllerForAncestor];
+    if (ancestorController) {
+        [ancestorController presentViewController:appChooser animated:YES completion:nil];
+    }
 }
 %end
 
@@ -636,178 +560,180 @@ static NSString *accessGroupID() {
     [self addSubview:rebornOverlayButton];
 }
 
-%new;
+%new
 - (void)rebornOptionsAction {
-    NSString *videoIdentifier = [shortsPlayingVideoID videoId];
+    NSString *videoID = [shortsPlayingVideoID videoId];
+    if (!videoID.length) {
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Unable to retrieve video ID."];
+        return;
+    }
 
-    UIAlertController *alertMenu = [UIAlertController alertControllerWithTitle:nil message:@"Please Pause The Video Before Continuing" preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *alertMenu = [UIAlertController alertControllerWithTitle:nil 
+                                                                       message:@"Please pause the video before continuing." 
+                                                                preferredStyle:UIAlertControllerStyleActionSheet];
 
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kRebornIHaveYouTubePremium"] == NO) {
-        [alertMenu addAction:[UIAlertAction actionWithTitle:@"Download Audio" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [self rebornAudioDownloader:videoIdentifier];
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"kRebornIHaveYouTubePremium"]) {
+        [alertMenu addAction:[UIAlertAction actionWithTitle:@"Download Audio" 
+                                                      style:UIAlertActionStyleDefault 
+                                                    handler:^(UIAlertAction *action) {
+            [self rebornAudioDownloader:videoID];
         }]];
-
-        [alertMenu addAction:[UIAlertAction actionWithTitle:@"Download Video" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [self rebornVideoDownloader:videoIdentifier];
+        [alertMenu addAction:[UIAlertAction actionWithTitle:@"Download Video" 
+                                                      style:UIAlertActionStyleDefault 
+                                                    handler:^(UIAlertAction *action) {
+            [self rebornVideoDownloader:videoID];
         }]];
     }
 
-    [alertMenu addAction:[UIAlertAction actionWithTitle:@"Play In External App" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        [self rebornPlayInExternalApp:videoIdentifier];
+    [alertMenu addAction:[UIAlertAction actionWithTitle:@"Play in External App" 
+                                                  style:UIAlertActionStyleDefault 
+                                                handler:^(UIAlertAction *action) {
+        [self rebornPlayInExternalApp:videoID];
     }]];
+    [alertMenu addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
 
-    [alertMenu addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-    }]];
+    alertMenu.modalPresentationStyle = UIModalPresentationPopover;
+    alertMenu.popoverPresentationController.sourceView = self;
+    alertMenu.popoverPresentationController.sourceRect = self.bounds;
 
-    [alertMenu setModalPresentationStyle:UIModalPresentationPopover];
-    UIPopoverPresentationController *popPresenter = [alertMenu popoverPresentationController];
-    popPresenter.sourceView = self;
-    popPresenter.sourceRect = self.bounds;
-
-    UIViewController *menuViewController = [self _viewControllerForAncestor];
-    [menuViewController presentViewController:alertMenu animated:YES completion:nil];
+    UIViewController *ancestorController = [self _viewControllerForAncestor];
+    if (ancestorController) {
+        [ancestorController presentViewController:alertMenu animated:YES completion:nil];
+    } else {
+        [ancestorController showAlertWithTitle:@"Error" message:@"Unable to display options."];
+    }
 }
 
-%new;
-- (void)rebornVideoDownloader :(NSString *)videoID {
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
-    NSString *videoTitle = [NSString stringWithFormat:@"%@", youtubePlayerRequest[@"videoDetails"][@"title"]];
-    NSArray *videoArtworkArray = youtubePlayerRequest[@"videoDetails"][@"thumbnail"][@"thumbnails"];
-    NSURL *videoArtwork = [NSURL URLWithString:[NSString stringWithFormat:@"%@", videoArtworkArray[([videoArtworkArray count] - 1)][@"url"]]];
-    NSDictionary *innertubeFormats = youtubePlayerRequest[@"streamingData"][@"formats"];
-    NSURL *video2160p;
-    NSURL *video1440p;
-    NSURL *video1080p;
-    NSURL *video720p;
-    NSURL *video480p;
-    NSURL *video360p;
-    NSURL *video240p;
-    for (NSDictionary *format in innertubeFormats) {
-        if ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"2160"] || [[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"quality"]] isEqual:@"hd2160"]) {
-            if (video2160p == nil) {
-                video2160p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
-            }
-        } else if ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"1440"] || [[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"quality"]] isEqual:@"hd1440"]) {
-            if (video1440p == nil) {
-                video1440p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
-            }
-        } else if ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"1080"] || [[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"quality"]] isEqual:@"hd1080"]) {
-            if (video1080p == nil) {
-                video1080p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
-            }
-        } else if ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"720"] || [[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"quality"]] isEqual:@"hd720"]) {
-            if (video720p == nil) {
-                video720p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
-            }
-        } else if ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"480"] || [[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"qualityLabel"]] isEqual:@"480p"]) {
-            if (video480p == nil) {
-                video480p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
-            }
-        } else if ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"360"] || [[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"qualityLabel"]] isEqual:@"360p"]) {
-            if (video360p == nil) {
-                video360p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
-            }
-        } else if ([[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"height"]] isEqual:@"240"] || [[format objectForKey:@"mimeType"] containsString:@"video/mp4"] & [[NSString stringWithFormat:@"%@", [format objectForKey:@"qualityLabel"]] isEqual:@"240p"]) {
-            if (video240p == nil) {
-                video240p = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [format objectForKey:@"url"]]];
-            }
-        }
+%new
+- (void)rebornVideoDownloader:(NSString *)videoID {
+    NSDictionary *playerResponse = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
+    if (![YouTubeUtils validatePlayerResponse:playerResponse]) {
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Failed to fetch video details."];
+        return;
     }
 
-    NSURL *videoURL;
-    if (video2160p != nil) {
-        videoURL = video2160p;
-    } else if (video1440p != nil) {
-        videoURL = video1440p;
-    } else if (video1080p != nil) {
-        videoURL = video1080p;
-    } else if (video720p != nil) {
-        videoURL = video720p;
-    } else if (video480p != nil) {
-        videoURL = video480p;
-    } else if (video360p != nil) {
-        videoURL = video360p;
-    } else if (video240p != nil) {
-        videoURL = video240p;
+    NSDictionary *videoDetails = playerResponse[@"videoDetails"];
+    NSString *videoTitle = videoDetails[@"title"];
+    NSArray *thumbnails = videoDetails[@"thumbnail"][@"thumbnails"];
+    NSURL *artworkURL = [YouTubeUtils highestQualityThumbnailURLFromArray:thumbnails];
+
+    NSArray *formats = playerResponse[@"streamingData"][@"formats"];
+    NSArray *adaptiveFormats = playerResponse[@"streamingData"][@"adaptiveFormats"];
+    NSDictionary *bestVideo = [YouTubeUtils bestVideoInfoFromFormats:[formats arrayByAddingObjectsFromArray:adaptiveFormats]];
+
+    if (!bestVideo[@"url"] || !videoTitle.length || !artworkURL) {
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Unable to prepare video download."];
+        return;
     }
 
-    YouTubeDownloadController *rebornYouTubeDownloadController = [[YouTubeDownloadController alloc] init];
-    rebornYouTubeDownloadController.downloadTitle = videoTitle;
-    rebornYouTubeDownloadController.videoURL = nil;
-    rebornYouTubeDownloadController.audioURL = nil;
-    rebornYouTubeDownloadController.dualURL = videoURL;
-    rebornYouTubeDownloadController.artworkURL = videoArtwork;
-    rebornYouTubeDownloadController.downloadOption = 2;
+    YouTubeDownloadController *downloadController = [[YouTubeDownloadController alloc] init];
+    downloadController.downloadTitle = videoTitle;
+    downloadController.videoURL = nil;
+    downloadController.audioURL = nil;
+    downloadController.dualURL = bestVideo[@"url"];
+    downloadController.artworkURL = artworkURL;
+    downloadController.downloadOption = 2;
 
-    UIViewController *rebornYouTubeDownloadViewController = self._viewControllerForAncestor;
-    [rebornYouTubeDownloadViewController presentViewController:rebornYouTubeDownloadController animated:YES completion:nil];
+    UIViewController *ancestorController = [self _viewControllerForAncestor];
+    if (ancestorController) {
+        [ancestorController presentViewController:downloadController animated:YES completion:nil];
+    }
 }
 
-%new;
-- (void)rebornAudioDownloader :(NSString *)videoID {
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
-    NSArray *videoArtworkArray = youtubePlayerRequest[@"videoDetails"][@"thumbnail"][@"thumbnails"];
-    NSArray *innertubeAdaptiveFormats = youtubePlayerRequest[@"streamingData"][@"adaptiveFormats"];
-
-    NSMutableDictionary *qualityInfo = [[NSMutableDictionary alloc] init];
-    for (NSDictionary *format in innertubeAdaptiveFormats) {
-        if ([format[@"mimeType"] containsString:@"audio/mp4"] && [format[@"audioQuality"] isEqual:@"AUDIO_QUALITY_HIGH"] && (qualityInfo[@"audioQuality"] == nil || [qualityInfo[@"audioQuality"] isEqual:@""] || [qualityInfo[@"audioQuality"] isEqual:@"medium"] || [qualityInfo[@"audioQuality"] isEqual:@"low"])) {
-            qualityInfo[@"audioQuality"] = @"high";
-            qualityInfo[@"audioUrl"] = [NSURL URLWithString:format[@"url"]];
-        } else if ([format[@"mimeType"] containsString:@"audio/mp4"] && [format[@"audioQuality"] isEqual:@"AUDIO_QUALITY_MEDIUM"] && (qualityInfo[@"audioQuality"] == nil || [qualityInfo[@"audioQuality"] isEqual:@""] || [qualityInfo[@"audioQuality"] isEqual:@"low"])) {
-            qualityInfo[@"audioQuality"] = @"medium";
-            qualityInfo[@"audioUrl"] = [NSURL URLWithString:format[@"url"]];
-        } else if ([format[@"mimeType"] containsString:@"audio/mp4"] && [format[@"audioQuality"] isEqual:@"AUDIO_QUALITY_LOW"] && (qualityInfo[@"audioQuality"] == nil || [qualityInfo[@"audioQuality"] isEqual:@""])) {
-            qualityInfo[@"audioQuality"] = @"low";
-            qualityInfo[@"audioUrl"] = [NSURL URLWithString:format[@"url"]];
-        }
+%new
+- (void)rebornAudioDownloader:(NSString *)videoID {
+    NSDictionary *playerResponse = [YouTubeExtractor youtubePlayerRequest:@"mediaconnect":videoID];
+    if (![YouTubeUtils validatePlayerResponse:playerResponse]) {
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Failed to fetch audio details."];
+        return;
     }
 
-    YouTubeDownloadController *rebornYouTubeDownloadController = [[YouTubeDownloadController alloc] init];
-    rebornYouTubeDownloadController.downloadTitle = youtubePlayerRequest[@"videoDetails"][@"title"];
-    rebornYouTubeDownloadController.videoURL = nil;
-    rebornYouTubeDownloadController.audioURL = qualityInfo[@"audioUrl"];
-    rebornYouTubeDownloadController.dualURL = nil;
-    rebornYouTubeDownloadController.artworkURL = [NSURL URLWithString:videoArtworkArray[([videoArtworkArray count] - 1)][@"url"]];
-    rebornYouTubeDownloadController.downloadOption = 1;
+    NSDictionary *videoDetails = playerResponse[@"videoDetails"];
+    NSString *videoTitle = videoDetails[@"title"];
+    NSArray *thumbnails = videoDetails[@"thumbnail"][@"thumbnails"];
+    NSURL *artworkURL = [YouTubeUtils highestQualityThumbnailURLFromArray:thumbnails];
 
-    UIViewController *rebornYouTubeDownloadViewController = self._viewControllerForAncestor;
-    [rebornYouTubeDownloadViewController presentViewController:rebornYouTubeDownloadController animated:YES completion:nil];
+    NSArray *adaptiveFormats = playerResponse[@"streamingData"][@"adaptiveFormats"];
+    NSDictionary *audioInfo = [YouTubeUtils bestAudioInfoFromFormats:adaptiveFormats];
+
+    if (!audioInfo[@"url"] || !videoTitle.length || !artworkURL) {
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Unable to prepare audio download."];
+        return;
+    }
+
+    YouTubeDownloadController *downloadController = [[YouTubeDownloadController alloc] init];
+    downloadController.downloadTitle = videoTitle;
+    downloadController.videoURL = nil;
+    downloadController.audioURL = audioInfo[@"url"];
+    downloadController.dualURL = nil;
+    downloadController.artworkURL = artworkURL;
+    downloadController.downloadOption = 1;
+
+    UIViewController *ancestorController = [self _viewControllerForAncestor];
+    if (ancestorController) {
+        [ancestorController presentViewController:downloadController animated:YES completion:nil];
+    }
 }
 
-%new;
-- (void)rebornPlayInExternalApp :(NSString *)videoID {
-    NSDictionary *youtubePlayerRequest = [YouTubeExtractor youtubePlayerRequest:@"ios":videoID];
-    NSURL *videoPath = [NSURL URLWithString:[NSString stringWithFormat:@"%@", youtubePlayerRequest[@"streamingData"][@"hlsManifestUrl"]]];
+%new
+- (void)rebornPlayInExternalApp:(NSString *)videoID {
+    NSDictionary *playerResponse = [YouTubeExtractor youtubePlayerRequest:@"ios":videoID];
+    NSString *hlsURLString = playerResponse[@"streamingData"][@"hlsManifestUrl"];
+    if (!hlsURLString.length) {
+        UIViewController *vc = [self _viewControllerForAncestor];
+        if (vc) [vc showAlertWithTitle:@"Error" message:@"Failed to fetch playback URL."];
+        return;
+    }
 
-    UIAlertController *alertApp = [UIAlertController alertControllerWithTitle:@"Choose App" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    NSURL *hlsURL = [NSURL URLWithString:hlsURLString];
+    UIAlertController *appChooser = [UIAlertController alertControllerWithTitle:@"Choose App" 
+                                                                        message:nil 
+                                                                 preferredStyle:UIAlertControllerStyleAlert];
 
-    [alertApp addAction:[UIAlertAction actionWithTitle:@"Play In Infuse" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"infuse://x-callback-url/play?url=%@", videoPath]] options:@{} completionHandler:nil];
+    [appChooser addAction:[UIAlertAction actionWithTitle:@"Play in Infuse" 
+                                                   style:UIAlertActionStyleDefault 
+                                                 handler:^(UIAlertAction *action) {
+        NSString *infuseURLString = [NSString stringWithFormat:@"infuse://x-callback-url/play?url=%@", hlsURL.absoluteString];
+        NSURL *infuseURL = [NSURL URLWithString:[infuseURLString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+        [[UIApplication sharedApplication] openURL:infuseURL options:@{} completionHandler:nil];
     }]];
 
-    [alertApp addAction:[UIAlertAction actionWithTitle:@"Play In VLC" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"vlc-x-callback://x-callback-url/stream?url=%@", videoPath]] options:@{} completionHandler:nil];
+    [appChooser addAction:[UIAlertAction actionWithTitle:@"Play in VLC" 
+                                                   style:UIAlertActionStyleDefault 
+                                                 handler:^(UIAlertAction *action) {
+        NSString *vlcURLString = [NSString stringWithFormat:@"vlc-x-callback://x-callback-url/stream?url=%@", hlsURL.absoluteString];
+        NSURL *vlcURL = [NSURL URLWithString:[vlcURLString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+        [[UIApplication sharedApplication] openURL:vlcURL options:@{} completionHandler:nil];
     }]];
 
-    [alertApp addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-    }]];
+    [appChooser addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
 
-    UIViewController *alertAppViewController = [self _viewControllerForAncestor];
-    [alertAppViewController presentViewController:alertApp animated:YES completion:nil];
+    UIViewController *ancestorController = [self _viewControllerForAncestor];
+    if (ancestorController) {
+        [ancestorController presentViewController:appChooser animated:YES completion:nil];
+    }
 }
 %end
 
-// No YouTube Ads
+// No YouTube Ads - @PoomSmart (YouTube-X)
 %group gNoVideoAds
 %hook YTHotConfig
-- (BOOL)disableAfmaIdfaCollection { return NO; }
+- (BOOL)clientInfraClientConfigIosEnableFillingEncodedHacksInnertubeContext { return NO; }
 %end
 %hook YTIPlayerResponse
 - (BOOL)isMonetized { return NO; }
 %end
-%hook YTDataUtils
+%hook YTAdShieldUtils
 + (id)spamSignalsDictionary { return @{}; }
++ (id)spamSignalsDictionaryWithoutIDFA { return @{}; }
+%end
+%hook YTDataUtils
++ (id)spamSignalsDictionary { return @{ @"ms": @"" }; }
 + (id)spamSignalsDictionaryWithoutIDFA { return @{}; }
 %end
 %hook YTAdsInnerTubeContextDecorator
@@ -816,7 +742,21 @@ static NSString *accessGroupID() {
 %hook YTAccountScopedAdsInnerTubeContextDecorator
 - (void)decorateContext:(id)context { %orig(nil); }
 %end
+%hook YTReelDataSource
+- (YTReelModel *)makeContentModelForEntry:(id)entry {
+    YTReelModel *model = %orig;
+    if ([model respondsToSelector:@selector(videoType)] && model.videoType == 3)
+        return nil;
+    return model;
+}
+%end
 %hook YTReelInfinitePlaybackDataSource
+- (YTReelModel *)makeContentModelForEntry:(id)entry {
+    YTReelModel *model = %orig;
+    if ([model respondsToSelector:@selector(videoType)] && model.videoType == 3)
+        return nil;
+    return model;
+}
 - (void)setReels:(NSMutableOrderedSet <YTReelModel *> *)reels {
     [reels removeObjectsAtIndexes:[reels indexesOfObjectsPassingTest:^BOOL(YTReelModel *obj, NSUInteger idx, BOOL *stop) {
         return [obj respondsToSelector:@selector(videoType)] ? obj.videoType == 3 : NO;
@@ -824,83 +764,118 @@ static NSString *accessGroupID() {
     %orig;
 }
 %end
-BOOL isAdString(NSString *description) {
-    if ([description containsString:@"brand_promo"]
-        || [description containsString:@"carousel_footered_layout"]
-        || [description containsString:@"carousel_headered_layout"]
-        || [description containsString:@"feed_ad_metadata"]
-        || [description containsString:@"full_width_portrait_image_layout"]
-        || [description containsString:@"full_width_square_image_layout"]
-        || [description containsString:@"home_video_with_context"]
-        || [description containsString:@"landscape_image_wide_button_layout"]
-        || [description containsString:@"product_engagement_panel"]
-        || [description containsString:@"product_item"]
-        || [description containsString:@"shelf_header"]
-        || [description containsString:@"square_image_layout"]
-        || [description containsString:@"text_image_button_layout"]
-        || [description containsString:@"text_search_ad"]
-        || [description containsString:@"expandable_list"]
-        || [description containsString:@"expandable_metadata"]
-        || [description containsString:@"video_display_full_layout"]
-        || [description containsString:@"video_display_full_buttoned_layout"])
-        return YES;
+static BOOL isProductList(YTICommand *command) {
+    if ([command respondsToSelector:@selector(yt_showEngagementPanelEndpoint)]) {
+        YTIShowEngagementPanelEndpoint *endpoint = [command yt_showEngagementPanelEndpoint];
+        return [endpoint.identifier.tag isEqualToString:@"PAproduct_list"];
+    }
     return NO;
 }
-NSData *cellDividerData;
-%hook YTIElementRenderer
-- (NSData *)elementData {
-    NSString *description = [self description];
-    if ([description containsString:@"cell_divider"]) {
-        if (!cellDividerData) cellDividerData = %orig;
-        return cellDividerData;
+%hook YTWatchNextResponseViewController
+- (void)loadWithModel:(YTIWatchNextResponse *)model {
+    YTICommand *onUiReady = model.onUiReady;
+    if ([onUiReady respondsToSelector:@selector(yt_commandExecutorCommand)]) {
+        YTICommandExecutorCommand *commandExecutorCommand = [onUiReady yt_commandExecutorCommand];
+        NSMutableArray <YTICommand *> *commandsArray = commandExecutorCommand.commandsArray;
+        [commandsArray removeObjectsAtIndexes:[commandsArray indexesOfObjectsPassingTest:^BOOL(YTICommand *command, NSUInteger idx, BOOL *stop) {
+            return isProductList(command);
+        }]];
     }
-    if ([self respondsToSelector:@selector(hasCompatibilityOptions)] && self.hasCompatibilityOptions && self.compatibilityOptions.hasAdLoggingData) return cellDividerData;
-    return %orig;
-}
-%end
-%hook YTInnerTubeCollectionViewController
-- (void)loadWithModel:(YTISectionListRenderer *)model {
-    if ([model isKindOfClass:%c(YTISectionListRenderer)]) {
-        NSMutableArray <YTISectionListSupportedRenderers *> *contentsArray = model.contentsArray;
-        NSIndexSet *removeIndexes = [contentsArray indexesOfObjectsPassingTest:^BOOL(YTISectionListSupportedRenderers *renderers, NSUInteger idx, BOOL *stop) {
-            if (![renderers isKindOfClass:%c(YTISectionListSupportedRenderers)])
-                return NO;
-            YTIItemSectionRenderer *sectionRenderer = renderers.itemSectionRenderer;
-            YTIItemSectionSupportedRenderers *firstObject = [sectionRenderer.contentsArray firstObject];
-            YTIElementRenderer *elementRenderer = firstObject.elementRenderer;
-            NSString *description = [elementRenderer description];
-            return isAdString(description)
-                || [description containsString:@"post_shelf"]
-                || [description containsString:@"product_carousel"]
-                || [description containsString:@"statement_banner"];
-        }];
-        [contentsArray removeObjectsAtIndexes:removeIndexes];
-    }
+    if (isProductList(onUiReady))
+        model.onUiReady = nil;
     %orig;
 }
 %end
-%hook YTWatchNextResultsViewController
-- (void)loadWithModel:(YTISectionListRenderer *)watchNextResults {
-    if ([watchNextResults isKindOfClass:%c(YTISectionListRenderer)]) {
-        NSMutableArray <YTISectionListSupportedRenderers *> *contentsArray = watchNextResults.contentsArray;
-        NSIndexSet *removeIndexes = [contentsArray indexesOfObjectsPassingTest:^BOOL(YTISectionListSupportedRenderers *renderers, NSUInteger idx, BOOL *stop) {
-            if (![renderers isKindOfClass:%c(YTISectionListSupportedRenderers)])
-                return NO;
-            YTIItemSectionRenderer *sectionRenderer = renderers.itemSectionRenderer;
-            YTIItemSectionSupportedRenderers *firstObject = [sectionRenderer.contentsArray firstObject];
-            YTIElementRenderer *elementRenderer = firstObject.elementRenderer;
-            NSString *description = [elementRenderer description];
-            return isAdString(description);
-        }];
-        [contentsArray removeObjectsAtIndexes:removeIndexes];
-    }
+%hook YTMainAppVideoPlayerOverlayViewController
+- (void)playerOverlayProvider:(YTPlayerOverlayProvider *)provider didInsertPlayerOverlay:(YTPlayerOverlay *)overlay {
+    if ([[overlay overlayIdentifier] isEqualToString:@"player_overlay_product_in_video"]) return;
     %orig;
 }
 %end
+NSString *getAdString(NSString *description) {
+    for (NSString *str in @[
+        @"brand_promo",
+        @"carousel_footered_layout",
+        @"carousel_headered_layout",
+        @"eml.expandable_metadata",
+        @"feed_ad_metadata",
+        @"full_width_portrait_image_layout",
+        @"full_width_square_image_layout",
+        @"landscape_image_wide_button_layout",
+        @"post_shelf",
+        @"product_carousel",
+        @"product_engagement_panel",
+        @"product_item",
+        @"shopping_carousel",
+        @"shopping_item_card_list",
+        @"statement_banner",
+        @"square_image_layout",
+        @"text_image_button_layout",
+        @"text_search_ad",
+        @"video_display_full_layout",
+        @"video_display_full_buttoned_layout"
+    ])
+        if ([description containsString:str]) return str;
+    return nil;
+}
+static BOOL isAdRenderer(YTIElementRenderer *elementRenderer, int kind) {
+    if ([elementRenderer respondsToSelector:@selector(hasCompatibilityOptions)] && elementRenderer.hasCompatibilityOptions && elementRenderer.compatibilityOptions.hasAdLoggingData) {
+        HBLogDebug(@"YTX adLogging %d %@", kind, elementRenderer);
+        return YES;
+    }
+    NSString *description = [elementRenderer description];
+    NSString *adString = getAdString(description);
+    if (adString) {
+        HBLogDebug(@"YTX getAdString %d %@ %@", kind, adString, elementRenderer);
+        return YES;
+    }
+    return NO;
+}
+static NSMutableArray <YTIItemSectionRenderer *> *filteredArray(NSArray <YTIItemSectionRenderer *> *array) {
+    NSMutableArray <YTIItemSectionRenderer *> *newArray = [array mutableCopy];
+    NSIndexSet *removeIndexes = [newArray indexesOfObjectsPassingTest:^BOOL(YTIItemSectionRenderer *sectionRenderer, NSUInteger idx, BOOL *stop) {
+        if ([sectionRenderer isKindOfClass:%c(YTIShelfRenderer)]) {
+            YTIShelfSupportedRenderers *content = ((YTIShelfRenderer *)sectionRenderer).content;
+            YTIHorizontalListRenderer *horizontalListRenderer = content.horizontalListRenderer;
+            NSMutableArray <YTIHorizontalListSupportedRenderers *> *itemsArray = horizontalListRenderer.itemsArray;
+            NSIndexSet *removeItemsArrayIndexes = [itemsArray indexesOfObjectsPassingTest:^BOOL(YTIHorizontalListSupportedRenderers *horizontalListSupportedRenderers, NSUInteger idx2, BOOL *stop2) {
+                YTIElementRenderer *elementRenderer = horizontalListSupportedRenderers.elementRenderer;
+                return isAdRenderer(elementRenderer, 4);
+            }];
+            [itemsArray removeObjectsAtIndexes:removeItemsArrayIndexes];
+        }
+        if (![sectionRenderer isKindOfClass:%c(YTIItemSectionRenderer)])
+            return NO;
+        NSMutableArray <YTIItemSectionSupportedRenderers *> *contentsArray = sectionRenderer.contentsArray;
+        if (contentsArray.count > 1) {
+            NSIndexSet *removeContentsArrayIndexes = [contentsArray indexesOfObjectsPassingTest:^BOOL(YTIItemSectionSupportedRenderers *sectionSupportedRenderers, NSUInteger idx2, BOOL *stop2) {
+                YTIElementRenderer *elementRenderer = sectionSupportedRenderers.elementRenderer;
+                return isAdRenderer(elementRenderer, 3);
+            }];
+            [contentsArray removeObjectsAtIndexes:removeContentsArrayIndexes];
+        }
+        YTIItemSectionSupportedRenderers *firstObject = [contentsArray firstObject];
+        YTIElementRenderer *elementRenderer = firstObject.elementRenderer;
+        return isAdRenderer(elementRenderer, 2);
+    }];
+    [newArray removeObjectsAtIndexes:removeIndexes];
+    return newArray;
+}
 %hook _ASDisplayView
 - (void)didMoveToWindow {
-    %orig();
-    if ([self.accessibilityIdentifier isEqualToString:@"id.products_in_video_with_preview_overlay_badge.view"]) self.hidden = YES; 
+     %orig;
+    if (([self.accessibilityIdentifier isEqualToString:@"eml.expandable_metadata.vpp"]))
+        [self removeFromSuperview];
+ }
+%end
+%hook YTInnerTubeCollectionViewController
+- (void)displaySectionsWithReloadingSectionControllerByRenderer:(id)renderer {
+    NSMutableArray *sectionRenderers = [self valueForKey:@"_sectionRenderers"];
+    [self setValue:filteredArray(sectionRenderers) forKey:@"_sectionRenderers"];
+    %orig;
+}
+- (void)addSectionsFromArray:(NSArray <YTIItemSectionRenderer *> *)array {
+    %orig(filteredArray(array));
 }
 %end
 %end
@@ -2276,7 +2251,7 @@ NSData *cellDividerData;
 %hook YTHeaderLogoController
 - (void)setTopbarLogoRenderer:(YTITopbarLogoRenderer *)renderer {
     YTIIcon *iconImage = renderer.iconImage;
-    iconImage.iconType = 537;
+    iconImage.iconType = YT_PREMIUM_LOGO;
     %orig;
 }
 - (void)setPremiumLogo:(BOOL)isPremiumLogo {
@@ -2309,7 +2284,7 @@ NSData *cellDividerData;
                 YTICompactLinkRenderer *compactLinkRenderer = [itemSectionSupportedRenderers compactLinkRenderer];
                 if ([compactLinkRenderer hasIcon]) {
                     YTIIcon *icon = [compactLinkRenderer icon];
-                    if ([icon hasIconType] && icon.iconType == 741) {
+                    if ([icon hasIconType] && icon.iconType == YT_PREMIUM_STANDALONE) {
                         if ([((YTIStringRun *)(compactLinkRenderer.title.runsArray.firstObject)).text isEqualToString:@"Downloads"]) {
                             DownloadsController *downloadsController = [[DownloadsController alloc] init];
                             [self.navigationController pushViewController:downloadsController animated:YES];
@@ -2326,7 +2301,7 @@ NSData *cellDividerData;
                         YTIIconThumbnailRenderer *iconThumbnailRenderer = thumbnail.iconThumbnailRenderer;
                         if ([iconThumbnailRenderer hasIcon]) {
                             YTIIcon *icon = iconThumbnailRenderer.icon;
-                            if ([icon hasIconType] && icon.iconType == 658) {
+                            if ([icon hasIconType] && icon.iconType == YT_MY_VIDEOS) {
                                 yourVideosCellIndex = [subContentsArray indexOfObject:itemSectionSupportedRenderers];
                             }
                         }
@@ -2337,7 +2312,7 @@ NSData *cellDividerData;
         if (yourVideosCellIndex != -1 && subContentsArray[yourVideosCellIndex].accessibilityLabel == nil) {
             YTIItemSectionSupportedRenderers *newItemSectionSupportedRenderers = [subContentsArray[yourVideosCellIndex] copy];
             ((YTIStringRun *)(newItemSectionSupportedRenderers.compactListItemRenderer.title.runsArray.firstObject)).text = @"Downloads";
-            newItemSectionSupportedRenderers.compactListItemRenderer.thumbnail.iconThumbnailRenderer.icon.iconType = 147;
+            newItemSectionSupportedRenderers.compactListItemRenderer.thumbnail.iconThumbnailRenderer.icon.iconType = YT_DOWNLOADS_OUTLINE;
             [subContentsArray insertObject:newItemSectionSupportedRenderers atIndex:yourVideosCellIndex + 1];
             subContentsArray[yourVideosCellIndex].accessibilityLabel = @"uYouEnhanced Modified";
             yourVideosCellIndex = -1;
@@ -2691,10 +2666,10 @@ BOOL selectedTabIndex = NO;
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableCustomDoubleTapToSkipDuration"] == YES) %init(gEnableCustomDoubleTapToSkipDuration);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideCurrentTime"] == YES) %init(gHideCurrentTimeLabel);
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideDuration"] == YES) %init(gHideDurationLabel);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableRelatedVideosInOverlay"] == YES & [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideOverlayQuickActions"] == YES & [[NSUserDefaults standardUserDefaults] boolForKey:@"kAlwaysShowPlayerBarVTwo"] == YES) {
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableRelatedVideosInOverlay"] == YES && [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideOverlayQuickActions"] == YES && [[NSUserDefaults standardUserDefaults] boolForKey:@"kAlwaysShowPlayerBarVTwo"] == YES) {
             %init(gAlwaysShowPlayerBar);
         }
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableiPadStyleOniPhone"] == NO & hasDeviceNotch() == NO & [[NSUserDefaults standardUserDefaults] boolForKey:@"kShowStatusBarInOverlay"] == YES) {
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableiPadStyleOniPhone"] == NO && hasDeviceNotch() == NO && [[NSUserDefaults standardUserDefaults] boolForKey:@"kShowStatusBarInOverlay"] == YES) {
             %init(gShowStatusBarInOverlay);
         }
         NSData *colorData = [[NSUserDefaults standardUserDefaults] objectForKey:@"kYTRebornColourOptionsVFour"];

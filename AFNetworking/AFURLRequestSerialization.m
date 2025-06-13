@@ -22,7 +22,7 @@
 #import "AFURLRequestSerialization.h"
 
 #if TARGET_OS_IOS || TARGET_OS_WATCH || TARGET_OS_TV
-#import <MobileCoreServices/MobileCoreServices.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #else
 #import <CoreServices/CoreServices.h>
 #endif
@@ -609,13 +609,12 @@ static inline NSString * AFMultipartFormFinalBoundary(NSString *boundary) {
 }
 
 static inline NSString * AFContentTypeForPathExtension(NSString *extension) {
-    NSString *UTI = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)extension, NULL);
-    NSString *contentType = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)UTI, kUTTagClassMIMEType);
+UTType *uti = [UTType typeWithFilenameExtension:extension];
+    NSString *contentType = uti.preferredMIMEType;
     if (!contentType) {
         return @"application/octet-stream";
-    } else {
-        return contentType;
     }
+    return contentType;
 }
 
 NSUInteger const kAFUploadStream3GSuggestedPacketSize = 1024 * 16;
