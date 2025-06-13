@@ -241,9 +241,6 @@
 @interface SSOConfiguration : NSObject
 @end
 
-@interface _ASDisplayView : UIView
-@end
-
 @interface YTLabel : UILabel
 @end
 
