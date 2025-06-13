@@ -791,6 +791,7 @@ static BOOL isProductList(YTICommand *command) {
     if ([[overlay overlayIdentifier] isEqualToString:@"player_overlay_product_in_video"]) return;
     %orig;
 }
+%end
 NSString *getAdString(NSString *description) {
     for (NSString *str in @[
         @"brand_promo",
